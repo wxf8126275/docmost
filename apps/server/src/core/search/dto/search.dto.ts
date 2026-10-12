@@ -39,6 +39,10 @@ export class SearchDTO {
   titleOnly?: boolean;
 
   @IsOptional()
+  @IsBoolean()
+  aiSearch?: boolean;
+
+  @IsOptional()
   @IsNumber()
   limit?: number;
 

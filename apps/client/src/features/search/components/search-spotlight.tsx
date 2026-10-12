@@ -39,6 +39,14 @@ export function SearchSpotlight({ spaceId }: SearchSpotlightProps) {
   });
   const [isAiMode, setIsAiMode] = useState(false);
 
+  // pgvector semantic search is available when the workspace enables AI search
+  // and the configured vector driver is pgvector (turbopuffer uses a different
+  // enterprise answer pipeline handled below).
+  const isPgvectorAi =
+    workspace?.settings?.ai?.search === true &&
+    getAiVectorDriver() === "pgvector";
+  const useSemanticSearch = isAiMode && isPgvectorAi;
+
   // Build unified search params
   const searchParams = useMemo(() => {
     const params: any = {
@@ -70,8 +78,8 @@ export function SearchSpotlight({ spaceId }: SearchSpotlightProps) {
     data: searchResults,
     isFetching,
   } = useUnifiedSearch(
-    searchParams,
-    !isAiMode // Disable regular search when in AI mode
+    { ...searchParams, aiSearch: useSemanticSearch },
+    !isAiMode || useSemanticSearch // enabled in normal mode and in pgvector AI mode
   );
   const {
     //@ts-ignore
@@ -142,7 +150,7 @@ export function SearchSpotlight({ spaceId }: SearchSpotlightProps) {
   };
 
   const handleAiSearchTrigger = () => {
-    if (query.trim() && isAiMode) {
+    if (query.trim() && isAiMode && !isPgvectorAi) {
       triggerAiSearchMutation(searchParams);
     }
   };
@@ -163,18 +171,36 @@ export function SearchSpotlight({ spaceId }: SearchSpotlightProps) {
       >
         <Group gap="xs" px="sm" pt="sm" pb="xs">
           <Spotlight.Search
-            placeholder={isAiMode ? t("Ask a question...") : t("Search...")}
-            aria-label={isAiMode ? t("Ask a question...") : t("Search")}
+            placeholder={
+              isAiMode
+                ? isPgvectorAi
+                  ? t("Search with AI...")
+                  : t("Ask a question...")
+                : t("Search...")
+            }
+            aria-label={
+              isAiMode
+                ? isPgvectorAi
+                  ? t("Search with AI")
+                  : t("Ask a question...")
+                : t("Search")
+            }
             leftSection={<IconSearch size={20} stroke={1.5} />}
             style={{ flex: 1 }}
             onKeyDown={(e) => {
-              if (e.key === "Enter" && isAiMode && query.trim() && !isAiLoading) {
+              if (
+                e.key === "Enter" &&
+                isAiMode &&
+                query.trim() &&
+                !isAiLoading &&
+                !isPgvectorAi
+              ) {
                 e.preventDefault();
                 handleAiSearchTrigger();
               }
             }}
           />
-          {isAiMode && hasAiFeature && (
+          {isAiMode && hasAiFeature && !isPgvectorAi && (
             <Button
               size="xs"
               leftSection={<IconSparkles size={16} />}
@@ -201,7 +227,7 @@ export function SearchSpotlight({ spaceId }: SearchSpotlightProps) {
         </div>
 
         <VisuallyHidden role="status" aria-live="polite">
-          {isAiMode
+          {isAiMode && !isPgvectorAi
             ? query.length > 0 && !isAiLoading && !aiSearchResult
               ? t("No answer available")
               : ""
@@ -213,7 +239,7 @@ export function SearchSpotlight({ spaceId }: SearchSpotlightProps) {
         </VisuallyHidden>
 
         <Spotlight.ActionsList>
-          {isAiMode ? (
+          {isAiMode && !isPgvectorAi ? (
             <>
               {query.length === 0 && (
                 <Spotlight.Empty>{t("Ask a question...")}</Spotlight.Empty>

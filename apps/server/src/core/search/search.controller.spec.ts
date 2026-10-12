@@ -1,16 +1,19 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundException } from '@nestjs/common';
 import { SearchController } from './search.controller';
+import { SearchService } from './search.service';
 
 describe('SearchController', () => {
   let controller: SearchController;
 
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      controllers: [SearchController],
-    }).compile();
-
-    controller = module.get<SearchController>(SearchController);
+  beforeEach(() => {
+    controller = new SearchController(
+      { searchPage: jest.fn() } as unknown as SearchService,
+      {} as never,
+      { getSearchDriver: jest.fn() } as never,
+      {} as never,
+      {} as never,
+      {} as never,
+    );
   });
 
   it('should be defined', () => {

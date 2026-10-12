@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { SearchDTO, SearchSuggestionDTO } from './dto/search.dto';
 import { SearchResponseDto } from './dto/search-response.dto';
 import { InjectKysely } from 'nestjs-kysely';
@@ -8,27 +8,221 @@ import { PageRepo } from '@docmost/db/repos/page/page.repo';
 import { SpaceMemberRepo } from '@docmost/db/repos/space/space-member.repo';
 import { ShareRepo } from '@docmost/db/repos/share/share.repo';
 import { PagePermissionRepo } from '@docmost/db/repos/page/page-permission.repo';
+import { EmbeddingService } from '../ai/services/embedding.service';
+import { PageEmbeddingRepo } from '@docmost/db/repos/page-embedding/page-embedding.repo';
+import { WorkspaceService } from '../workspace/services/workspace.service';
+import { EnvironmentService } from '../../integrations/environment/environment.service';
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const tsquery = require('pg-tsquery')();
 
+interface SearchOpts {
+  userId?: string;
+  workspaceId: string;
+  publicPageIds?: string[];
+}
+
 @Injectable()
 export class SearchService {
+  private readonly logger = new Logger(SearchService.name);
+
   constructor(
     @InjectKysely() private readonly db: KyselyDB,
     private pageRepo: PageRepo,
     private shareRepo: ShareRepo,
     private spaceMemberRepo: SpaceMemberRepo,
     private pagePermissionRepo: PagePermissionRepo,
+    private embeddingService: EmbeddingService,
+    private pageEmbeddingRepo: PageEmbeddingRepo,
+    private workspaceService: WorkspaceService,
+    private environmentService: EnvironmentService,
   ) {}
 
   async searchPage(
     searchParams: SearchDTO,
-    opts: {
-      userId?: string;
-      workspaceId: string;
-      publicPageIds?: string[];
-    },
+    opts: SearchOpts,
+  ): Promise<{ items: SearchResponseDto[] }> {
+    const query = searchParams.query?.trim() ?? '';
+
+    // AI semantic search (pgvector): only when the client explicitly requests
+    // it AND the workspace has AI search enabled with the pgvector driver.
+    if (searchParams.aiSearch === true && query.length >= 1) {
+      const enabled = await this.isSemanticSearchEnabled(opts.workspaceId);
+      if (enabled) {
+        return this.searchSemanticOrFallback(searchParams, opts, query);
+      }
+    }
+
+    return this.searchFullText(searchParams, opts);
+  }
+
+  private async isSemanticSearchEnabled(workspaceId: string): Promise<boolean> {
+    if (this.environmentService.getAiVectorDriver() !== 'pgvector') {
+      return false;
+    }
+    const workspace = await this.workspaceService.findById(workspaceId);
+    const settings = (workspace?.settings ?? {}) as {
+      ai?: { search?: boolean };
+    };
+    return settings.ai?.search === true;
+  }
+
+  /**
+   * Primary path: semantic (vector) search. Falls back to full-text search when
+   * no semantic hits are found, then tops up semantic results with full-text
+   * matches so lexically-strong pages still surface.
+   */
+  private async searchSemanticOrFallback(
+    searchParams: SearchDTO,
+    opts: SearchOpts,
+    query: string,
+  ): Promise<{ items: SearchResponseDto[] }> {
+    const limit = searchParams.limit || 25;
+
+    let semanticItems: SearchResponseDto[] = [];
+    try {
+      semanticItems = await this.searchSemantic(searchParams, opts, query);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : String(err);
+      this.logger.warn(
+        `Semantic search failed, falling back to full-text: ${message}`,
+      );
+    }
+
+    if (semanticItems.length === 0) {
+      return this.searchFullText(searchParams, opts);
+    }
+
+    const existingIds = new Set(semanticItems.map((i) => i.id));
+    let needed = limit - semanticItems.length;
+    if (needed > 0) {
+      const fullText = await this.searchFullText(searchParams, opts);
+      for (const item of fullText.items) {
+        if (needed <= 0) break;
+        if (!existingIds.has(item.id)) {
+          semanticItems.push(item);
+          existingIds.add(item.id);
+          needed--;
+        }
+      }
+    }
+
+    return { items: semanticItems };
+  }
+
+  private async searchSemantic(
+    searchParams: SearchDTO,
+    opts: SearchOpts,
+    query: string,
+  ): Promise<SearchResponseDto[]> {
+    const limit = searchParams.limit || 25;
+    const offset = searchParams.offset || 0;
+
+    const [queryVec] = await this.embeddingService.embed([query]);
+
+    const semanticHits = await this.pageEmbeddingRepo.vectorSearch(
+      opts.workspaceId,
+      queryVec,
+      { limit: (limit + offset) * 3 + 50, spaceId: searchParams.spaceId },
+    );
+
+    if (semanticHits.length === 0) {
+      return [];
+    }
+
+    const distanceByPage = new Map<string, number>(
+      semanticHits.map((h) => [h.pageId, h.distance]),
+    );
+    let candidateIds = semanticHits.map((h) => h.pageId);
+
+    // Apply the same access control as the full-text path.
+    let idQuery = this.db
+      .selectFrom('pages')
+      .select(['id'])
+      .where('id', 'in', candidateIds)
+      .where('deletedAt', 'is', null)
+      .where('workspaceId', '=', opts.workspaceId);
+
+    if (opts.publicPageIds && !opts.userId) {
+      if (opts.publicPageIds.length === 0) {
+        return [];
+      }
+      idQuery = idQuery.where('id', 'in', opts.publicPageIds);
+    } else if (opts.userId && !searchParams.spaceId) {
+      idQuery = idQuery.where(
+        'spaceId',
+        'in',
+        this.spaceMemberRepo.getUserSpaceIdsQuery(opts.userId),
+      );
+    } else if (searchParams.spaceId) {
+      idQuery = idQuery.where('spaceId', '=', searchParams.spaceId);
+    } else if (!opts.userId && !opts.publicPageIds) {
+      return [];
+    }
+
+    const allowed = await idQuery.execute();
+    let allowedIds = allowed.map((r: any) => r.id);
+
+    if (opts.userId && allowedIds.length > 0) {
+      const accessibleIds =
+        await this.pagePermissionRepo.filterAccessiblePageIds({
+          pageIds: allowedIds,
+          userId: opts.userId,
+          spaceId: searchParams.spaceId,
+        });
+      const accessibleSet = new Set(accessibleIds);
+      allowedIds = allowedIds.filter((id) => accessibleSet.has(id));
+    }
+
+    if (allowedIds.length === 0) {
+      return [];
+    }
+
+    let rowsQuery = this.db
+      .selectFrom('pages')
+      .select([
+        'id',
+        'slugId',
+        'title',
+        'icon',
+        'parentPageId',
+        'creatorId',
+        'createdAt',
+        'updatedAt',
+      ])
+      .where('id', 'in', allowedIds);
+
+    if (!searchParams.shareId && !opts.publicPageIds) {
+      rowsQuery = rowsQuery.select((eb) => this.pageRepo.withSpace(eb));
+    }
+
+    const pageRows = await rowsQuery.execute();
+
+    const scored: SearchResponseDto[] = pageRows.map((r: any) => ({
+      id: r.id,
+      slugId: r.slugId,
+      title: r.title,
+      icon: r.icon,
+      parentPageId: r.parentPageId,
+      creatorId: r.creatorId,
+      createdAt: r.createdAt,
+      updatedAt: r.updatedAt,
+      space: r.space,
+      // cosine distance is in [0, 2]; invert so higher rank = more similar.
+      rank: 1 - (distanceByPage.get(r.id) ?? 1),
+      highlight: '',
+      matchedText: [],
+      wholeWord: false,
+    }));
+
+    scored.sort((a, b) => b.rank - a.rank);
+
+    return scored.slice(offset, offset + limit);
+  }
+
+  async searchFullText(
+    searchParams: SearchDTO,
+    opts: SearchOpts,
   ): Promise<{ items: SearchResponseDto[] }> {
     const query = searchParams.query?.trim() ?? '';
     const labelIds = [...new Set(searchParams.labelIds ?? [])];
@@ -206,7 +400,7 @@ export class SearchService {
 
     //@ts-ignore
     const searchResults = results.map((result: SearchResponseDto) => {
-      result.wholeWord = true
+      result.wholeWord = true;
       if (!result.highlight) {
         result.highlight = '';
         result.matchedText = [];
