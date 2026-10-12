@@ -1,0 +1,10 @@
+{
+  "timestamp": "2026-10-10T22:30:00Z",
+  "action": "start",
+  "feature": "siem",
+  "before": { "active": "audit-logs" },
+  "after": { "active": "siem", "status": "DRAFT" },
+  "files_created": ["docs/requirements/2026-10-10-siem.md"],
+  "files_modified": ["docs/.sean/state.json"],
+  "undone": false
+}

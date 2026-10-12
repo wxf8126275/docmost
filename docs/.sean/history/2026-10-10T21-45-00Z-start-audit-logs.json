@@ -1,0 +1,16 @@
+{
+  "timestamp": "2026-10-10T21:45:00Z",
+  "action": "start",
+  "feature": "audit-logs",
+  "before": {
+    "active": "workspace-api-keys",
+    "features": ["ai-chat", "workspace-api-keys"]
+  },
+  "after": {
+    "active": "audit-logs",
+    "features": ["ai-chat", "workspace-api-keys", "audit-logs"]
+  },
+  "files_created": ["docs/requirements/2026-10-10-audit-logs.md"],
+  "files_modified": ["docs/.sean/state.json"],
+  "undone": false
+}

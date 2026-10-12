@@ -1,0 +1,15 @@
+{
+  "timestamp": "2026-10-10T22:12:00Z",
+  "action": "run",
+  "feature": "audit-logs",
+  "before": { "status": "PLANNED", "tests_passed": 0, "tests_failed": 0 },
+  "after": { "status": "DONE", "tests_passed": 13, "tests_failed": 0 },
+  "summary": "实现工作区设置 · 审计日志 后台接口（社区自托管可用），沿用现有前端 ee/audit 页面。后端 ee/audit 模块：AuditRepo（写/游标分页筛选联表 users/按 workspaces.auditRetentionDays 存留存）、AuditService（实现 IAuditService，从 CLS 审计上下文取 actorId/actorType/ipAddress/userAgent 落库，log/logBatchWithContext/setActorId/setActorType/updateRetention）、AuditController（POST /api/audit 列表、/retention、/retention/update，JwtAuthGuard + owner 校验）。ee/ee.module 改用真实 AuditModule（@Global 提供 AUDIT_SERVICE）替换 NoopAuditModule。前端 features.ts 的 COMMUNITY_FEATURES 加入 Feature.AUDIT_LOGS，使社区版菜单可点击（owner + 自托管）。",
+  "key_decisions": [
+    "复用既有 audit 表（迁移 20260228T223532-audit 已建，DB 已存在），不新建表；最初误建 audit_logs 迁移已删除。",
+    "AUDIT_SERVICE 由真实 AuditModule 提供，替换 NoopAuditModule；AppModule 在 ee 加载时不引入 NoopAuditModule 的逻辑保持不变。",
+    "列表响应映射为前端 IAuditLog 形状（actor 嵌套、resource 为 null，前端已兜底）。",
+    "仅启用 Feature.AUDIT_LOGS；SIEM 流式（Feature.SIEM）不在本期范围；前端页面未改动。"
+  ],
+  "verification": "13 个单测全过（repo/service/controller/module 各 spec）；tsc --noEmit 全过；node dist/main.js 启动成功，路由 /api/audit、/api/audit/retention、/api/audit/retention/update 均已 Mapped，AUDIT_SERVICE 由真实 AuditService 提供无 DI 报错；client pnpm build 通过。"
+}

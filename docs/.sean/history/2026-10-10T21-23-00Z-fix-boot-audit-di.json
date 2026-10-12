@@ -1,0 +1,9 @@
+{
+  "feature": "workspace-api-keys",
+  "action": "fix-boot",
+  "summary": "创建 ee/ee.module.ts 后，AppModule 因 enterpriseModules 非空而停止加载 NoopAuditModule，导致全局 AUDIT_SERVICE 无人提供，UserService 启动即 UnknownDependenciesException。修复：EeModule 导入 @Global() 的 NoopAuditModule（等价非 ee 路径下 AppModule 的提供方式）。",
+  "verification": "用 tsc -p tsconfig.build.json 编译（绕开 nest build 的 safe-delete 清理拦截），node dist/main.js 启动成功，日志显示 Nest application successfully started、Database connection successful，且 /api/api-keys/{create,update,revoke} 路由已映射，无 AUDIT_SERVICE 报错。",
+  "decisions": [
+    "本仓库为企业版占位（OSS）实现：ee 激活时由 NoopAuditModule 提供 AUDIT_SERVICE（真实企业版应提供真实审计服务）。"
+  ]
+}

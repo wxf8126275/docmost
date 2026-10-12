@@ -1,0 +1,26 @@
+{
+  "ts": "2026-10-10T22:40:00Z",
+  "type": "feature-done",
+  "feature": "siem",
+  "summary": "SIEM backend implemented, wired, and verified. 26 unit tests pass, full server typecheck passes, server boots with all 6 /api/siem/* routes mapped with no DI errors, client builds with Feature.SIEM enabled.",
+  "artifacts": [
+    "docs/requirements/2026-10-10-siem.md",
+    "docs/plans/2026-10-10-siem.md"
+  ],
+  "tasks": ["siem-repo", "siem-formatter", "siem-service", "siem-controller", "siem-delivery-processor", "siem-module-wiring"],
+  "tests_passed": 26,
+  "tests_failed": 0,
+  "tests_fixed": 0,
+  "runtime_evidence": {
+    "routes": [
+      "POST /api/siem/destinations",
+      "POST /api/siem/destinations/create",
+      "POST /api/siem/destinations/update",
+      "POST /api/siem/destinations/delete",
+      "POST /api/siem/destinations/test",
+      "POST /api/siem/destinations/retry"
+    ],
+    "boot": "Nest application successfully started; DB + Redis connections established",
+    "client_build": "pass"
+  }
+}

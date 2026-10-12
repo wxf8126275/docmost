@@ -1,0 +1,20 @@
+{
+  "feature": "workspace-api-keys",
+  "action": "run",
+  "before": {
+    "status": "DRAFT",
+    "tests_passed": 0,
+    "tests_failed": 0
+  },
+  "after": {
+    "status": "DONE",
+    "tests_passed": 13,
+    "tests_failed": 0
+  },
+  "summary": "实现工作区设置 → API 密钥 后台接口（ee/api-key），沿用现有前端页面。补迁移添加 key_hash/key_prefix 列；修复 ee 目录层级相对路径与 ApiKey/WorkspaceAbilityFactory 导入；修复迁移器 corrupted 状态（补回 20260923 占位迁移文件）并将表所有权转交 docmost 后成功运行迁移。13 个单测全过，tsc --noEmit 全过。",
+  "decisions": [
+    "API key 明文用 TokenService 签发的 JWT，仅创建时返回；库内只存 SHA-256 哈希与前缀。",
+    "后端置于 apps/server/src/ee/api-key，经新增 ee/ee.module 被 AppModule 动态 require 加载。",
+    "管理员鉴权用 CASL Manage/API（与前端 isAdmin 一致）。"
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "timestamp": "2026-10-10T12:00:00Z",
+  "action": "start",
+  "feature": "ai-chat",
+  "before": {
+    "version": 3,
+    "active": null,
+    "features": {}
+  },
+  "after": {
+    "version": 3,
+    "active": "ai-chat",
+    "features": {
+      "ai-chat": {
+        "name": "ai-chat",
+        "requirement": "docs/requirements/2026-10-10-ai-chat.md",
+        "plan": null,
+        "status": "DRAFT",
+        "current_task": 0,
+        "tasks_total": 0,
+        "tasks": [],
+        "tests_passed": 0,
+        "tests_failed": 0,
+        "tests_fixed": 0,
+        "started_at": "2026-10-10T12:00:00Z",
+        "completed_at": null,
+        "blocked_reason": null,
+        "review": null,
+        "findings": []
+      }
+    }
+  },
+  "files_created": ["docs/requirements/2026-10-10-ai-chat.md"],
+  "files_modified": [],
+  "undone": false
+}
