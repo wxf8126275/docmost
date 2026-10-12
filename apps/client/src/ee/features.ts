@@ -48,4 +48,12 @@ export const COMMUNITY_FEATURES: string[] = [
   // Page verification backend/UI is implemented in the community build, so the
   // settings "Verified pages" module is usable without an enterprise license.
   Feature.PAGE_VERIFICATION,
+  // DOCX import backend is implemented in the community build (mammoth-based,
+  // images extracted to storage), so the "Import pages" Word option is usable
+  // without an enterprise license.
+  Feature.DOCX_IMPORT,
+  // PDF import backend is implemented in the community build (pdf-inspector
+  // based, images extracted to storage), so the "Import pages" PDF option is
+  // usable without an enterprise license.
+  Feature.PDF_IMPORT,
 ];

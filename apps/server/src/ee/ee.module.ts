@@ -3,6 +3,7 @@ import { ApiKeyModule } from './api-key/api-key.module';
 import { AuditModule } from './audit/audit.module';
 import { SiemModule } from './siem/siem.module';
 import { PageVerificationModule } from './page-verification/page-verification.module';
+import { DocumentImportModule } from './document-import/document-import.module';
 
 /**
  * Enterprise module aggregator. `AppModule` requires this file dynamically and
@@ -16,7 +17,13 @@ import { PageVerificationModule } from './page-verification/page-verification.mo
  * the enterprise build.
  */
 @Module({
-  imports: [AuditModule, ApiKeyModule, SiemModule, PageVerificationModule],
+  imports: [
+    AuditModule,
+    ApiKeyModule,
+    SiemModule,
+    PageVerificationModule,
+    DocumentImportModule,
+  ],
   exports: [ApiKeyModule],
 })
 export class EeModule {}

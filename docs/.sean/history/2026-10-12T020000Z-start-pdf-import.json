@@ -1,0 +1,18 @@
+{
+  "timestamp": "2026-10-12T02:00:00Z",
+  "action": "start",
+  "feature": "pdf-import",
+  "before": null,
+  "after": {
+    "status": "IN_PROGRESS",
+    "current_task": 1,
+    "tasks_total": 3
+  },
+  "files_created": [
+    "docs/requirements/2026-10-12-pdf-import.md",
+    "docs/plans/2026-10-12-pdf-import.md",
+    "docs/.sean/state.json"
+  ],
+  "files_modified": [],
+  "undone": false
+}

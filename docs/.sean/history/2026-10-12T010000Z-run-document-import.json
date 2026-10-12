@@ -1,0 +1,26 @@
+{
+  "timestamp": "2026-10-12T01:00:00Z",
+  "action": "run",
+  "feature": "document-import",
+  "before": {
+    "status": "IN_PROGRESS",
+    "current_task": 1,
+    "tasks_total": 3
+  },
+  "after": {
+    "status": "DONE",
+    "current_task": 3,
+    "tasks_total": 3
+  },
+  "files_created": [
+    "apps/server/src/ee/document-import/docx-import.service.ts",
+    "apps/server/src/ee/document-import/document-import.module.ts",
+    "apps/server/src/ee/document-import/docx-import.service.spec.ts"
+  ],
+  "files_modified": [
+    "apps/server/src/ee/ee.module.ts",
+    "apps/client/src/ee/features.ts",
+    "apps/server/src/integrations/import/services/import.service.ts"
+  ],
+  "undone": false
+}

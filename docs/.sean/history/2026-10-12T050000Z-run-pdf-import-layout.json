@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-10-12T05:00:00Z",
+  "action": "run",
+  "feature": "pdf-import-layout",
+  "before": {
+    "status": "IN_PROGRESS",
+    "current_task": 1,
+    "tasks_total": 2
+  },
+  "after": {
+    "status": "DONE",
+    "current_task": 2,
+    "tasks_total": 2
+  },
+  "files_created": [],
+  "files_modified": [
+    "apps/server/src/ee/document-import/pdf-import.service.ts",
+    "apps/server/src/ee/document-import/pdf-import.service.spec.ts"
+  ],
+  "undone": false
+}
