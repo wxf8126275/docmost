@@ -37,6 +37,8 @@ export interface ApiKeys {
   id: Generated<string>;
   lastUsedAt: Timestamp | null;
   name: string | null;
+  keyHash: string;
+  keyPrefix: string;
   updatedAt: Generated<Timestamp>;
   creatorId: string;
   workspaceId: string;

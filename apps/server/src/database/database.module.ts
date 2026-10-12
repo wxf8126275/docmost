@@ -134,7 +134,10 @@ export class DatabaseModule implements OnApplicationBootstrap {
   async onApplicationBootstrap() {
     await this.establishConnection();
 
-    if (this.environmentService.getNodeEnv() === 'production') {
+    // Run pending migrations automatically outside of the test environment so
+    // that `NODE_ENV=development` (the default for `pnpm start`) also keeps the
+    // schema in sync without a manual `migration:latest` step.
+    if (this.environmentService.getNodeEnv() !== 'test') {
       await this.migrationService.migrateToLatest();
     }
   }

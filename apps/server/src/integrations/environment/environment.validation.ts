@@ -144,11 +144,13 @@ export class EnvironmentVariables {
   })
   TURBOPUFFER_NAMESPACE_PREFIX: string;
 
-  @IsOptional()
+  @ValidateIf((obj) => obj.AI_VECTOR_DRIVER === 'pgvector')
+  @IsNotEmpty()
   @IsString()
   AI_EMBEDDING_MODEL: string;
 
-  @ValidateIf((obj) => obj.AI_EMBEDDING_DIMENSION)
+  @ValidateIf((obj) => obj.AI_VECTOR_DRIVER === 'pgvector')
+  @IsNotEmpty()
   @IsIn(['768', '1024', '1536', '2000', '3072'])
   @IsString()
   AI_EMBEDDING_DIMENSION: string;

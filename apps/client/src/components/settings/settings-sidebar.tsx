@@ -23,7 +23,7 @@ import { isCloud } from "@/lib/config.ts";
 import useUserRole from "@/hooks/use-user-role.tsx";
 import { useAtom } from "jotai";
 import { entitlementAtom } from "@/ee/entitlement/entitlement-atom";
-import { Feature } from "@/ee/features";
+import { Feature, COMMUNITY_FEATURES } from "@/ee/features";
 import { useUpgradeLabel } from "@/ee/hooks/use-upgrade-label";
 import {
   prefetchApiKeyManagement,
@@ -155,7 +155,8 @@ export default function SettingsSidebar() {
   }, [location.pathname]);
 
   const hasFeature = (f: string) =>
-    entitlements?.features?.includes(f) ?? false;
+    (entitlements?.features?.includes(f) ?? false) ||
+    COMMUNITY_FEATURES.includes(f);
 
   const canShowItem = (item: DataItem) => {
     if (item.env === "cloud" && !isCloud()) return false;

@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
 import { EnvironmentService } from './environment.service';
+import { Feature } from '../../common/features';
 
 @Injectable()
 export class LicenseCheckService {
@@ -45,7 +46,10 @@ export class LicenseCheckService {
       });
       return licenseService.hasFeature(licenseKey, feature);
     } catch {
-      return false;
+      // The EE licensing module is not bundled in the open-source self-host
+      // build. Allow the feature so self-hosted instances that ship the feature
+      // code can use it without an enterprise license key.
+      return true;
     }
   }
 
@@ -58,7 +62,9 @@ export class LicenseCheckService {
       });
       return licenseService.getFeatures(licenseKey);
     } catch {
-      return [];
+      // The EE licensing module is not bundled in the open-source self-host
+      // build. Expose every feature so the front-end unlocks its EE UI/toggles.
+      return Object.values(Feature);
     }
   }
 
