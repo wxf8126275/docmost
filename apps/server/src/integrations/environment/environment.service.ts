@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import * as bytes from 'bytes';
 import ms, { StringValue } from 'ms';
 
 @Injectable()
@@ -84,11 +85,15 @@ export class EnvironmentService {
   }
 
   getFileUploadSizeLimit(): string {
-    return this.configService.get<string>('FILE_UPLOAD_SIZE_LIMIT', '50mb');
+    const val = this.configService.get<string>('FILE_UPLOAD_SIZE_LIMIT', '50mb');
+    const parsed = bytes(val);
+    return parsed && parsed > 0 ? val : '50mb';
   }
 
   getFileImportSizeLimit(): string {
-    return this.configService.get<string>('FILE_IMPORT_SIZE_LIMIT', '200mb');
+    const val = this.configService.get<string>('FILE_IMPORT_SIZE_LIMIT', '200mb');
+    const parsed = bytes(val);
+    return parsed && parsed > 0 ? val : '200mb';
   }
 
   getAwsS3AccessKeyId(): string {
