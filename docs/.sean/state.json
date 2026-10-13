@@ -1,6 +1,6 @@
 {
   "version": 3,
-  "active": "personal-space",
+  "active": "attachment-upload-limit",
   "features": {
     "base-backend": {
       "name": "base-backend",
@@ -91,7 +91,59 @@
         "learning-capture": { "score": 70, "evidence": "present" }
       },
       "findings": [
-        { "id": "F001", "dimension": "reliable-delivery", "severity": "medium", "evidence": "Unit tests mock SpaceRepo/SpaceService; no e2e boot against a live Postgres, and no git commit / CI run yet", "impact": "Module DI / DB write paths (createSpace: member add + audit) unverified at runtime; change not yet accepted at the delivery boundary", "repair": "Boot against a dev DB (or add e2e) and create the conventional commit", "verifier": "pnpm --filter server test:e2e; git log", "status": "open" }
+        { "id": "F001", "dimension": "reliable-delivery", "severity": "medium", "evidence": "Unit tests mock SpaceRepo/SpaceService; no e2e boot against a live Postgres, and no git commit / CI run yet", "impact": "Module DI / DB write paths (createSpace: member add + audit) unverified at runtime; change not yet accepted at the delivery boundary", "repair": "Boot against a dev DB (or add an e2e) and create the conventional commit", "verifier": "pnpm --filter server test:e2e; git log", "status": "open" }
+      ]
+    },
+    "recycle-bin": {
+      "name": "recycle-bin",
+      "requirement": "docs/requirements/2026-10-13-recycle-bin.md",
+      "plan": null,
+      "status": "DRAFT",
+      "current_task": 0,
+      "tasks_total": 0,
+      "tasks": [],
+      "tests_passed": 0,
+      "tests_failed": 0,
+      "tests_fixed": 0,
+      "started_at": "2026-10-13T03:00:00Z",
+      "completed_at": null,
+      "blocked_reason": null,
+      "review": {
+        "task-understanding": { "score": 0, "evidence": "unobserved" },
+        "controlled-execution": { "score": 0, "evidence": "unobserved" },
+        "change-validation": { "score": 0, "evidence": "unobserved" },
+        "reliable-delivery": { "score": 0, "evidence": "unobserved" },
+        "learning-capture": { "score": 0, "evidence": "unobserved" }
+      },
+      "findings": []
+    },
+    "attachment-upload-limit": {
+      "name": "attachment-upload-limit",
+      "requirement": "docs/requirements/2026-10-13-attachment-upload-limit.md",
+      "plan": "docs/plans/2026-10-13-attachment-upload-limit.md",
+      "status": "DONE",
+      "current_task": 3,
+      "tasks_total": 3,
+      "tasks": [
+        { "id": 1, "name": "client-config-fallback", "status": "done", "evidence": "exercised", "tests_total": 8, "tests_passed": 8, "fixes": 0, "complexity": "medium", "parallel_safe": true, "report": "docs/test-reports/2026-10-13-attachment-upload-limit/task-1-client.md" },
+        { "id": 2, "name": "server-env-fallback", "status": "done", "evidence": "exercised", "tests_total": 6, "tests_passed": 6, "fixes": 1, "complexity": "medium", "parallel_safe": true, "report": "docs/test-reports/2026-10-13-attachment-upload-limit/task-2-server.md" },
+        { "id": 3, "name": "verify-limits", "status": "done", "evidence": "exercised", "tests_total": 0, "tests_passed": 0, "fixes": 0, "complexity": "low", "parallel_safe": false, "report": null }
+      ],
+      "tests_passed": 14,
+      "tests_failed": 0,
+      "tests_fixed": 1,
+      "started_at": "2026-10-13T03:30:00Z",
+      "completed_at": "2026-10-13T03:40:00Z",
+      "blocked_reason": null,
+      "review": {
+        "task-understanding": { "score": 90, "evidence": "exercised" },
+        "controlled-execution": { "score": 90, "evidence": "exercised" },
+        "change-validation": { "score": 90, "evidence": "outcome-supported" },
+        "reliable-delivery": { "score": 75, "evidence": "wired" },
+        "learning-capture": { "score": 70, "evidence": "present" }
+      },
+      "findings": [
+        { "id": "F001", "dimension": "reliable-delivery", "severity": "low", "evidence": "Client eslint could not run (missing @tanstack/eslint-plugin-query in the environment) and no live browser e2e of an actual PDF insert with empty/0 config was performed", "impact": "Lint gate on the client change is unverified; real PDF-insert path (upload-*-action UI) not exercised end-to-end", "repair": "Install client deps and run eslint on the changed files; manually verify inserting a PDF with FILE_UPLOAD_SIZE_LIMIT empty / 0 / 100mb", "verifier": "npx eslint src/lib/config.ts src/lib/config.spec.ts; manual insert", "status": "open" }
       ]
     }
   }

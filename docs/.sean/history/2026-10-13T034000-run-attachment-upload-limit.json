@@ -1,0 +1,80 @@
+{
+  "timestamp": "2026-10-13T03:40:00Z",
+  "action": "run",
+  "feature": "attachment-upload-limit",
+  "before": {
+    "version": 3,
+    "active": "attachment-upload-limit",
+    "features": {
+      "base-backend": { "name": "base-backend", "status": "DONE" },
+      "template": { "name": "template", "status": "DONE" },
+      "personal-space": { "name": "personal-space", "status": "DONE" },
+      "recycle-bin": { "name": "recycle-bin", "status": "DRAFT" },
+      "attachment-upload-limit": {
+        "name": "attachment-upload-limit",
+        "requirement": "docs/requirements/2026-10-13-attachment-upload-limit.md",
+        "plan": "docs/plans/2026-10-13-attachment-upload-limit.md",
+        "status": "PLANNED",
+        "current_task": 1,
+        "tasks_total": 3,
+        "tasks": [
+          { "id": 1, "name": "client-config-fallback", "status": "pending", "tests_total": 0, "tests_passed": 0, "fixes": 0 },
+          { "id": 2, "name": "server-env-fallback", "status": "pending", "tests_total": 0, "tests_passed": 0, "fixes": 0 },
+          { "id": 3, "name": "verify-limits", "status": "pending", "tests_total": 0, "tests_passed": 0, "fixes": 0 }
+        ],
+        "tests_passed": 0,
+        "tests_failed": 0,
+        "tests_fixed": 0,
+        "started_at": "2026-10-13T03:30:00Z",
+        "completed_at": null
+      }
+    }
+  },
+  "after": {
+    "version": 3,
+    "active": "attachment-upload-limit",
+    "features": {
+      "base-backend": { "name": "base-backend", "status": "DONE" },
+      "template": { "name": "template", "status": "DONE" },
+      "personal-space": { "name": "personal-space", "status": "DONE" },
+      "recycle-bin": { "name": "recycle-bin", "status": "DRAFT" },
+      "attachment-upload-limit": {
+        "name": "attachment-upload-limit",
+        "requirement": "docs/requirements/2026-10-13-attachment-upload-limit.md",
+        "plan": "docs/plans/2026-10-13-attachment-upload-limit.md",
+        "status": "DONE",
+        "current_task": 3,
+        "tasks_total": 3,
+        "tasks": [
+          { "id": 1, "name": "client-config-fallback", "status": "done", "tests_total": 8, "tests_passed": 8, "fixes": 0, "report": "docs/test-reports/2026-10-13-attachment-upload-limit/task-1-client.md" },
+          { "id": 2, "name": "server-env-fallback", "status": "done", "tests_total": 6, "tests_passed": 6, "fixes": 1, "report": "docs/test-reports/2026-10-13-attachment-upload-limit/task-2-server.md" },
+          { "id": 3, "name": "verify-limits", "status": "done", "tests_total": 0, "tests_passed": 0, "fixes": 0 }
+        ],
+        "tests_passed": 14,
+        "tests_failed": 0,
+        "tests_fixed": 1,
+        "started_at": "2026-10-13T03:30:00Z",
+        "completed_at": "2026-10-13T03:40:00Z"
+      }
+    }
+  },
+  "files_created": [
+    "apps/client/src/lib/config.spec.ts",
+    "apps/server/src/integrations/environment/environment.service.spec.ts",
+    "docs/test-reports/2026-10-13-attachment-upload-limit/task-1-client.md",
+    "docs/test-reports/2026-10-13-attachment-upload-limit/task-2-server.md"
+  ],
+  "files_modified": [
+    "apps/client/src/lib/config.ts",
+    "apps/server/src/integrations/environment/environment.service.ts"
+  ],
+  "files_verified": {
+    "client_vitest": "8/8 passed",
+    "server_jest": "6/6 passed",
+    "server_tsc": "clean",
+    "server_eslint": "clean",
+    "client_tsc": "clean",
+    "client_eslint": "blocked: missing @tanstack/eslint-plugin-query (env dep, not code)"
+  },
+  "undone": false
+}
