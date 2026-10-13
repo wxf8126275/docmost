@@ -4,6 +4,7 @@ import { AuditModule } from './audit/audit.module';
 import { SiemModule } from './siem/siem.module';
 import { PageVerificationModule } from './page-verification/page-verification.module';
 import { DocumentImportModule } from './document-import/document-import.module';
+import { BaseModule } from './base/base.module';
 
 /**
  * Enterprise module aggregator. `AppModule` requires this file dynamically and
@@ -23,6 +24,7 @@ import { DocumentImportModule } from './document-import/document-import.module';
     SiemModule,
     PageVerificationModule,
     DocumentImportModule,
+    BaseModule,
   ],
   exports: [ApiKeyModule],
 })
