@@ -6,6 +6,7 @@ import { PageVerificationModule } from './page-verification/page-verification.mo
 import { DocumentImportModule } from './document-import/document-import.module';
 import { BaseModule } from './base/base.module';
 import { TemplateModule } from './template/template.module';
+import { PersonalSpaceModule } from './personal-space/personal-space.module';
 
 /**
  * Enterprise module aggregator. `AppModule` requires this file dynamically and
@@ -27,6 +28,7 @@ import { TemplateModule } from './template/template.module';
     DocumentImportModule,
     BaseModule,
     TemplateModule,
+    PersonalSpaceModule,
   ],
   exports: [ApiKeyModule],
 })
