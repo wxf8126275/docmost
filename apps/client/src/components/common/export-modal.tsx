@@ -17,6 +17,7 @@ import { useState } from "react";
 import { ExportFormat } from "@/features/page/types/page.types.ts";
 import { notifications } from "@mantine/notifications";
 import { exportSpace } from "@/features/space/services/space-service";
+import { buildExportFailureMessage } from "@/features/page/services/export-error";
 import { useTranslation } from "react-i18next";
 import { Feature } from "@/ee/features";
 import { useHasFeature } from "@/ee/hooks/use-feature";
@@ -68,8 +69,9 @@ export default function ExportModal({
       });
       onClose();
     } catch (err) {
+      const message = await buildExportFailureMessage(err);
       notifications.show({
-        message: "Export failed:" + err.response?.data.message,
+        message,
         color: "red",
       });
       console.error("export error", err);

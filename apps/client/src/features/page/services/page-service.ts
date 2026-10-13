@@ -11,6 +11,7 @@ import {
 import { QueryParams } from "@/lib/types";
 import { IPagination } from "@/lib/types.ts";
 import { saveAs } from "file-saver";
+import { parseExportError } from "./export-error";
 import { InfiniteData } from "@tanstack/react-query";
 import { IFileTask } from '@/features/file-task/types/file-task.types.ts';
 import { IAttachment } from '@/features/attachments/types/attachment.types.ts';
@@ -114,41 +115,49 @@ export async function getCreatedByPages(
 }
 
 export async function exportPage(data: IExportPageParams): Promise<void> {
-  const req = await api.post("/pages/export", data, {
-    responseType: "blob",
-  });
-
-  const fileName = req?.headers["content-disposition"]
-    .split("filename=")[1]
-    .replace(/"/g, "");
-
-  let decodedFileName = fileName;
   try {
-    decodedFileName = decodeURIComponent(fileName);
-  } catch (err) {
-    // fallback to raw filename
-  }
+    const req = await api.post("/pages/export", data, {
+      responseType: "blob",
+    });
 
-  saveAs(req.data, decodedFileName);
+    const fileName = req?.headers["content-disposition"]
+      .split("filename=")[1]
+      .replace(/"/g, "");
+
+    let decodedFileName = fileName;
+    try {
+      decodedFileName = decodeURIComponent(fileName);
+    } catch (err) {
+      // fallback to raw filename
+    }
+
+    saveAs(req.data, decodedFileName);
+  } catch (err) {
+    throw new Error(await parseExportError(err));
+  }
 }
 
 export async function exportPageToDocx(data: { pageId: string }): Promise<void> {
-  const req = await api.post("/docx-export", data, {
-    responseType: "blob",
-  });
-
-  const fileName = req?.headers["content-disposition"]
-    .split("filename=")[1]
-    .replace(/"/g, "");
-
-  let decodedFileName = fileName;
   try {
-    decodedFileName = decodeURIComponent(fileName);
-  } catch (err) {
-    // fallback to raw filename
-  }
+    const req = await api.post("/docx-export", data, {
+      responseType: "blob",
+    });
 
-  saveAs(req.data, decodedFileName);
+    const fileName = req?.headers["content-disposition"]
+      .split("filename=")[1]
+      .replace(/"/g, "");
+
+    let decodedFileName = fileName;
+    try {
+      decodedFileName = decodeURIComponent(fileName);
+    } catch (err) {
+      // fallback to raw filename
+    }
+
+    saveAs(req.data, decodedFileName);
+  } catch (err) {
+    throw new Error(await parseExportError(err));
+  }
 }
 
 export async function importPage(file: File, spaceId: string) {
