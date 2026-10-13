@@ -1,0 +1,154 @@
+{
+  "timestamp": "2026-10-13T01:00:00Z",
+  "action": "run",
+  "feature": "template",
+  "before": {
+    "version": 3,
+    "active": "template",
+    "features": {
+      "base-backend": {
+        "name": "base-backend",
+        "requirement": "docs/requirements/2026-10-12-base-backend.md",
+        "plan": "docs/plans/2026-10-12-base-backend.md",
+        "status": "DONE",
+        "current_task": 6,
+        "tasks_total": 6,
+        "tasks": [
+          { "id": 1, "name": "position-util", "status": "done", "evidence": "exercised", "tests_total": 6, "tests_passed": 6, "fixes": 0, "complexity": "low", "parallel_safe": true, "report": "docs/test-reports/2026-10-12-base-backend/task-1-position.md" },
+          { "id": 2, "name": "dtos", "status": "done", "evidence": "exercised", "tests_total": 0, "tests_passed": 0, "fixes": 0, "complexity": "low", "parallel_safe": true, "report": null },
+          { "id": 3, "name": "base-service", "status": "done", "evidence": "exercised", "tests_total": 12, "tests_passed": 12, "fixes": 0, "complexity": "high", "parallel_safe": false, "report": "docs/test-reports/2026-10-12-base-backend/task-3-service.md" },
+          { "id": 4, "name": "controller-module-realtime", "status": "done", "evidence": "exercised", "tests_total": 0, "tests_passed": 0, "fixes": 0, "complexity": "medium", "parallel_safe": false, "report": null },
+          { "id": 5, "name": "wire-ee-module", "status": "done", "evidence": "exercised", "tests_total": 0, "tests_passed": 0, "fixes": 0, "complexity": "low", "parallel_safe": false, "report": null },
+          { "id": 6, "name": "service-tests", "status": "done", "evidence": "exercised", "tests_total": 18, "tests_passed": 18, "fixes": 0, "complexity": "medium", "parallel_safe": false, "report": "docs/test-reports/2026-10-12-base-backend/task-6-tests.md" }
+        ],
+        "tests_passed": 18,
+        "tests_failed": 0,
+        "tests_fixed": 0,
+        "started_at": "2026-10-12T00:00:00Z",
+        "completed_at": "2026-10-12T01:00:00Z",
+        "blocked_reason": null,
+        "review": {
+          "task-understanding": { "score": 85, "evidence": "exercised" },
+          "controlled-execution": { "score": 84, "evidence": "wired" },
+          "change-validation": { "score": 95, "evidence": "outcome-supported" },
+          "reliable-delivery": { "score": 60, "evidence": "present" },
+          "learning-capture": { "score": 70, "evidence": "present" }
+        },
+        "findings": [
+          { "id": "F001", "dimension": "reliable-delivery", "severity": "medium", "evidence": "Handoff generated but no commit/integration test against a live Postgres", "impact": "DB-dependent paths unverified at runtime", "repair": "Run against a dev DB or add an e2e test", "verifier": "pnpm --filter @docmost/server test:e2e", "status": "open" }
+        ]
+      },
+      "template": {
+        "name": "template",
+        "requirement": "docs/requirements/2026-10-13-template.md",
+        "plan": "docs/plans/2026-10-13-template.md",
+        "status": "RUNNING",
+        "current_task": 1,
+        "tasks_total": 4,
+        "tasks": [
+          { "id": 1, "name": "template-dtos", "status": "done", "evidence": "exercised", "tests_total": 0, "tests_passed": 0, "fixes": 0, "complexity": "low", "parallel_safe": true, "report": null },
+          { "id": 2, "name": "template-service", "status": "done", "evidence": "exercised", "tests_total": 15, "tests_passed": 15, "fixes": 1, "complexity": "high", "parallel_safe": false, "report": "docs/test-reports/2026-10-13-template/task-2-service.md" },
+          { "id": 3, "name": "template-controller-module", "status": "done", "evidence": "exercised", "tests_total": 0, "tests_passed": 0, "fixes": 0, "complexity": "medium", "parallel_safe": false, "report": null },
+          { "id": 4, "name": "wire-ee-module", "status": "done", "evidence": "exercised", "tests_total": 0, "tests_passed": 0, "fixes": 0, "complexity": "low", "parallel_safe": false, "report": null }
+        ],
+        "tests_passed": 15,
+        "tests_failed": 0,
+        "tests_fixed": 1,
+        "started_at": "2026-10-13T00:00:00Z",
+        "completed_at": "2026-10-13T01:00:00Z",
+        "blocked_reason": null,
+        "review": {
+          "task-understanding": { "score": 90, "evidence": "exercised" },
+          "controlled-execution": { "score": 85, "evidence": "wired" },
+          "change-validation": { "score": 85, "evidence": "outcome-supported" },
+          "reliable-delivery": { "score": 60, "evidence": "present" },
+          "learning-capture": { "score": 70, "evidence": "present" }
+        },
+        "findings": [
+          { "id": "F001", "dimension": "reliable-delivery", "severity": "medium", "evidence": "Unit tests mock repositories; no e2e boot against a live Postgres", "impact": "Module DI / DB-dependent paths unverified at runtime", "repair": "Boot against a dev DB or add an e2e test", "verifier": "pnpm --filter server test:e2e", "status": "open" }
+        ]
+      }
+    }
+  },
+  "after": {
+    "version": 3,
+    "active": "template",
+    "features": {
+      "base-backend": {
+        "name": "base-backend",
+        "requirement": "docs/requirements/2026-10-12-base-backend.md",
+        "plan": "docs/plans/2026-10-12-base-backend.md",
+        "status": "DONE",
+        "current_task": 6,
+        "tasks_total": 6,
+        "tasks": [
+          { "id": 1, "name": "position-util", "status": "done", "evidence": "exercised", "tests_total": 6, "tests_passed": 6, "fixes": 0, "complexity": "low", "parallel_safe": true, "report": "docs/test-reports/2026-10-12-base-backend/task-1-position.md" },
+          { "id": 2, "name": "dtos", "status": "done", "evidence": "exercised", "tests_total": 0, "tests_passed": 0, "fixes": 0, "complexity": "low", "parallel_safe": true, "report": null },
+          { "id": 3, "name": "base-service", "status": "done", "evidence": "exercised", "tests_total": 12, "tests_passed": 12, "fixes": 0, "complexity": "high", "parallel_safe": false, "report": "docs/test-reports/2026-10-12-base-backend/task-3-service.md" },
+          { "id": 4, "name": "controller-module-realtime", "status": "done", "evidence": "exercised", "tests_total": 0, "tests_passed": 0, "fixes": 0, "complexity": "medium", "parallel_safe": false, "report": null },
+          { "id": 5, "name": "wire-ee-module", "status": "done", "evidence": "exercised", "tests_total": 0, "tests_passed": 0, "fixes": 0, "complexity": "low", "parallel_safe": false, "report": null },
+          { "id": 6, "name": "service-tests", "status": "done", "evidence": "exercised", "tests_total": 18, "tests_passed": 18, "fixes": 0, "complexity": "medium", "parallel_safe": false, "report": "docs/test-reports/2026-10-12-base-backend/task-6-tests.md" }
+        ],
+        "tests_passed": 18,
+        "tests_failed": 0,
+        "tests_fixed": 0,
+        "started_at": "2026-10-12T00:00:00Z",
+        "completed_at": "2026-10-12T01:00:00Z",
+        "blocked_reason": null,
+        "review": {
+          "task-understanding": { "score": 85, "evidence": "exercised" },
+          "controlled-execution": { "score": 84, "evidence": "wired" },
+          "change-validation": { "score": 95, "evidence": "outcome-supported" },
+          "reliable-delivery": { "score": 60, "evidence": "present" },
+          "learning-capture": { "score": 70, "evidence": "present" }
+        },
+        "findings": [
+          { "id": "F001", "dimension": "reliable-delivery", "severity": "medium", "evidence": "Handoff generated but no commit/integration test against a live Postgres", "impact": "DB-dependent paths unverified at runtime", "repair": "Run against a dev DB or add an e2e test", "verifier": "pnpm --filter @docmost/server test:e2e", "status": "open" }
+        ]
+      },
+      "template": {
+        "name": "template",
+        "requirement": "docs/requirements/2026-10-13-template.md",
+        "plan": "docs/plans/2026-10-13-template.md",
+        "status": "DONE",
+        "current_task": 4,
+        "tasks_total": 4,
+        "tasks": [
+          { "id": 1, "name": "template-dtos", "status": "done", "evidence": "exercised", "tests_total": 0, "tests_passed": 0, "fixes": 0, "complexity": "low", "parallel_safe": true, "report": null },
+          { "id": 2, "name": "template-service", "status": "done", "evidence": "exercised", "tests_total": 15, "tests_passed": 15, "fixes": 1, "complexity": "high", "parallel_safe": false, "report": "docs/test-reports/2026-10-13-template/task-2-service.md" },
+          { "id": 3, "name": "template-controller-module", "status": "done", "evidence": "exercised", "tests_total": 0, "tests_passed": 0, "fixes": 0, "complexity": "medium", "parallel_safe": false, "report": null },
+          { "id": 4, "name": "wire-ee-module", "status": "done", "evidence": "exercised", "tests_total": 0, "tests_passed": 0, "fixes": 0, "complexity": "low", "parallel_safe": false, "report": null }
+        ],
+        "tests_passed": 15,
+        "tests_failed": 0,
+        "tests_fixed": 1,
+        "started_at": "2026-10-13T00:00:00Z",
+        "completed_at": "2026-10-13T01:00:00Z",
+        "blocked_reason": null,
+        "review": {
+          "task-understanding": { "score": 90, "evidence": "exercised" },
+          "controlled-execution": { "score": 85, "evidence": "wired" },
+          "change-validation": { "score": 85, "evidence": "outcome-supported" },
+          "reliable-delivery": { "score": 60, "evidence": "present" },
+          "learning-capture": { "score": 70, "evidence": "present" }
+        },
+        "findings": [
+          { "id": "F001", "dimension": "reliable-delivery", "severity": "medium", "evidence": "Unit tests mock repositories; no e2e boot against a live Postgres", "impact": "Module DI / DB-dependent paths unverified at runtime", "repair": "Boot against a dev DB or add an e2e test", "verifier": "pnpm --filter server test:e2e", "status": "open" }
+        ]
+      }
+    }
+  },
+  "files_created": [
+    "apps/server/src/ee/template/template.dto.ts",
+    "apps/server/src/ee/template/template.service.ts",
+    "apps/server/src/ee/template/template.service.spec.ts",
+    "apps/server/src/ee/template/template.controller.ts",
+    "apps/server/src/ee/template/template.module.ts",
+    "docs/test-reports/2026-10-13-template/task-2-service.md",
+    "docs/handoff/2026-10-13-template.md"
+  ],
+  "files_modified": [
+    "apps/server/src/ee/ee.module.ts"
+  ],
+  "undone": false
+}
