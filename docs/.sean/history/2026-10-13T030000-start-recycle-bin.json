@@ -1,0 +1,53 @@
+{
+  "timestamp": "2026-10-13T03:00:00Z",
+  "action": "start",
+  "feature": "recycle-bin",
+  "before": {
+    "version": 3,
+    "active": "personal-space",
+    "features": {
+      "base-backend": { "name": "base-backend", "status": "DONE" },
+      "template": { "name": "template", "status": "DONE" },
+      "personal-space": { "name": "personal-space", "status": "DONE" }
+    }
+  },
+  "after": {
+    "version": 3,
+    "active": "recycle-bin",
+    "features": {
+      "base-backend": { "name": "base-backend", "status": "DONE" },
+      "template": { "name": "template", "status": "DONE" },
+      "personal-space": { "name": "personal-space", "status": "DONE" },
+      "recycle-bin": {
+        "name": "recycle-bin",
+        "requirement": "docs/requirements/2026-10-13-recycle-bin.md",
+        "plan": null,
+        "status": "DRAFT",
+        "current_task": 0,
+        "tasks_total": 0,
+        "tasks": [],
+        "tests_passed": 0,
+        "tests_failed": 0,
+        "tests_fixed": 0,
+        "started_at": "2026-10-13T03:00:00Z",
+        "completed_at": null,
+        "blocked_reason": null,
+        "review": {
+          "task-understanding": { "score": 0, "evidence": "unobserved" },
+          "controlled-execution": { "score": 0, "evidence": "unobserved" },
+          "change-validation": { "score": 0, "evidence": "unobserved" },
+          "reliable-delivery": { "score": 0, "evidence": "unobserved" },
+          "learning-capture": { "score": 0, "evidence": "unobserved" }
+        },
+        "findings": []
+      }
+    }
+  },
+  "files_created": [
+    "docs/requirements/2026-10-13-recycle-bin.md"
+  ],
+  "files_modified": [
+    "docs/.sean/state.json"
+  ],
+  "undone": false
+}
