@@ -1,0 +1,24 @@
+{
+  "timestamp": "2026-10-14T05:00:00Z",
+  "action": "commit",
+  "feature": "word-export-error",
+  "note": "Commit feature implementation + sean state/handoff. State unchanged except handoff pointer added.",
+  "committed_files": [
+    "apps/client/src/lib/api-client.ts",
+    "apps/client/src/lib/api-error.ts",
+    "apps/client/src/lib/api-error.spec.ts",
+    "apps/server/src/integrations/export/dto/export-dto.ts",
+    "apps/server/src/integrations/export/export.controller.ts",
+    "apps/server/src/integrations/export/export.service.ts",
+    "apps/server/src/integrations/export/export.service.spec.ts",
+    "docs/.sean/state.json",
+    "docs/.sean/history/2026-10-14T040000-plan-word-export-error.json",
+    "docs/.sean/history/2026-10-14T040000-start-word-export-error.json",
+    "docs/.sean/history/2026-10-14T043000-plan-word-export-error-v2.json",
+    "docs/.sean/history/2026-10-14T045000-run-word-export-error.json",
+    "docs/HANDOFF.md",
+    "docs/plans/2026-10-14-word-export-error.md",
+    "docs/requirements/2026-10-14-word-export-error.md",
+    "docs/test-reports/2026-10-14-word-export-error/"
+  ]
+}
