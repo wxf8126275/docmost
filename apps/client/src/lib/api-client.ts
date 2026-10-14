@@ -1,6 +1,7 @@
 import axios, { AxiosInstance } from "axios";
 import APP_ROUTE from "@/lib/app-route.ts";
 import { isCloud } from "@/lib/config.ts";
+import { isWorkspaceNotFound } from "@/lib/api-error";
 
 const api: AxiosInstance = axios.create({
   baseURL: "/api",
@@ -49,11 +50,7 @@ api.interceptors.response.use(
           break;
         case 404:
           // Handle not found error
-          if (
-            error.response.data.message
-              .toLowerCase()
-              .includes("workspace not found")
-          ) {
+          if (isWorkspaceNotFound(error)) {
             console.log("workspace not found");
             if (
               !isCloud() &&

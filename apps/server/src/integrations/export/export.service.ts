@@ -38,7 +38,11 @@ import {
   getAttachmentIds,
   getProsemirrorContent,
 } from '../../common/helpers/prosemirror/utils';
-import { htmlToMarkdown } from '@docmost/editor-ext';
+import {
+  htmlToMarkdown,
+  pageNodeToDocxBuffer,
+  type DocxImageResolver,
+} from '@docmost/editor-ext';
 
 type AllowedAttachment = { id: string; fileName: string; filePath: string };
 
@@ -101,6 +105,72 @@ export class ExportService {
     }
 
     return;
+  }
+
+  async exportPageToDocx(page: Page, userId?: string): Promise<Buffer> {
+    let prosemirrorJson = getProsemirrorContent(page.content);
+
+    const baseUrl = await this.getWorkspaceBaseUrl(page.workspaceId);
+    prosemirrorJson = await this.turnPageMentionsToLinks(
+      prosemirrorJson,
+      page.workspaceId,
+      baseUrl,
+      userId,
+    );
+
+    if (page.title) {
+      prosemirrorJson.content.unshift({
+        type: 'heading',
+        attrs: { level: 1 },
+        content: [{ type: 'text', text: getPageTitle(page.title) }],
+      });
+    }
+
+    const node = jsonToNode(prosemirrorJson);
+
+    const getImageBuffer: DocxImageResolver = async (src) => {
+      const buffer = await this.resolveDocxImage(src, page);
+      if (!buffer) {
+        // Serializer skips images it cannot resolve instead of failing export.
+        throw new Error('image not resolvable');
+      }
+      return buffer;
+    };
+
+    return pageNodeToDocxBuffer(node, getImageBuffer);
+  }
+
+  private async resolveDocxImage(
+    src: string,
+    page: Page,
+  ): Promise<Uint8Array | undefined> {
+    if (!src) {
+      return undefined;
+    }
+
+    const match = src.match(/\/files\/([^/?]+)/);
+    const attachmentId = match?.[1];
+    if (!attachmentId) {
+      return undefined;
+    }
+
+    try {
+      const attachment = await this.db
+        .selectFrom('attachments')
+        .select(['filePath'])
+        .where('id', '=', attachmentId)
+        .where('spaceId', '=', page.spaceId)
+        .executeTakeFirst();
+
+      if (!attachment?.filePath) {
+        return undefined;
+      }
+
+      const buffer = await this.storageService.read(attachment.filePath);
+      return new Uint8Array(buffer);
+    } catch {
+      return undefined;
+    }
   }
 
   async exportPages(

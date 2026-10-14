@@ -1,0 +1,315 @@
+{
+  "timestamp": "2026-10-14T04:05:00Z",
+  "action": "plan",
+  "feature": "word-export-error",
+  "before": {
+    "version": 3,
+    "active": "word-export-error",
+    "features": {
+      "base-backend": {
+        "name": "base-backend",
+        "requirement": "docs/requirements/2026-10-12-base-backend.md",
+        "plan": "docs/plans/2026-10-12-base-backend.md",
+        "status": "DONE",
+        "current_task": 6,
+        "tasks_total": 6,
+        "tasks": [
+          { "id": 1, "name": "position-util", "status": "done", "evidence": "exercised", "tests_total": 6, "tests_passed": 6, "fixes": 0, "complexity": "low", "parallel_safe": true, "report": "docs/test-reports/2026-10-12-base-backend/task-1-position.md" },
+          { "id": 2, "name": "dtos", "status": "done", "evidence": "exercised", "tests_total": 0, "tests_passed": 0, "fixes": 0, "complexity": "low", "parallel_safe": true, "report": null },
+          { "id": 3, "name": "base-service", "status": "done", "evidence": "exercised", "tests_total": 12, "tests_passed": 12, "fixes": 0, "complexity": "high", "parallel_safe": false, "report": "docs/test-reports/2026-10-12-base-backend/task-3-service.md" },
+          { "id": 4, "name": "controller-module-realtime", "status": "done", "evidence": "exercised", "tests_total": 0, "tests_passed": 0, "fixes": 0, "complexity": "medium", "parallel_safe": false, "report": null },
+          { "id": 5, "name": "wire-ee-module", "status": "done", "evidence": "exercised", "tests_total": 0, "tests_passed": 0, "fixes": 0, "complexity": "low", "parallel_safe": false, "report": null },
+          { "id": 6, "name": "service-tests", "status": "done", "evidence": "exercised", "tests_total": 18, "tests_passed": 18, "fixes": 0, "complexity": "medium", "parallel_safe": false, "report": "docs/test-reports/2026-10-12-base-backend/task-6-tests.md" }
+        ],
+        "tests_passed": 18,
+        "tests_failed": 0,
+        "tests_fixed": 0,
+        "started_at": "2026-10-12T00:00:00Z",
+        "completed_at": "2026-10-12T01:00:00Z",
+        "blocked_reason": null,
+        "review": { "task-understanding": { "score": 85, "evidence": "exercised" }, "controlled-execution": { "score": 84, "evidence": "wired" }, "change-validation": { "score": 95, "evidence": "outcome-supported" }, "reliable-delivery": { "score": 60, "evidence": "present" }, "learning-capture": { "score": 70, "evidence": "present" } },
+        "findings": [ { "id": "F001", "dimension": "reliable-delivery", "severity": "medium", "evidence": "Handoff generated but no commit/integration test against a live Postgres", "impact": "DB-dependent paths unverified at runtime", "repair": "Run against a dev DB or add an e2e test", "verifier": "pnpm --filter @docmost/server test:e2e", "status": "open" } ]
+      },
+      "template": {
+        "name": "template",
+        "requirement": "docs/requirements/2026-10-13-template.md",
+        "plan": "docs/plans/2026-10-13-template.md",
+        "status": "DONE",
+        "current_task": 4,
+        "tasks_total": 4,
+        "tasks": [
+          { "id": 1, "name": "template-dtos", "status": "done", "evidence": "exercised", "tests_total": 0, "tests_passed": 0, "fixes": 0, "complexity": "low", "parallel_safe": true, "report": null },
+          { "id": 2, "name": "template-service", "status": "done", "evidence": "exercised", "tests_total": 15, "tests_passed": 15, "fixes": 1, "complexity": "high", "parallel_safe": false, "report": "docs/test-reports/2026-10-13-template/task-2-service.md" },
+          { "id": 3, "name": "template-controller-module", "status": "done", "evidence": "exercised", "tests_total": 0, "tests_passed": 0, "fixes": 0, "complexity": "medium", "parallel_safe": false, "report": null },
+          { "id": 4, "name": "wire-ee-module", "status": "done", "evidence": "exercised", "tests_total": 0, "tests_passed": 0, "fixes": 0, "complexity": "low", "parallel_safe": false, "report": null }
+        ],
+        "tests_passed": 15,
+        "tests_failed": 0,
+        "tests_fixed": 1,
+        "started_at": "2026-10-13T00:00:00Z",
+        "completed_at": "2026-10-13T01:00:00Z",
+        "blocked_reason": null,
+        "review": { "task-understanding": { "score": 90, "evidence": "exercised" }, "controlled-execution": { "score": 85, "evidence": "exercised" }, "change-validation": { "score": 90, "evidence": "outcome-supported" }, "reliable-delivery": { "score": 75, "evidence": "wired" }, "learning-capture": { "score": 70, "evidence": "present" } },
+        "findings": [ { "id": "F001", "dimension": "reliable-delivery", "severity": "medium", "evidence": "Unit tests mock repositories/PageService; no e2e boot against a live Postgres, and no git commit / CI run yet", "impact": "Module DI / DB-dependent paths unverified at runtime; change not yet accepted at the delivery boundary", "repair": "Boot against a dev DB (or add an e2e) and create the conventional commit", "verifier": "pnpm --filter server test:e2e; git log", "status": "open" } ]
+      },
+      "personal-space": {
+        "name": "personal-space",
+        "requirement": "docs/requirements/2026-10-13-personal-space.md",
+        "plan": "docs/plans/2026-10-13-personal-space.md",
+        "status": "DONE",
+        "current_task": 4,
+        "tasks_total": 4,
+        "tasks": [
+          { "id": 1, "name": "personal-space-dto", "status": "done", "evidence": "exercised", "tests_total": 0, "tests_passed": 0, "fixes": 0, "complexity": "low", "parallel_safe": true, "report": null },
+          { "id": 2, "name": "personal-space-service", "status": "done", "evidence": "exercised", "tests_total": 5, "tests_passed": 5, "fixes": 0, "complexity": "high", "parallel_safe": false, "report": "docs/test-reports/2026-10-13-personal-space/task-2-service.md" },
+          { "id": 3, "name": "personal-space-controller-module", "status": "done", "evidence": "exercised", "tests_total": 0, "tests_passed": 0, "fixes": 0, "complexity": "medium", "parallel_safe": false, "report": null },
+          { "id": 4, "name": "wire-ee-module", "status": "done", "evidence": "exercised", "tests_total": 0, "tests_passed": 0, "fixes": 0, "complexity": "low", "parallel_safe": false, "report": null }
+        ],
+        "tests_passed": 5,
+        "tests_failed": 0,
+        "tests_fixed": 0,
+        "started_at": "2026-10-13T02:00:00Z",
+        "completed_at": "2026-10-13T02:30:00Z",
+        "blocked_reason": null,
+        "review": { "task-understanding": { "score": 90, "evidence": "exercised" }, "controlled-execution": { "score": 85, "evidence": "exercised" }, "change-validation": { "score": 90, "evidence": "outcome-supported" }, "reliable-delivery": { "score": 70, "evidence": "wired" }, "learning-capture": { "score": 70, "evidence": "present" } },
+        "findings": [ { "id": "F001", "dimension": "reliable-delivery", "severity": "medium", "evidence": "Unit tests mock SpaceRepo/SpaceService; no e2e boot against a live Postgres, and no git commit / CI run yet", "impact": "Module DI / DB write paths unverified at runtime; change not yet accepted at the delivery boundary", "repair": "Boot against a dev DB (or add an e2e) and create the conventional commit", "verifier": "pnpm --filter server test:e2e; git log", "status": "open" } ]
+      },
+      "recycle-bin": {
+        "name": "recycle-bin",
+        "requirement": "docs/requirements/2026-10-13-recycle-bin.md",
+        "plan": null,
+        "status": "DRAFT",
+        "current_task": 0,
+        "tasks_total": 0,
+        "tasks": [],
+        "tests_passed": 0,
+        "tests_failed": 0,
+        "tests_fixed": 0,
+        "started_at": "2026-10-13T03:00:00Z",
+        "completed_at": null,
+        "blocked_reason": null,
+        "review": { "task-understanding": { "score": 0, "evidence": "unobserved" }, "controlled-execution": { "score": 0, "evidence": "unobserved" }, "change-validation": { "score": 0, "evidence": "unobserved" }, "reliable-delivery": { "score": 0, "evidence": "unobserved" }, "learning-capture": { "score": 0, "evidence": "unobserved" } },
+        "findings": []
+      },
+      "attachment-upload-limit": {
+        "name": "attachment-upload-limit",
+        "requirement": "docs/requirements/2026-10-13-attachment-upload-limit.md",
+        "plan": "docs/plans/2026-10-13-attachment-upload-limit.md",
+        "status": "DONE",
+        "current_task": 3,
+        "tasks_total": 3,
+        "tasks": [
+          { "id": 1, "name": "client-config-fallback", "status": "done", "evidence": "exercised", "tests_total": 8, "tests_passed": 8, "fixes": 0, "complexity": "medium", "parallel_safe": true, "report": "docs/test-reports/2026-10-13-attachment-upload-limit/task-1-client.md" },
+          { "id": 2, "name": "server-env-fallback", "status": "done", "evidence": "exercised", "tests_total": 6, "tests_passed": 6, "fixes": 1, "complexity": "medium", "parallel_safe": true, "report": "docs/test-reports/2026-10-13-attachment-upload-limit/task-2-server.md" },
+          { "id": 3, "name": "verify-limits", "status": "done", "evidence": "exercised", "tests_total": 0, "tests_passed": 0, "fixes": 0, "complexity": "low", "parallel_safe": false, "report": null }
+        ],
+        "tests_passed": 14,
+        "tests_failed": 0,
+        "tests_fixed": 1,
+        "started_at": "2026-10-13T03:30:00Z",
+        "completed_at": "2026-10-13T03:40:00Z",
+        "blocked_reason": null,
+        "review": { "task-understanding": { "score": 90, "evidence": "exercised" }, "controlled-execution": { "score": 90, "evidence": "exercised" }, "change-validation": { "score": 90, "evidence": "outcome-supported" }, "reliable-delivery": { "score": 75, "evidence": "wired" }, "learning-capture": { "score": 70, "evidence": "present" } },
+        "findings": [ { "id": "F001", "dimension": "reliable-delivery", "severity": "low", "evidence": "Client eslint could not run (missing @tanstack/eslint-plugin-query in the environment) and no live browser e2e of an actual PDF insert with empty/0 config was performed", "impact": "Lint gate on the client change is unverified; real PDF-insert path not exercised end-to-end", "repair": "Install client deps and run eslint on the changed files; manually verify inserting a PDF with FILE_UPLOAD_SIZE_LIMIT empty / 0 / 100mb", "verifier": "npx eslint src/lib/config.ts src/lib/config.spec.ts; manual insert", "status": "open" } ]
+      },
+      "page-export": {
+        "name": "page-export",
+        "requirement": "docs/requirements/2026-10-13-page-export.md",
+        "plan": "docs/plans/2026-10-13-page-export.md",
+        "status": "DONE",
+        "current_task": 3,
+        "tasks_total": 3,
+        "tasks": [
+          { "id": 1, "name": "client-export-error-helper", "status": "done", "evidence": "exercised", "tests_total": 7, "tests_passed": 7, "fixes": 0, "complexity": "medium", "parallel_safe": true, "report": "docs/test-reports/2026-10-13-page-export/task-1-helper.md" },
+          { "id": 2, "name": "client-export-modal-message", "status": "done", "evidence": "exercised", "tests_total": 0, "tests_passed": 0, "fixes": 0, "complexity": "medium", "parallel_safe": false, "report": "docs/test-reports/2026-10-13-page-export/task-2-modal.md" },
+          { "id": 3, "name": "verify-export", "status": "done", "evidence": "exercised", "tests_total": 0, "tests_passed": 0, "fixes": 0, "complexity": "low", "parallel_safe": false, "report": null }
+        ],
+        "tests_passed": 7,
+        "tests_failed": 0,
+        "tests_fixed": 0,
+        "started_at": "2026-10-13T04:00:00Z",
+        "completed_at": "2026-10-13T04:10:00Z",
+        "blocked_reason": null,
+        "review": { "task-understanding": { "score": 90, "evidence": "exercised" }, "controlled-execution": { "score": 90, "evidence": "exercised" }, "change-validation": { "score": 90, "evidence": "outcome-supported" }, "reliable-delivery": { "score": 75, "evidence": "wired" }, "learning-capture": { "score": 75, "evidence": "present" } },
+        "findings": [ { "id": "F001", "dimension": "reliable-delivery", "severity": "low", "evidence": "Client eslint could not run (missing @tanstack/eslint-plugin-query); the underlying backend HTTP error that triggers the export failure was not reproduced", "impact": "Lint gate on client change is unverified; the real server error behind the export failure is not confirmed, only its message is now surfaced", "repair": "Install client deps and run eslint on the changed files; identify the triggering HTTP error via browser Network tab or server logs", "verifier": "npx eslint src/features/page/services/export-error.ts src/components/common/export-modal.tsx; reproduce export error", "status": "open" } ]
+      },
+      "word-export-error": {
+        "name": "word-export-error",
+        "requirement": "docs/requirements/2026-10-14-word-export-error.md",
+        "plan": null,
+        "status": "DRAFT",
+        "current_task": 0,
+        "tasks_total": 0,
+        "tasks": [],
+        "tests_passed": 0,
+        "tests_failed": 0,
+        "tests_fixed": 0,
+        "started_at": "2026-10-14T04:00:00Z",
+        "completed_at": null,
+        "blocked_reason": null,
+        "review": { "task-understanding": { "score": 0, "evidence": "unobserved" }, "controlled-execution": { "score": 0, "evidence": "unobserved" }, "change-validation": { "score": 0, "evidence": "unobserved" }, "reliable-delivery": { "score": 0, "evidence": "unobserved" }, "learning-capture": { "score": 0, "evidence": "unobserved" } },
+        "findings": []
+      }
+    }
+  },
+  "after": {
+    "version": 3,
+    "active": "word-export-error",
+    "features": {
+      "base-backend": {
+        "name": "base-backend",
+        "requirement": "docs/requirements/2026-10-12-base-backend.md",
+        "plan": "docs/plans/2026-10-12-base-backend.md",
+        "status": "DONE",
+        "current_task": 6,
+        "tasks_total": 6,
+        "tasks": [
+          { "id": 1, "name": "position-util", "status": "done", "evidence": "exercised", "tests_total": 6, "tests_passed": 6, "fixes": 0, "complexity": "low", "parallel_safe": true, "report": "docs/test-reports/2026-10-12-base-backend/task-1-position.md" },
+          { "id": 2, "name": "dtos", "status": "done", "evidence": "exercised", "tests_total": 0, "tests_passed": 0, "fixes": 0, "complexity": "low", "parallel_safe": true, "report": null },
+          { "id": 3, "name": "base-service", "status": "done", "evidence": "exercised", "tests_total": 12, "tests_passed": 12, "fixes": 0, "complexity": "high", "parallel_safe": false, "report": "docs/test-reports/2026-10-12-base-backend/task-3-service.md" },
+          { "id": 4, "name": "controller-module-realtime", "status": "done", "evidence": "exercised", "tests_total": 0, "tests_passed": 0, "fixes": 0, "complexity": "medium", "parallel_safe": false, "report": null },
+          { "id": 5, "name": "wire-ee-module", "status": "done", "evidence": "exercised", "tests_total": 0, "tests_passed": 0, "fixes": 0, "complexity": "low", "parallel_safe": false, "report": null },
+          { "id": 6, "name": "service-tests", "status": "done", "evidence": "exercised", "tests_total": 18, "tests_passed": 18, "fixes": 0, "complexity": "medium", "parallel_safe": false, "report": "docs/test-reports/2026-10-12-base-backend/task-6-tests.md" }
+        ],
+        "tests_passed": 18,
+        "tests_failed": 0,
+        "tests_fixed": 0,
+        "started_at": "2026-10-12T00:00:00Z",
+        "completed_at": "2026-10-12T01:00:00Z",
+        "blocked_reason": null,
+        "review": { "task-understanding": { "score": 85, "evidence": "exercised" }, "controlled-execution": { "score": 84, "evidence": "wired" }, "change-validation": { "score": 95, "evidence": "outcome-supported" }, "reliable-delivery": { "score": 60, "evidence": "present" }, "learning-capture": { "score": 70, "evidence": "present" } },
+        "findings": [ { "id": "F001", "dimension": "reliable-delivery", "severity": "medium", "evidence": "Handoff generated but no commit/integration test against a live Postgres", "impact": "DB-dependent paths unverified at runtime", "repair": "Run against a dev DB or add an e2e test", "verifier": "pnpm --filter @docmost/server test:e2e", "status": "open" } ]
+      },
+      "template": {
+        "name": "template",
+        "requirement": "docs/requirements/2026-10-13-template.md",
+        "plan": "docs/plans/2026-10-13-template.md",
+        "status": "DONE",
+        "current_task": 4,
+        "tasks_total": 4,
+        "tasks": [
+          { "id": 1, "name": "template-dtos", "status": "done", "evidence": "exercised", "tests_total": 0, "tests_passed": 0, "fixes": 0, "complexity": "low", "parallel_safe": true, "report": null },
+          { "id": 2, "name": "template-service", "status": "done", "evidence": "exercised", "tests_total": 15, "tests_passed": 15, "fixes": 1, "complexity": "high", "parallel_safe": false, "report": "docs/test-reports/2026-10-13-template/task-2-service.md" },
+          { "id": 3, "name": "template-controller-module", "status": "done", "evidence": "exercised", "tests_total": 0, "tests_passed": 0, "fixes": 0, "complexity": "medium", "parallel_safe": false, "report": null },
+          { "id": 4, "name": "wire-ee-module", "status": "done", "evidence": "exercised", "tests_total": 0, "tests_passed": 0, "fixes": 0, "complexity": "low", "parallel_safe": false, "report": null }
+        ],
+        "tests_passed": 15,
+        "tests_failed": 0,
+        "tests_fixed": 1,
+        "started_at": "2026-10-13T00:00:00Z",
+        "completed_at": "2026-10-13T01:00:00Z",
+        "blocked_reason": null,
+        "review": { "task-understanding": { "score": 90, "evidence": "exercised" }, "controlled-execution": { "score": 85, "evidence": "exercised" }, "change-validation": { "score": 90, "evidence": "outcome-supported" }, "reliable-delivery": { "score": 75, "evidence": "wired" }, "learning-capture": { "score": 70, "evidence": "present" } },
+        "findings": [ { "id": "F001", "dimension": "reliable-delivery", "severity": "medium", "evidence": "Unit tests mock repositories/PageService; no e2e boot against a live Postgres, and no git commit / CI run yet", "impact": "Module DI / DB-dependent paths unverified at runtime; change not yet accepted at the delivery boundary", "repair": "Boot against a dev DB (or add an e2e) and create the conventional commit", "verifier": "pnpm --filter server test:e2e; git log", "status": "open" } ]
+      },
+      "personal-space": {
+        "name": "personal-space",
+        "requirement": "docs/requirements/2026-10-13-personal-space.md",
+        "plan": "docs/plans/2026-10-13-personal-space.md",
+        "status": "DONE",
+        "current_task": 4,
+        "tasks_total": 4,
+        "tasks": [
+          { "id": 1, "name": "personal-space-dto", "status": "done", "evidence": "exercised", "tests_total": 0, "tests_passed": 0, "fixes": 0, "complexity": "low", "parallel_safe": true, "report": null },
+          { "id": 2, "name": "personal-space-service", "status": "done", "evidence": "exercised", "tests_total": 5, "tests_passed": 5, "fixes": 0, "complexity": "high", "parallel_safe": false, "report": "docs/test-reports/2026-10-13-personal-space/task-2-service.md" },
+          { "id": 3, "name": "personal-space-controller-module", "status": "done", "evidence": "exercised", "tests_total": 0, "tests_passed": 0, "fixes": 0, "complexity": "medium", "parallel_safe": false, "report": null },
+          { "id": 4, "name": "wire-ee-module", "status": "done", "evidence": "exercised", "tests_total": 0, "tests_passed": 0, "fixes": 0, "complexity": "low", "parallel_safe": false, "report": null }
+        ],
+        "tests_passed": 5,
+        "tests_failed": 0,
+        "tests_fixed": 0,
+        "started_at": "2026-10-13T02:00:00Z",
+        "completed_at": "2026-10-13T02:30:00Z",
+        "blocked_reason": null,
+        "review": { "task-understanding": { "score": 90, "evidence": "exercised" }, "controlled-execution": { "score": 85, "evidence": "exercised" }, "change-validation": { "score": 90, "evidence": "outcome-supported" }, "reliable-delivery": { "score": 70, "evidence": "wired" }, "learning-capture": { "score": 70, "evidence": "present" } },
+        "findings": [ { "id": "F001", "dimension": "reliable-delivery", "severity": "medium", "evidence": "Unit tests mock SpaceRepo/SpaceService; no e2e boot against a live Postgres, and no git commit / CI run yet", "impact": "Module DI / DB write paths unverified at runtime; change not yet accepted at the delivery boundary", "repair": "Boot against a dev DB (or add an e2e) and create the conventional commit", "verifier": "pnpm --filter server test:e2e; git log", "status": "open" } ]
+      },
+      "recycle-bin": {
+        "name": "recycle-bin",
+        "requirement": "docs/requirements/2026-10-13-recycle-bin.md",
+        "plan": null,
+        "status": "DRAFT",
+        "current_task": 0,
+        "tasks_total": 0,
+        "tasks": [],
+        "tests_passed": 0,
+        "tests_failed": 0,
+        "tests_fixed": 0,
+        "started_at": "2026-10-13T03:00:00Z",
+        "completed_at": null,
+        "blocked_reason": null,
+        "review": { "task-understanding": { "score": 0, "evidence": "unobserved" }, "controlled-execution": { "score": 0, "evidence": "unobserved" }, "change-validation": { "score": 0, "evidence": "unobserved" }, "reliable-delivery": { "score": 0, "evidence": "unobserved" }, "learning-capture": { "score": 0, "evidence": "unobserved" } },
+        "findings": []
+      },
+      "attachment-upload-limit": {
+        "name": "attachment-upload-limit",
+        "requirement": "docs/requirements/2026-10-13-attachment-upload-limit.md",
+        "plan": "docs/plans/2026-10-13-attachment-upload-limit.md",
+        "status": "DONE",
+        "current_task": 3,
+        "tasks_total": 3,
+        "tasks": [
+          { "id": 1, "name": "client-config-fallback", "status": "done", "evidence": "exercised", "tests_total": 8, "tests_passed": 8, "fixes": 0, "complexity": "medium", "parallel_safe": true, "report": "docs/test-reports/2026-10-13-attachment-upload-limit/task-1-client.md" },
+          { "id": 2, "name": "server-env-fallback", "status": "done", "evidence": "exercised", "tests_total": 6, "tests_passed": 6, "fixes": 1, "complexity": "medium", "parallel_safe": true, "report": "docs/test-reports/2026-10-13-attachment-upload-limit/task-2-server.md" },
+          { "id": 3, "name": "verify-limits", "status": "done", "evidence": "exercised", "tests_total": 0, "tests_passed": 0, "fixes": 0, "complexity": "low", "parallel_safe": false, "report": null }
+        ],
+        "tests_passed": 14,
+        "tests_failed": 0,
+        "tests_fixed": 1,
+        "started_at": "2026-10-13T03:30:00Z",
+        "completed_at": "2026-10-13T03:40:00Z",
+        "blocked_reason": null,
+        "review": { "task-understanding": { "score": 90, "evidence": "exercised" }, "controlled-execution": { "score": 90, "evidence": "exercised" }, "change-validation": { "score": 90, "evidence": "outcome-supported" }, "reliable-delivery": { "score": 75, "evidence": "wired" }, "learning-capture": { "score": 70, "evidence": "present" } },
+        "findings": [ { "id": "F001", "dimension": "reliable-delivery", "severity": "low", "evidence": "Client eslint could not run (missing @tanstack/eslint-plugin-query in the environment) and no live browser e2e of an actual PDF insert with empty/0 config was performed", "impact": "Lint gate on the client change is unverified; real PDF-insert path not exercised end-to-end", "repair": "Install client deps and run eslint on the changed files; manually verify inserting a PDF with FILE_UPLOAD_SIZE_LIMIT empty / 0 / 100mb", "verifier": "npx eslint src/lib/config.ts src/lib/config.spec.ts; manual insert", "status": "open" } ]
+      },
+      "page-export": {
+        "name": "page-export",
+        "requirement": "docs/requirements/2026-10-13-page-export.md",
+        "plan": "docs/plans/2026-10-13-page-export.md",
+        "status": "DONE",
+        "current_task": 3,
+        "tasks_total": 3,
+        "tasks": [
+          { "id": 1, "name": "client-export-error-helper", "status": "done", "evidence": "exercised", "tests_total": 7, "tests_passed": 7, "fixes": 0, "complexity": "medium", "parallel_safe": true, "report": "docs/test-reports/2026-10-13-page-export/task-1-helper.md" },
+          { "id": 2, "name": "client-export-modal-message", "status": "done", "evidence": "exercised", "tests_total": 0, "tests_passed": 0, "fixes": 0, "complexity": "medium", "parallel_safe": false, "report": "docs/test-reports/2026-10-13-page-export/task-2-modal.md" },
+          { "id": 3, "name": "verify-export", "status": "done", "evidence": "exercised", "tests_total": 0, "tests_passed": 0, "fixes": 0, "complexity": "low", "parallel_safe": false, "report": null }
+        ],
+        "tests_passed": 7,
+        "tests_failed": 0,
+        "tests_fixed": 0,
+        "started_at": "2026-10-13T04:00:00Z",
+        "completed_at": "2026-10-13T04:10:00Z",
+        "blocked_reason": null,
+        "review": { "task-understanding": { "score": 90, "evidence": "exercised" }, "controlled-execution": { "score": 90, "evidence": "exercised" }, "change-validation": { "score": 90, "evidence": "outcome-supported" }, "reliable-delivery": { "score": 75, "evidence": "wired" }, "learning-capture": { "score": 75, "evidence": "present" } },
+        "findings": [ { "id": "F001", "dimension": "reliable-delivery", "severity": "low", "evidence": "Client eslint could not run (missing @tanstack/eslint-plugin-query); the underlying backend HTTP error that triggers the export failure was not reproduced", "impact": "Lint gate on client change is unverified; the real server error behind the export failure is not confirmed, only its message is now surfaced", "repair": "Install client deps and run eslint on the changed files; identify the triggering HTTP error via browser Network tab or server logs", "verifier": "npx eslint src/features/page/services/export-error.ts src/components/common/export-modal.tsx; reproduce export error", "status": "open" } ]
+      },
+      "word-export-error": {
+        "name": "word-export-error",
+        "requirement": "docs/requirements/2026-10-14-word-export-error.md",
+        "plan": "docs/plans/2026-10-14-word-export-error.md",
+        "status": "PLANNED",
+        "current_task": 0,
+        "tasks_total": 2,
+        "tasks": [
+          { "id": 1, "name": "interceptor-404-guard", "status": "pending", "evidence": "present", "tests_total": 0, "tests_passed": 0, "fixes": 0, "complexity": "medium", "parallel_safe": false, "depends_on": [], "report": null },
+          { "id": 2, "name": "client-verify", "status": "pending", "evidence": "present", "tests_total": 0, "tests_passed": 0, "fixes": 0, "complexity": "low", "parallel_safe": true, "depends_on": [1], "report": null }
+        ],
+        "tests_passed": 0,
+        "tests_failed": 0,
+        "tests_fixed": 0,
+        "started_at": "2026-10-14T04:00:00Z",
+        "completed_at": null,
+        "blocked_reason": null,
+        "review": { "task-understanding": { "score": 0, "evidence": "unobserved" }, "controlled-execution": { "score": 0, "evidence": "unobserved" }, "change-validation": { "score": 0, "evidence": "unobserved" }, "reliable-delivery": { "score": 0, "evidence": "unobserved" }, "learning-capture": { "score": 0, "evidence": "unobserved" } },
+        "findings": []
+      }
+    }
+  },
+  "files_created": [
+    "docs/plans/2026-10-14-word-export-error.md"
+  ],
+  "files_modified": [
+    { "path": "docs/.sean/state.json", "before_hash": "see-before", "after_hash": "see-after" }
+  ],
+  "undone": false
+}

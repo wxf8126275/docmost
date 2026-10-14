@@ -15,3 +15,27 @@ export function getApiErrorMessage(
   }
   return fallback;
 }
+
+interface ResponseLike {
+  response?: {
+    data?: {
+      message?: unknown;
+    };
+  };
+}
+
+/**
+ * Returns true when an axios error is a 404 "workspace not found".
+ *
+ * Some responses (e.g. blob responses for file/docx exports) arrive with a Blob
+ * body where `data.message` is undefined; reading it without a type guard would
+ * throw `Cannot read properties of undefined (reading 'toLowerCase')`. We guard
+ * the type before lowercasing so the interceptor never crashes on such errors.
+ */
+export function isWorkspaceNotFound(error: unknown): boolean {
+  const message = (error as ResponseLike)?.response?.data?.message;
+  return (
+    typeof message === "string" &&
+    message.toLowerCase().includes("workspace not found")
+  );
+}

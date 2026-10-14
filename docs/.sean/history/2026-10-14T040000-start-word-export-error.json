@@ -1,0 +1,20 @@
+{
+  "feature": "word-export-error",
+  "phase": "start",
+  "started_at": "2026-10-14T04:00:00Z",
+  "requirement_ref": "docs/requirements/2026-10-14-word-export-error.md",
+  "symptom": "Import/export of a Word (docx) page throws 'Export failed: Cannot read properties of undefined (reading \\'toLowerCase\\')'.",
+  "root_cause": {
+    "file": "apps/client/src/lib/api-client.ts",
+    "location": "axios error interceptor, case 404 branch (approx lines 50-64)",
+    "code": "error.response.data.message.toLowerCase()",
+    "explanation": "For blob-response requests (docx/markdown export) that fail with a non-2xx, axios stores the error body as a Blob. error.response.data.message is then undefined, so .toLowerCase() throws a V8 TypeError whose message becomes the surfaced text via buildExportFailureMessage in export-modal.tsx. docx export always 404s in the community build (no /docx-export route), so it always crashes; JSON-response requests (docx import) are unaffected."
+  },
+  "constraint": "Reuse the existing frontend page/UI; minimal client-only change.",
+  "proposed_fix": "Guard access to error.response.data.message in the 404 interceptor branch with a typeof string check before calling toLowerCase().",
+  "scope_notes": [
+    "Adding a /docx-export server route is EE follow-up, out of scope (frontend-only constraint).",
+    "Complements the prior export-error.ts blob-body parsing fix; this fixes the interceptor-layer crash that loses the original error."
+  ],
+  "next_phase": "plan"
+}

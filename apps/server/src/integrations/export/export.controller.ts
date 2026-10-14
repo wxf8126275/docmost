@@ -11,7 +11,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ExportService } from './export.service';
-import { ExportPageDto, ExportSpaceDto } from './dto/export-dto';
+import { ExportPageDto, ExportSpaceDto, ExportDocxPageDto } from './dto/export-dto';
 import { AuthUser } from '../../common/decorators/auth-user.decorator';
 import { User } from '@docmost/db/types/entity.types';
 import SpaceAbilityFactory from '../../core/casl/abilities/space-ability.factory';
@@ -113,6 +113,40 @@ export class ExportController {
 
       res.send(result.stream);
     }
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  @Post('docx-export')
+  async exportPageDocx(
+    @Body() dto: ExportDocxPageDto,
+    @AuthUser() user: User,
+    @Res() res: FastifyReply,
+  ) {
+    const page = await this.pageRepo.findById(dto.pageId, {
+      includeContent: true,
+    });
+
+    if (!page || page.deletedAt) {
+      throw new NotFoundException('Page not found');
+    }
+
+    await this.pageAccessService.validateCanView(page, user);
+
+    const buffer = await this.exportService.exportPageToDocx(page, user.id);
+
+    const fileName =
+      sanitizeFileName(page.title || 'untitled', { preserveSpaces: true }) +
+      '.docx';
+
+    res.headers({
+      'Content-Type':
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      'Content-Disposition':
+        'attachment; filename="' + encodeURIComponent(fileName) + '"',
+    });
+
+    res.send(buffer);
   }
 
   @UseGuards(JwtAuthGuard)
