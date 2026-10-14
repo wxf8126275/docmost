@@ -1,0 +1,17 @@
+{
+  "timestamp": "2026-10-14T04:50:00Z",
+  "action": "start",
+  "feature": "recycle-bin",
+  "before": {
+    "version": 3,
+    "active": "word-export-error"
+  },
+  "after": {
+    "version": 3,
+    "active": "recycle-bin"
+  },
+  "files_created": [],
+  "files_modified": [],
+  "undone": true,
+  "note": "Requirement already existed (docs/requirements/2026-10-13-recycle-bin.md); preserved. Active pointer switched to recycle-bin then reverted (user declined to handle the feature)."
+}

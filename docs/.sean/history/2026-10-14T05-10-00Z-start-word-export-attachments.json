@@ -1,0 +1,17 @@
+{
+  "timestamp": "2026-10-14T05:10:00Z",
+  "action": "start",
+  "feature": "word-export-attachments",
+  "before": {
+    "version": 3,
+    "active": "word-export-error"
+  },
+  "after": {
+    "version": 3,
+    "active": "word-export-attachments"
+  },
+  "files_created": ["docs/requirements/2026-10-14-word-export-attachments.md"],
+  "files_modified": ["docs/.sean/state.json"],
+  "undone": false,
+  "note": "New feature distinct from existing DONE word-export-error (which was about error surfacing). This one addresses attachment content not being embedded into the .docx export."
+}

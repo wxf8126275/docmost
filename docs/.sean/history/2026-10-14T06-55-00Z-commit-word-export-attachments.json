@@ -1,0 +1,44 @@
+{
+  "timestamp": "2026-10-14T06:55:00Z",
+  "action": "commit",
+  "feature": "word-export-attachments",
+  "before": {
+    "features": {
+      "word-export-attachments": { "status": "DONE", "current_task": 5, "tasks_total": 5, "tests_passed": 16 }
+    }
+  },
+  "after": {
+    "features": {
+      "word-export-attachments": { "status": "DONE", "current_task": 5, "tasks_total": 5, "tests_passed": 16 }
+    }
+  },
+  "files_created": [
+    "packages/editor-ext/src/lib/prosemirror-docx/attachment-helpers.ts",
+    "packages/editor-ext/src/lib/prosemirror-docx/attachment.ts",
+    "packages/editor-ext/src/lib/prosemirror-docx/attachment-helpers.spec.ts",
+    "packages/editor-ext/src/lib/prosemirror-docx/attachment.spec.ts",
+    "packages/editor-ext/vitest.config.ts",
+    "apps/server/src/integrations/export/docx-attachment.smoke.ts",
+    "docs/requirements/2026-10-14-word-export-attachments.md",
+    "docs/plans/2026-10-14-word-export-attachments.md",
+    "docs/test-reports/2026-10-14-word-export-attachments/handoff.md",
+    "docs/test-reports/2026-10-14-word-export-attachments/summary.md",
+    "docs/test-reports/2026-10-14-word-export-attachments/task-1-editor-ext-resolver.md",
+    "docs/test-reports/2026-10-14-word-export-attachments/task-2-editor-ext-file-embed.md",
+    "docs/test-reports/2026-10-14-word-export-attachments/task-4-server-tests.md",
+    "docs/test-reports/2026-10-14-word-export-attachments/task-5-verify.md"
+  ],
+  "files_modified": [
+    "packages/editor-ext/src/index.ts",
+    "packages/editor-ext/src/lib/prosemirror-docx/index.ts",
+    "packages/editor-ext/src/lib/prosemirror-docx/schema.ts",
+    "packages/editor-ext/src/lib/prosemirror-docx/serializer.ts",
+    "packages/editor-ext/src/lib/prosemirror-docx/types.ts",
+    "packages/editor-ext/tsconfig.json",
+    "apps/server/src/integrations/export/export.service.ts",
+    "apps/server/src/integrations/export/export.service.spec.ts",
+    "docs/.sean/state.json"
+  ],
+  "undone": false,
+  "note": "Commit split per repo convention: (1) feat(export) for code+tests, (2) chore(sean) for sean workflow artifacts (requirements/plans/test-reports/state/history). dist/ is gitignored and not committed."
+}

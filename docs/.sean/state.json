@@ -1,6 +1,6 @@
 {
   "version": 3,
-  "active": "word-export-error",
+  "active": "word-export-attachments",
   "features": {
     "base-backend": {
       "name": "base-backend",
@@ -173,6 +173,37 @@
       },
       "findings": [
         { "id": "F001", "dimension": "reliable-delivery", "severity": "low", "evidence": "Client eslint could not run (missing @tanstack/eslint-plugin-query in the environment); the underlying backend HTTP error that triggers the export failure was not reproduced (no dev DB / network)", "impact": "Lint gate on client change is unverified; the real server error (403/400/404/500) behind the export failure is not confirmed, only its message is now surfaced", "repair": "Install client deps and run eslint on the changed files; identify the triggering HTTP error via browser Network tab or server logs", "verifier": "npx eslint src/features/page/services/export-error.ts src/components/common/export-modal.tsx; reproduce export error", "status": "open" }
+      ]
+    },
+    "word-export-attachments": {
+      "name": "word-export-attachments",
+      "requirement": "docs/requirements/2026-10-14-word-export-attachments.md",
+      "plan": "docs/plans/2026-10-14-word-export-attachments.md",
+      "status": "DONE",
+      "current_task": 5,
+      "tasks_total": 5,
+      "tasks": [
+        { "id": 1, "name": "editor-ext-attachment-resolver", "status": "done", "evidence": "exercised", "tests_total": 8, "tests_passed": 8, "fixes": 0, "complexity": "medium", "parallel_safe": false, "report": "docs/test-reports/2026-10-14-word-export-attachments/task-1-editor-ext-resolver.md" },
+        { "id": 2, "name": "editor-ext-file-embed", "status": "done", "evidence": "exercised", "tests_total": 4, "tests_passed": 4, "fixes": 0, "complexity": "high", "parallel_safe": false, "depends_on": [1], "report": "docs/test-reports/2026-10-14-word-export-attachments/task-2-editor-ext-file-embed.md" },
+        { "id": 3, "name": "server-attachment-resolver", "status": "done", "evidence": "exercised", "tests_total": 0, "tests_passed": 0, "fixes": 0, "complexity": "medium", "parallel_safe": true, "depends_on": [1], "report": null },
+        { "id": 4, "name": "server-attachment-tests", "status": "done", "evidence": "exercised", "tests_total": 4, "tests_passed": 4, "fixes": 0, "complexity": "medium", "parallel_safe": false, "depends_on": [3], "report": "docs/test-reports/2026-10-14-word-export-attachments/task-4-server-tests.md" },
+        { "id": 5, "name": "verify-runtime-smoke", "status": "done", "evidence": "outcome-supported", "tests_total": 0, "tests_passed": 0, "fixes": 0, "complexity": "medium", "parallel_safe": false, "depends_on": [2, 3], "report": "docs/test-reports/2026-10-14-word-export-attachments/task-5-verify.md" }
+      ],
+      "tests_passed": 16,
+      "tests_failed": 0,
+      "tests_fixed": 0,
+      "started_at": "2026-10-14T05:10:00Z",
+      "completed_at": "2026-10-14T06:50:00Z",
+      "blocked_reason": null,
+      "review": {
+        "task-understanding": { "score": 90, "evidence": "exercised" },
+        "controlled-execution": { "score": 85, "evidence": "exercised" },
+        "change-validation": { "score": 95, "evidence": "outcome-supported" },
+        "reliable-delivery": { "score": 75, "evidence": "wired" },
+        "learning-capture": { "score": 80, "evidence": "present" }
+      },
+      "findings": [
+        { "id": "F001", "dimension": "change-validation", "severity": "medium", "evidence": "docx@9.7.1 has no native file embedding (no EmbeddedFile/OLE); non-image files are carried as a clickable hyperlink to the attachment URL instead of embedded bytes.", "impact": "Non-image attachments (PDF/docx/zip) are not physically inside the .docx; they require network access to the server to open.", "repair": "If self-contained non-image embedding is required, add an OLE embedded-object XmlComponent or switch to the HTML/markdown zip export (which already bundles attachments as files).", "verifier": "Open generated .docx and confirm the PDF link resolves; or use zip export for offline file bundling.", "status": "open" }
       ]
     },
     "word-export-error": {

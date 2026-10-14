@@ -1,0 +1,42 @@
+{
+  "timestamp": "2026-10-14T06:50:00Z",
+  "action": "run",
+  "feature": "word-export-attachments",
+  "before": {
+    "features": {
+      "word-export-attachments": { "status": "PLANNED", "current_task": 0, "tasks_total": 5 }
+    }
+  },
+  "after": {
+    "features": {
+      "word-export-attachments": { "status": "DONE", "current_task": 5, "tasks_total": 5, "tests_passed": 16 }
+    }
+  },
+  "files_created": [
+    "packages/editor-ext/src/lib/prosemirror-docx/attachment-helpers.ts",
+    "packages/editor-ext/src/lib/prosemirror-docx/attachment.ts",
+    "packages/editor-ext/src/lib/prosemirror-docx/attachment-helpers.spec.ts",
+    "packages/editor-ext/src/lib/prosemirror-docx/attachment.spec.ts",
+    "packages/editor-ext/vitest.config.ts",
+    "apps/server/src/integrations/export/docx-attachment.smoke.ts",
+    "docs/test-reports/2026-10-14-word-export-attachments/handoff.md",
+    "docs/test-reports/2026-10-14-word-export-attachments/summary.md",
+    "docs/test-reports/2026-10-14-word-export-attachments/task-1-editor-ext-resolver.md",
+    "docs/test-reports/2026-10-14-word-export-attachments/task-2-editor-ext-file-embed.md",
+    "docs/test-reports/2026-10-14-word-export-attachments/task-4-server-tests.md",
+    "docs/test-reports/2026-10-14-word-export-attachments/task-5-verify.md"
+  ],
+  "files_modified": [
+    "packages/editor-ext/src/lib/prosemirror-docx/types.ts",
+    "packages/editor-ext/src/lib/prosemirror-docx/serializer.ts",
+    "packages/editor-ext/src/lib/prosemirror-docx/schema.ts",
+    "packages/editor-ext/src/lib/prosemirror-docx/index.ts",
+    "packages/editor-ext/src/index.ts",
+    "packages/editor-ext/tsconfig.json",
+    "apps/server/src/integrations/export/export.service.ts",
+    "apps/server/src/integrations/export/export.service.spec.ts",
+    "docs/.sean/state.json"
+  ],
+  "undone": false,
+  "note": "All 5 tasks executed serially (only 1 parallel_safe task depended on unmet deps, so serial per skill rule). Image attachments now embed as pictures in the .docx (runtime-verified via tsx smoke: word/media/*.png present). Non-image files use hyperlink fallback (docx@9.7.1 lacks native file embedding). editor-ext rebuilt (dist) so server jest resolves new types."
+}
