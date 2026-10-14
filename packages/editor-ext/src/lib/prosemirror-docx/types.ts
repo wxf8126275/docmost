@@ -32,3 +32,17 @@ export interface SerializationState {
   children?: ISectionOptions['children'];
   footnotes?: IFootnotes;
 }
+
+/** Resolved attachment bytes + metadata, returned by the export resolver. */
+export interface DocxAttachmentData {
+  data: Uint8Array;
+  name: string;
+  mimeType?: string;
+  /** Optional download URL used to render a clickable link for non-image files. */
+  url?: string;
+}
+
+/** Resolves an attachment reference (image or file) to its bytes. */
+export type DocxAttachmentResolver = (
+  src: string,
+) => Promise<DocxAttachmentData | undefined>;

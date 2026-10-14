@@ -1,5 +1,10 @@
 // MIT - https://github.com/curvenote/prosemirror-docx/
-export type { SectionConfig, SerializationState } from './types';
+export type {
+  SectionConfig,
+  SerializationState,
+  DocxAttachmentData,
+  DocxAttachmentResolver,
+} from './types';
 export type {
   MarkSerializer,
   NodeSerializer,

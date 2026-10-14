@@ -37,5 +37,7 @@ export * from "./lib/resizable-nodeview";
 export {
   pageNodeToDocxBuffer,
   type DocxImageResolver,
+  type DocxAttachmentData,
+  type DocxAttachmentResolver,
 } from "./lib/prosemirror-docx";
 export * from "./lib/base-embed";

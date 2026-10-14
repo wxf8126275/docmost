@@ -31,6 +31,7 @@ import { imageDimensionsFromData } from 'image-dimensions';
 import { createNumbering, NumberingStyles } from './numbering';
 import { buildDoc, createShortId } from './utils';
 import { IFootnotes, INumbering, Mutable, SectionConfig, SerializationState } from './types';
+import type { DocxAttachmentResolver } from './types';
 
 // This is duplicated from @curvenote/schema
 export type AlignOptions = 'left' | 'center' | 'right';
@@ -57,6 +58,8 @@ export type Options = {
 
 export type OptionsAsync = {
   getImageBuffer: (src: string) => Uint8Array | Promise<Uint8Array>;
+  /** Resolves any attachment (image or file) to its bytes; optional for exports that don't embed attachments. */
+  getAttachment?: DocxAttachmentResolver;
   sections?: SectionConfig[];
 };
 

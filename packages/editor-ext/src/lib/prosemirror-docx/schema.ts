@@ -7,6 +7,8 @@ import {
   OptionsAsync,
 } from './serializer';
 import { writeDocx } from './utils';
+import { renderAttachment } from './attachment';
+import type { DocxAttachmentResolver } from './types';
 
 export type DocxImageResolver = OptionsAsync['getImageBuffer'];
 
@@ -133,8 +135,8 @@ export const defaultAsyncNodes: NodeSerializerAsync = {
   excalidraw: renderImage,
   video: renderFileLine,
   audio: renderFileLine,
-  pdf: renderFileLine,
-  attachment: renderFileLine,
+  pdf: renderAttachment,
+  attachment: renderAttachment,
   embed: renderEmbedLine,
   youtube: renderEmbedLine,
   async callout(state, node) {
@@ -245,11 +247,15 @@ export const defaultMarks: MarkSerializer = {
 export async function pageNodeToDocxBuffer(
   doc: Node,
   getImageBuffer: DocxImageResolver,
+  getAttachment?: DocxAttachmentResolver,
 ): Promise<Buffer> {
   const serializer = new DocxSerializerAsync(defaultAsyncNodes, defaultMarks);
   const wordDoc = await serializer.serializeAsync(
     doc,
-    { getImageBuffer },
+    {
+      getImageBuffer,
+      ...(getAttachment ? { getAttachment } : {}),
+    },
     // docx's built-in heading styles are blue (#2E74B5 / #1F4D78). The editor
     // has no heading color, so override the default heading run colors to the
     // normal text color. Sizes/italics mirror docx's own defaults so only the

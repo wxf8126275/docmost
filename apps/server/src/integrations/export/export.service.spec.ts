@@ -182,4 +182,168 @@ describe('ExportService.exportPageToDocx', () => {
     const result = await (service as any).exportPageToDocx(page, 'user-1');
     expect(result).toBe(docxBuffer);
   });
+
+  it('resolves attachment bytes + mime for an attachment node (image embed path)', async () => {
+    const docxBuffer = Buffer.from('PK\x03\x04');
+    editorExt.pageNodeToDocxBuffer.mockImplementation(
+      async (node: any, _getImageBuffer: any, getAttachment: any) => {
+        const att = node.child(0);
+        expect(att.type.name).toBe('attachment');
+        const resolved = await getAttachment(att.attrs.src);
+        expect(resolved.data).toEqual(new Uint8Array([9, 9, 9]));
+        expect(resolved.name).toBe('photo.png');
+        expect(resolved.mimeType).toBe('image/png');
+        expect(resolved.url).toContain('/api/files/att-img/photo.png');
+        return docxBuffer;
+      },
+    );
+    collaborationUtil.jsonToNode.mockImplementation((json: any) =>
+      fakeNode(json),
+    );
+    dbRow = {
+      filePath: 'attachments/photo.png',
+      fileName: 'photo.png',
+      mimeType: 'image/png',
+    };
+    storageService.read.mockResolvedValue(Buffer.from([9, 9, 9]));
+
+    const service = makeService();
+    const page: any = {
+      id: 'page-4',
+      title: '',
+      spaceId: 'space-1',
+      workspaceId: 'ws-1',
+      content: {
+        type: 'doc',
+        content: [
+          {
+            type: 'attachment',
+            attrs: { src: '/files/att-img/photo.png', name: 'photo.png' },
+          },
+        ],
+      },
+    };
+
+    const result = await (service as any).exportPageToDocx(page, 'user-1');
+    expect(result).toBe(docxBuffer);
+    expect(storageService.read).toHaveBeenCalledWith('attachments/photo.png');
+  });
+
+  it('resolves a non-image (pdf) attachment with its mime type and download url', async () => {
+    const docxBuffer = Buffer.from('PK\x03\x04');
+    editorExt.pageNodeToDocxBuffer.mockImplementation(
+      async (node: any, _getImageBuffer: any, getAttachment: any) => {
+        const resolved = await getAttachment(node.child(0).attrs.src);
+        expect(resolved.mimeType).toBe('application/pdf');
+        expect(resolved.url).toBe(
+          'https://test.docmost.dev/api/files/att-pdf/doc.pdf',
+        );
+        return docxBuffer;
+      },
+    );
+    collaborationUtil.jsonToNode.mockImplementation((json: any) =>
+      fakeNode(json),
+    );
+    dbRow = {
+      filePath: 'attachments/doc.pdf',
+      fileName: 'doc.pdf',
+      mimeType: 'application/pdf',
+    };
+    storageService.read.mockResolvedValue(Buffer.from([1]));
+
+    const service = makeService();
+    const page: any = {
+      id: 'page-5',
+      title: '',
+      spaceId: 'space-1',
+      workspaceId: 'ws-1',
+      content: {
+        type: 'doc',
+        content: [
+          {
+            type: 'attachment',
+            attrs: { src: '/files/att-pdf/doc.pdf', name: 'doc.pdf' },
+          },
+        ],
+      },
+    };
+
+    const result = await (service as any).exportPageToDocx(page, 'user-1');
+    expect(result).toBe(docxBuffer);
+  });
+
+  it('derives mime from the file extension when the table has none', async () => {
+    const docxBuffer = Buffer.from('PK\x03\x04');
+    editorExt.pageNodeToDocxBuffer.mockImplementation(
+      async (node: any, _getImageBuffer: any, getAttachment: any) => {
+        const resolved = await getAttachment(node.child(0).attrs.src);
+        expect(resolved.mimeType).toBe('image/png');
+        return docxBuffer;
+      },
+    );
+    collaborationUtil.jsonToNode.mockImplementation((json: any) =>
+      fakeNode(json),
+    );
+    dbRow = {
+      filePath: 'attachments/photo.PNG',
+      fileName: 'photo.PNG',
+      mimeType: null,
+    };
+    storageService.read.mockResolvedValue(Buffer.from([2, 2]));
+
+    const service = makeService();
+    const page: any = {
+      id: 'page-6',
+      title: '',
+      spaceId: 'space-1',
+      workspaceId: 'ws-1',
+      content: {
+        type: 'doc',
+        content: [
+          {
+            type: 'attachment',
+            attrs: { src: '/files/att-ext/photo.PNG', name: 'photo.PNG' },
+          },
+        ],
+      },
+    };
+
+    const result = await (service as any).exportPageToDocx(page, 'user-1');
+    expect(result).toBe(docxBuffer);
+  });
+
+  it('returns undefined for an unresolved attachment so the export still succeeds', async () => {
+    const docxBuffer = Buffer.from('PK\x03\x04');
+    editorExt.pageNodeToDocxBuffer.mockImplementation(
+      async (node: any, _getImageBuffer: any, getAttachment: any) => {
+        const resolved = await getAttachment(node.child(0).attrs.src);
+        expect(resolved).toBeUndefined();
+        return docxBuffer;
+      },
+    );
+    collaborationUtil.jsonToNode.mockImplementation((json: any) =>
+      fakeNode(json),
+    );
+    dbRow = undefined; // no attachment row -> resolveDocxAttachment returns undefined
+
+    const service = makeService();
+    const page: any = {
+      id: 'page-7',
+      title: '',
+      spaceId: 'space-1',
+      workspaceId: 'ws-1',
+      content: {
+        type: 'doc',
+        content: [
+          {
+            type: 'attachment',
+            attrs: { src: '/files/missing/x.png', name: 'x.png' },
+          },
+        ],
+      },
+    };
+
+    const result = await (service as any).exportPageToDocx(page, 'user-1');
+    expect(result).toBe(docxBuffer);
+  });
 });

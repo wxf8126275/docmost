@@ -41,10 +41,34 @@ import {
 import {
   htmlToMarkdown,
   pageNodeToDocxBuffer,
+  type DocxAttachmentData,
+  type DocxAttachmentResolver,
   type DocxImageResolver,
 } from '@docmost/editor-ext';
 
 type AllowedAttachment = { id: string; fileName: string; filePath: string };
+
+// Maps a file extension to a best-effort mime type when the attachments table
+// has no explicit `mimeType` (used to decide image-vs-file embedding).
+const MIME_BY_EXT: Record<string, string> = {
+  png: 'image/png',
+  jpg: 'image/jpeg',
+  jpeg: 'image/jpeg',
+  gif: 'image/gif',
+  webp: 'image/webp',
+  bmp: 'image/bmp',
+  pdf: 'application/pdf',
+  txt: 'text/plain',
+  doc: 'application/msword',
+  docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  xls: 'application/vnd.ms-excel',
+  zip: 'application/zip',
+};
+
+function mimeFromExt(fileName: string): string {
+  const ext = fileName.split('.').pop()?.toLowerCase() ?? '';
+  return MIME_BY_EXT[ext] ?? 'application/octet-stream';
+}
 
 @Injectable()
 export class ExportService {
@@ -137,7 +161,14 @@ export class ExportService {
       return buffer;
     };
 
-    return pageNodeToDocxBuffer(node, getImageBuffer);
+    // Resolves any attachment (image or file) referenced by a media node so the
+    // docx serializer can embed it instead of printing only its name.
+    const getAttachment: DocxAttachmentResolver = async (src) => {
+      const data = await this.resolveDocxAttachment(src, page);
+      return data ?? undefined;
+    };
+
+    return pageNodeToDocxBuffer(node, getImageBuffer, getAttachment);
   }
 
   private async resolveDocxImage(
@@ -168,6 +199,53 @@ export class ExportService {
 
       const buffer = await this.storageService.read(attachment.filePath);
       return new Uint8Array(buffer);
+    } catch {
+      return undefined;
+    }
+  }
+
+  /**
+   * Resolve any attachment (image or file) referenced by a media node to its
+   * bytes, file name, and mime type. Returns `undefined` on any failure so the
+   * docx serializer degrades to a name-only line instead of failing the export.
+   */
+  private async resolveDocxAttachment(
+    src: string,
+    page: Page,
+  ): Promise<DocxAttachmentData | undefined> {
+    if (!src) {
+      return undefined;
+    }
+
+    const match = src.match(/\/files\/([^/?]+)/);
+    const attachmentId = match?.[1];
+    if (!attachmentId) {
+      return undefined;
+    }
+
+    try {
+      const attachment = await this.db
+        .selectFrom('attachments')
+        .select(['filePath', 'fileName', 'mimeType'])
+        .where('id', '=', attachmentId)
+        .where('spaceId', '=', page.spaceId)
+        .executeTakeFirst();
+
+      if (!attachment?.filePath || !attachment?.fileName) {
+        return undefined;
+      }
+
+      const buffer = await this.storageService.read(attachment.filePath);
+      const mimeType =
+        attachment.mimeType ?? mimeFromExt(attachment.fileName);
+      const baseUrl = await this.getWorkspaceBaseUrl(page.workspaceId);
+
+      return {
+        data: new Uint8Array(buffer),
+        name: attachment.fileName,
+        mimeType,
+        url: `${baseUrl}/api/files/${attachmentId}/${attachment.fileName}`,
+      };
     } catch {
       return undefined;
     }
