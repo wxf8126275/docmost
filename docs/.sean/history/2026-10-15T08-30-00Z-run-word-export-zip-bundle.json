@@ -1,0 +1,19 @@
+{
+  "timestamp": "2026-10-15T08:30:00Z",
+  "action": "run",
+  "feature": "word-export-zip-bundle",
+  "before": {
+    "features": {
+      "word-export-zip-bundle": { "status": "PLANNED", "current_task": 0, "tasks_total": 5 }
+    }
+  },
+  "after": {
+    "features": {
+      "word-export-zip-bundle": { "status": "IN_PROGRESS", "current_task": 1, "tasks": { "1": "in_progress" } }
+    }
+  },
+  "files_created": [],
+  "files_modified": [],
+  "undone": false,
+  "note": "Begin executing 5 tasks for word-export-zip-bundle: make the docx-export endpoint return a self-contained .zip (document.docx + attachments/ folder) with relative attachment hyperlinks."
+}

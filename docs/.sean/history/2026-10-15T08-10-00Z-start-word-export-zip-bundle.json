@@ -1,0 +1,19 @@
+{
+  "timestamp": "2026-10-15T08:10:00Z",
+  "action": "start",
+  "feature": "word-export-zip-bundle",
+  "before": {
+    "active": "word-export-attachments"
+  },
+  "after": {
+    "active": "word-export-zip-bundle"
+  },
+  "files_created": [
+    "docs/requirements/2026-10-15-word-export-zip-bundle.md"
+  ],
+  "files_modified": [
+    "docs/.sean/state.json"
+  ],
+  "undone": false,
+  "note": "New feature created as an extension of the DONE word-export-attachments. The user wants non-image attachments (PDF/docx/zip) physically available offline. Evaluation confirmed docx@9.7.1->9.11.0 has NO native file embedding, so the chosen route is a self-contained .zip (document.docx + attachments/ folder). The existing DONE feature is preserved (not overwritten)."
+}
