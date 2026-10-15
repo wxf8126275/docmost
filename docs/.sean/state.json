@@ -1,12 +1,38 @@
 {
   "version": 3,
-  "active": "word-export-zip-bundle",
+  "active": "docker-deploy",
   "features": {
+    "docker-deploy": {
+      "name": "docker-deploy",
+      "requirement": "docs/requirements/2026-10-15-docker-deploy.md",
+      "plan": "docs/plans/2026-10-15-docker-deploy.md",
+      "status": "DONE",
+      "current_task": 2,
+      "tasks_total": 2,
+      "tasks": [
+        { "id": 1, "name": "write-docker-deploy-doc", "status": "done", "evidence": "exercised", "tests_total": 0, "tests_passed": 0, "fixes": 0, "complexity": "low", "parallel_safe": false, "report": "docs/deployment/docker.md" },
+        { "id": 2, "name": "verify-doc-accuracy", "status": "done", "evidence": "exercised", "tests_total": 0, "tests_passed": 0, "fixes": 0, "complexity": "low", "parallel_safe": false, "report": null }
+      ],
+      "tests_passed": 0,
+      "tests_failed": 0,
+      "tests_fixed": 0,
+      "started_at": "2026-10-15T10:00:00Z",
+      "completed_at": "2026-10-15T10:15:00Z",
+      "blocked_reason": null,
+      "review": {
+        "task-understanding": { "score": 90, "evidence": "exercised" },
+        "controlled-execution": { "score": 80, "evidence": "wired" },
+        "change-validation": { "score": 60, "evidence": "present" },
+        "reliable-delivery": { "score": 60, "evidence": "present" },
+        "learning-capture": { "score": 75, "evidence": "present" }
+      },
+      "findings": []
+    },
     "word-export-zip-bundle": {
       "name": "word-export-zip-bundle",
       "requirement": "docs/requirements/2026-10-15-word-export-zip-bundle.md",
       "plan": "docs/plans/2026-10-15-word-export-zip-bundle.md",
-      "status": "IN_PROGRESS",
+      "status": "DONE",
       "current_task": 5,
       "tasks_total": 5,
       "tasks": [

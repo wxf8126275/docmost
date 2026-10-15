@@ -1,0 +1,22 @@
+{
+  "timestamp": "2026-10-15T10:00:00Z",
+  "action": "start",
+  "feature": "docker-deploy",
+  "before": {
+    "active": "word-export-zip-bundle",
+    "features": { "word-export-zip-bundle": { "status": "IN_PROGRESS" } }
+  },
+  "after": {
+    "active": "docker-deploy",
+    "features": {
+      "docker-deploy": {
+        "status": "DRAFT",
+        "requirement": "docs/requirements/2026-10-15-docker-deploy.md"
+      },
+      "word-export-zip-bundle": { "status": "IN_PROGRESS" }
+    }
+  },
+  "files_created": ["docs/requirements/2026-10-15-docker-deploy.md"],
+  "files_modified": ["docs/.sean/state.json"],
+  "undone": false
+}

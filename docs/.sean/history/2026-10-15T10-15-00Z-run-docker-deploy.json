@@ -1,0 +1,16 @@
+{
+  "timestamp": "2026-10-15T10:15:00Z",
+  "action": "run",
+  "feature": "docker-deploy",
+  "before": {
+    "active": "docker-deploy",
+    "features": { "docker-deploy": { "status": "PLANNED", "tasks_total": 2 } }
+  },
+  "after": {
+    "active": "docker-deploy",
+    "features": { "docker-deploy": { "status": "DONE", "tasks_total": 2 } }
+  },
+  "files_created": ["docs/deployment/docker.md"],
+  "files_modified": ["docs/.sean/state.json"],
+  "undone": false
+}
