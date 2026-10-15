@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { EnvironmentService } from '../../../integrations/environment/environment.service';
+import { ResolvedAiProvider } from '../dto/ai-provider.dto';
 
 /**
  * Generates text embeddings for semantic search via an OpenAI-compatible
@@ -14,7 +15,10 @@ import { EnvironmentService } from '../../../integrations/environment/environmen
 export class EmbeddingService {
   constructor(private readonly environmentService: EnvironmentService) {}
 
-  async embed(texts: string[]): Promise<number[][]> {
+  async embed(
+    texts: string[],
+    provider?: ResolvedAiProvider,
+  ): Promise<number[][]> {
     if (!texts.length) {
       return [];
     }
@@ -22,15 +26,18 @@ export class EmbeddingService {
     const { embedMany } = await import('ai');
     const { createOpenAI } = await import('@ai-sdk/openai');
 
-    const apiKey = this.environmentService.getOpenAiApiKey();
-    const baseURL = this.environmentService.getOpenAiApiUrl();
+    const apiKey = provider?.apiKey ?? this.environmentService.getOpenAiApiKey();
+    const baseURL =
+      provider?.baseUrl ?? this.environmentService.getOpenAiApiUrl();
     const openai = createOpenAI({
       apiKey: apiKey ?? 'missing',
       baseURL: baseURL || undefined,
     });
 
     const modelName =
-      this.environmentService.getAiEmbeddingModel() ?? 'text-embedding-3-small';
+      provider?.embeddingModel ??
+      this.environmentService.getAiEmbeddingModel() ??
+      'text-embedding-3-small';
     const model = openai.embedding(modelName);
 
     const { embeddings } = await embedMany({

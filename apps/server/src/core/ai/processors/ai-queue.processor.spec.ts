@@ -7,6 +7,7 @@ function makeProcessor(deps: any): AiQueueProcessor {
     deps.pageRepo,
     deps.pageEmbeddingRepo,
     deps.embeddingService,
+    deps.aiProviderService,
     deps.workspaceService,
     deps.environmentService,
   );
@@ -17,6 +18,7 @@ describe('AiQueueProcessor', () => {
   let pageRepo: any;
   let pageEmbeddingRepo: any;
   let embeddingService: any;
+  let aiProviderService: any;
   let workspaceService: any;
   let environmentService: any;
 
@@ -29,6 +31,15 @@ describe('AiQueueProcessor', () => {
       deleteByWorkspace: jest.fn().mockResolvedValue(undefined),
     };
     embeddingService = { embed: jest.fn().mockResolvedValue([[0.1, 0.2]]) };
+    aiProviderService = {
+      getActiveProviderConfig: jest.fn().mockResolvedValue({
+        driver: 'openai',
+        apiKey: '',
+        baseUrl: undefined,
+        completionModel: 'gpt-4o-mini',
+        embeddingModel: 'text-embedding-3-small',
+      }),
+    };
     workspaceService = { findById: jest.fn() };
     environmentService = {
       getAiEmbeddingModel: jest.fn().mockReturnValue('text-embedding-3-small'),
@@ -46,6 +57,7 @@ describe('AiQueueProcessor', () => {
       pageRepo,
       pageEmbeddingRepo,
       embeddingService,
+      aiProviderService,
       workspaceService,
       environmentService,
     });
@@ -56,7 +68,10 @@ describe('AiQueueProcessor', () => {
     } as any);
 
     expect(pageRepo.findManyByIds).toHaveBeenCalledWith(['p1'], { workspaceId: 'w1' });
-    expect(embeddingService.embed).toHaveBeenCalledWith(['hello world']);
+    expect(embeddingService.embed.mock.calls[0][0]).toEqual(['hello world']);
+    expect(embeddingService.embed.mock.calls[0][1]).toMatchObject({
+      embeddingModel: 'text-embedding-3-small',
+    });
     expect(pageEmbeddingRepo.insertEmbeddings).toHaveBeenCalledTimes(1);
     const rows = pageEmbeddingRepo.insertEmbeddings.mock.calls[0][0];
     expect(rows[0].pageId).toBe('p1');
@@ -69,6 +84,7 @@ describe('AiQueueProcessor', () => {
       pageRepo,
       pageEmbeddingRepo,
       embeddingService,
+      aiProviderService,
       workspaceService,
       environmentService,
     });
@@ -95,6 +111,7 @@ describe('AiQueueProcessor', () => {
       pageRepo,
       pageEmbeddingRepo,
       embeddingService,
+      aiProviderService,
       workspaceService,
       environmentService,
     });
@@ -115,6 +132,7 @@ describe('AiQueueProcessor', () => {
       pageRepo,
       pageEmbeddingRepo,
       embeddingService,
+      aiProviderService,
       workspaceService,
       environmentService,
     });
@@ -141,6 +159,7 @@ describe('AiQueueProcessor', () => {
       pageRepo,
       pageEmbeddingRepo,
       embeddingService,
+      aiProviderService,
       workspaceService,
       environmentService,
     });

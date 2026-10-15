@@ -24,6 +24,7 @@ export const Feature = {
   BASES: 'bases',
   OAUTH: 'oauth',
   AI_CONTROLS: 'ai:controls',
+  AI_PROVIDERS: 'ai:providers',
   MCP_CONTROLS: 'mcp:controls',
   PUBLIC_SPACE_APPEARANCE: 'public-space:appearance',
   SIEM: 'siem',
@@ -45,6 +46,10 @@ export const COMMUNITY_FEATURES: string[] = [
   // and only persist their toggle flag.
   Feature.AI,
   Feature.AI_CONTROLS,
+  // AI service providers (encrypted config that overrides env vars) are
+  // implemented in the community backend, so self-hosted instances can manage
+  // their own LLM providers without an enterprise license.
+  Feature.AI_PROVIDERS,
   // Page verification backend/UI is implemented in the community build, so the
   // settings "Verified pages" module is usable without an enterprise license.
   Feature.PAGE_VERIFICATION,

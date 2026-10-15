@@ -2,6 +2,7 @@ import { Insertable, Selectable, Updateable } from 'kysely';
 import {
   AiChats,
   AiChatMessages,
+  AiProviders,
   Attachments,
   BaseProperties,
   BaseRows,
@@ -187,6 +188,11 @@ export type UpdatableUserMFA = Updateable<Omit<_UserMFA, 'id'>>;
 
 // Api Keys
 export type ApiKey = Selectable<ApiKeys>;
+export type InsertableApiProvider = Insertable<AiProviders>;
+export type UpdatableAiProvider = Updateable<Omit<AiProviders, 'id'>>;
+
+// AI Provider
+export type AiProvider = Selectable<AiProviders>;
 export type InsertableApiKey = Insertable<ApiKeys>;
 export type UpdatableApiKey = Updateable<Omit<ApiKeys, 'id'>>;
 

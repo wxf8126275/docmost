@@ -73,6 +73,32 @@ describe('AiChatLlmClient', () => {
     expect(params.temperature).toBe(0.7);
   });
 
+  it('uses the provider override for the model when supplied', async () => {
+    const streamTextFn = jest
+      .fn()
+      .mockReturnValue({ textStream: fakeAsyncIterable('ok') });
+    const client = makeClient(streamTextFn);
+    const provider = {
+      driver: 'openai-compatible',
+      apiKey: 'prov-key',
+      baseUrl: 'https://prov/v1',
+      completionModel: 'prov-model',
+      embeddingModel: 'prov-embed',
+    } as any;
+
+    for await (const _chunk of client.streamChat(
+      [{ role: 'user', content: 'hi' } as any],
+      undefined,
+      provider,
+    )) {
+      // drain
+    }
+
+    expect(streamTextFn).toHaveBeenCalledTimes(1);
+    const params = streamTextFn.mock.calls[0][0];
+    expect(params.model).toBe('prov-model');
+  });
+
   it('is resolvable from the Nest DI container without an override (guards startup DI)', async () => {
     const module = await Test.createTestingModule({
       providers: [

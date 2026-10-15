@@ -11,6 +11,7 @@ describe('AiChatService', () => {
   let service: AiChatService;
   let repo: any;
   let llm: any;
+  let aiProviderService: any;
 
   beforeEach(() => {
     repo = {
@@ -24,7 +25,18 @@ describe('AiChatService', () => {
       searchChats: jest.fn(),
     };
     llm = { streamChat: jest.fn() };
-    service = new AiChatService(repo, llm);
+    aiProviderService = {
+      getActiveProviderConfig: jest
+        .fn()
+        .mockResolvedValue({
+          driver: 'openai',
+          apiKey: '',
+          baseUrl: undefined,
+          completionModel: 'gpt-4o-mini',
+          embeddingModel: undefined,
+        }),
+    };
+    service = new AiChatService(repo, llm, aiProviderService);
   });
 
   it('createChat delegates to repo', async () => {
@@ -94,6 +106,9 @@ describe('AiChatService', () => {
     expect(repo.createChat).toHaveBeenCalled();
     expect(repo.insertMessage).toHaveBeenCalledTimes(2);
     expect(llm.streamChat).toHaveBeenCalled();
+    expect(llm.streamChat.mock.calls[0][2]).toMatchObject({
+      completionModel: 'gpt-4o-mini',
+    });
     expect(events.map((e) => e.type)).toEqual(['chat_created', 'content', 'done']);
     expect(events[0].chatId).toBe('c1');
     expect(events[1].text).toBe('Hi');

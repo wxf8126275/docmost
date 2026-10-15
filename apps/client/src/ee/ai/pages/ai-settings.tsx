@@ -8,6 +8,7 @@ import EnableAiChat from "@/ee/ai-chat/components/enable-ai-chat.tsx";
 import AiChatReadOnly from "@/ee/ai-chat/components/ai-chat-read-only.tsx";
 import AiChatWorkspaceKnowledgeOnly from "@/ee/ai-chat/components/ai-chat-workspace-knowledge-only.tsx";
 import McpSettings from "@/ee/ai/components/mcp-settings.tsx";
+import ProviderSettings from "@/ee/ai/components/provider-settings.tsx";
 import { Alert, Collapse, Stack, Tabs } from "@mantine/core";
 import { IconInfoCircle } from "@tabler/icons-react";
 import { useHasFeature } from "@/ee/hooks/use-feature";
@@ -29,7 +30,11 @@ export default function AiSettings() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const activeTab = location.pathname.endsWith("/mcp") ? "mcp" : "ai";
+  const activeTab = location.pathname.endsWith("/mcp")
+    ? "mcp"
+    : location.pathname.endsWith("/providers")
+      ? "providers"
+      : "ai";
 
   if (!isAdmin) {
     return null;
@@ -38,6 +43,8 @@ export default function AiSettings() {
   const handleTabChange = (value: string | null) => {
     if (value === "mcp") {
       navigate("/settings/ai/mcp");
+    } else if (value === "providers") {
+      navigate("/settings/ai/providers");
     } else {
       navigate("/settings/ai");
     }
@@ -55,6 +62,9 @@ export default function AiSettings() {
           </Tabs.Tab>
           <Tabs.Tab fw={500} value="mcp">
             {t("MCP")}
+          </Tabs.Tab>
+          <Tabs.Tab fw={500} value="providers">
+            {t("Providers")}
           </Tabs.Tab>
         </Tabs.List>
 
@@ -95,6 +105,10 @@ export default function AiSettings() {
 
         <Tabs.Panel value="mcp" pt="md">
           <McpSettings />
+        </Tabs.Panel>
+
+        <Tabs.Panel value="providers" pt="md">
+          <ProviderSettings />
         </Tabs.Panel>
       </Tabs>
     </>

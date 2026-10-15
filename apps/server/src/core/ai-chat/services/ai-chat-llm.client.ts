@@ -1,6 +1,7 @@
 import { Inject, Injectable, Optional } from '@nestjs/common';
 import type { LanguageModel, ModelMessage } from 'ai';
 import { EnvironmentService } from '../../../integrations/environment/environment.service';
+import { ResolvedAiProvider } from '../../ai/dto/ai-provider.dto';
 
 /**
  * Optional injection token for overriding the LLM streaming function in tests.
@@ -40,12 +41,13 @@ export class AiChatLlmClient {
   async *streamChat(
     messages: ModelMessage[],
     model?: string,
+    provider?: ResolvedAiProvider,
   ): AsyncGenerator<LlmStreamChunk> {
     try {
       if (this.injectedStreamTextFn) {
         yield* this.runStream(
           this.injectedStreamTextFn({
-            model: (model ?? this.environmentService.getAiChatModel() ?? 'gpt-4o-mini') as unknown,
+            model: (model ?? provider?.completionModel ?? this.environmentService.getAiChatModel() ?? 'gpt-4o-mini') as unknown,
             messages,
             temperature: 0.7,
           }),
@@ -54,7 +56,7 @@ export class AiChatLlmClient {
       }
 
       const { streamText } = await import('ai');
-      const modelObject = await this.buildModel(model);
+      const modelObject = await this.buildModel(model, provider);
       yield* this.runStream(
         streamText({
           model: modelObject,
@@ -79,16 +81,23 @@ export class AiChatLlmClient {
     }
   }
 
-  private async buildModel(model?: string): Promise<LanguageModel> {
+  private async buildModel(
+    model?: string,
+    provider?: ResolvedAiProvider,
+  ): Promise<LanguageModel> {
     const { createOpenAI } = await import('@ai-sdk/openai');
-    const apiKey = this.environmentService.getOpenAiApiKey();
-    const baseURL = this.environmentService.getOpenAiApiUrl();
+    const apiKey = provider?.apiKey ?? this.environmentService.getOpenAiApiKey();
+    const baseURL =
+      provider?.baseUrl ?? this.environmentService.getOpenAiApiUrl();
     const openai = createOpenAI({
       apiKey: apiKey ?? 'missing',
       baseURL: baseURL || undefined,
     });
     return openai(
-      model ?? this.environmentService.getAiChatModel() ?? 'gpt-4o-mini',
+      model ??
+        provider?.completionModel ??
+        this.environmentService.getAiChatModel() ??
+        'gpt-4o-mini',
     ) as unknown as LanguageModel;
   }
 }

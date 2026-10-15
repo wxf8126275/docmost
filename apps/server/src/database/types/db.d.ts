@@ -30,6 +30,21 @@ export type JsonValue = JsonArray | JsonObject | JsonPrimitive;
 
 export type Timestamp = ColumnType<Date, Date | string, Date | string>;
 
+export interface AiProviders {
+  id: Generated<string>;
+  workspaceId: string;
+  name: string;
+  driver: string;
+  apiKeyEncrypted: string | null;
+  baseUrl: string | null;
+  completionModel: string;
+  embeddingModel: string | null;
+  isDefault: Generated<boolean>;
+  createdAt: Generated<Timestamp>;
+  updatedAt: Generated<Timestamp>;
+  deletedAt: Timestamp | null;
+}
+
 export interface ApiKeys {
   createdAt: Generated<Timestamp>;
   deletedAt: Timestamp | null;
@@ -735,6 +750,7 @@ export interface OauthTokens {
 export interface DB {
   aiChats: AiChats;
   aiChatMessages: AiChatMessages;
+  aiProviders: AiProviders;
   apiKeys: ApiKeys;
   attachments: Attachments;
   audit: Audit;

@@ -7,6 +7,7 @@ import { QueueJob, QueueName } from '../../../integrations/queue/constants/queue
 import { PageRepo } from '@docmost/db/repos/page/page.repo';
 import { PageEmbeddingRepo } from '@docmost/db/repos/page-embedding/page-embedding.repo';
 import { EmbeddingService } from '../services/embedding.service';
+import { AiProviderService } from '../services/ai-provider.service';
 import { WorkspaceService } from '../../workspace/services/workspace.service';
 import { EnvironmentService } from '../../../integrations/environment/environment.service';
 import { chunkText } from '../embedding/chunk.util';
@@ -31,6 +32,7 @@ export class AiQueueProcessor
     private readonly pageRepo: PageRepo,
     private readonly pageEmbeddingRepo: PageEmbeddingRepo,
     private readonly embeddingService: EmbeddingService,
+    private readonly aiProviderService: AiProviderService,
     private readonly workspaceService: WorkspaceService,
     private readonly environmentService: EnvironmentService,
   ) {
@@ -95,7 +97,7 @@ export class AiQueueProcessor
     pageIds: string[],
   ): Promise<void> {
     const pages = await this.pageRepo.findManyByIds(pageIds, { workspaceId });
-    await this.embedPages(pages);
+    await this.embedPages(workspaceId, pages);
   }
 
   private async generateForWorkspace(workspaceId: string): Promise<void> {
@@ -129,9 +131,16 @@ export class AiQueueProcessor
     return (rows as Array<{ id: string }>).map((r) => r.id);
   }
 
-  private async embedPages(pages: Array<Record<string, any>>): Promise<void> {
+  private async embedPages(
+    workspaceId: string,
+    pages: Array<Record<string, any>>,
+  ): Promise<void> {
+    const provider =
+      await this.aiProviderService.getActiveProviderConfig(workspaceId);
     const modelName =
-      this.environmentService.getAiEmbeddingModel() ?? 'text-embedding-3-small';
+      provider.embeddingModel ??
+      this.environmentService.getAiEmbeddingModel() ??
+      'text-embedding-3-small';
     const modelDimensions = this.environmentService.getAiEmbeddingDimension();
 
     for (const page of pages) {
@@ -145,6 +154,7 @@ export class AiQueueProcessor
       }
       const vectors = await this.embeddingService.embed(
         chunks.map((c) => c.text),
+        provider,
       );
       const rows = chunks.map((chunk, index) => ({
         pageId: page.id,

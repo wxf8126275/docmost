@@ -9,12 +9,14 @@ import { AiChatLlmClient } from './ai-chat-llm.client';
 import { AiChatStreamEvent, SendChatInput } from '../types/ai-chat.types';
 import { PaginationOptions } from '@docmost/db/pagination/pagination-options';
 import { Json } from '@docmost/db/types/db';
+import { AiProviderService } from '../../ai/services/ai-provider.service';
 
 @Injectable()
 export class AiChatService {
   constructor(
     private readonly aiChatRepo: AiChatRepo,
     private readonly llmClient: AiChatLlmClient,
+    private readonly aiProviderService: AiProviderService,
   ) {}
 
   async createChat(workspaceId: string, userId: string) {
@@ -98,7 +100,10 @@ export class AiChatService {
     }));
 
     let assistantContent = '';
-    for await (const chunk of this.llmClient.streamChat(messages)) {
+    const provider = await this.aiProviderService.getActiveProviderConfig(
+      input.workspaceId,
+    );
+    for await (const chunk of this.llmClient.streamChat(messages, undefined, provider)) {
       if (chunk.type === 'content') {
         assistantContent += chunk.text;
         emit({ type: 'content', text: chunk.text });

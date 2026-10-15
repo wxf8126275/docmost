@@ -50,6 +50,24 @@ describe('EmbeddingService', () => {
     ]);
   });
 
+  it('uses the provider override for apiKey, baseUrl and embedding model', async () => {
+    const provider = {
+      driver: 'openai-compatible',
+      apiKey: 'prov-key',
+      baseUrl: 'https://prov/v1',
+      completionModel: 'prov-completion',
+      embeddingModel: 'prov-embed',
+    } as any;
+
+    await service.embed(['hello world'], provider);
+
+    expect(createOpenAI).toHaveBeenCalledWith({
+      apiKey: 'prov-key',
+      baseURL: 'https://prov/v1',
+    });
+    expect(embedMany.mock.calls[0][0].values).toEqual(['hello world']);
+  });
+
   it('chunkText() returns a single chunk for short text', () => {
     const chunks = chunkText('short', { maxChunkChars: 2000 });
     expect(chunks).toHaveLength(1);
