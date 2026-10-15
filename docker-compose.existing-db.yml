@@ -1,0 +1,40 @@
+# docker-compose.existing-db.yml
+# 复用已有的 Postgres / Redis，只把 docmost 应用跑成容器。
+#
+# 用法:
+#   docker compose -f docker-compose.existing-db.yml up -d --build
+#
+# 说明:
+#   - 通过 extra_hosts 把 host.docker.internal 指向宿主机网关，
+#     从而让容器访问「宿主上已运行的」PG/Redis（对应把 .env 里的
+#     localhost / 127.0.0.1 换成 host.docker.internal）。
+#   - env_file: .env 复用你现有的 APP_SECRET / APP_URL 等；
+#     environment 段覆盖 DATABASE_URL / REDIS_URL 为宿主可达地址。
+#   - 若 3000 端口被占用，把 ports 左侧改成其它端口（如 3055:3000），
+#     并同步修改 APP_URL。
+#   - 若你的 PG/Redis 账号、密码或宿主端口与下方不同，请改这 2 行。
+#   - 若 .env 不存在，请把所需变量直接写进 environment 段。
+
+services:
+  docmost:
+    build: .
+    image: docmost:local
+    container_name: docmost-app
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    env_file:
+      - .env
+    environment:
+      # 覆盖 .env 里的 localhost 连接串 -> 走宿主网关
+      DATABASE_URL: postgresql://docmost:docmost123@host.docker.internal:15432/docmost
+      REDIS_URL: redis://host.docker.internal:16379
+      STORAGE_DRIVER: local
+      PORT: "3000"
+    ports:
+      - "8089:3000"
+    volumes:
+      - docmost_storage:/app/data/storage
+    restart: unless-stopped
+
+volumes:
+  docmost_storage:

@@ -32,6 +32,7 @@ WORKDIR /app
 # Copy apps
 COPY --from=builder /app/apps/server/dist /app/apps/server/dist
 COPY --from=builder /app/apps/client/dist /app/apps/client/dist
+COPY --from=builder /app/apps/client/package.json /app/apps/client/package.json
 COPY --from=builder /app/apps/server/package.json /app/apps/server/package.json
 
 # Copy packages
