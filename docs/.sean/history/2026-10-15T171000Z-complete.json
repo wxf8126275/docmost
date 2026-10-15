@@ -1,0 +1,48 @@
+{
+  "timestamp": "2026-10-15T17:10:00Z",
+  "action": "complete",
+  "feature": "ai-provider-config",
+  "before": {
+    "status": "IN_PROGRESS",
+    "tests_passed": 59,
+    "tasks_done": 5
+  },
+  "after": {
+    "status": "DONE",
+    "tests_passed": 59,
+    "tasks_done": 6,
+    "tasks_total": 6
+  },
+  "files_created": [
+    "apps/server/src/database/migrations/20261015T120000-add-ai-providers.ts",
+    "apps/server/src/core/ai/repos/ai-provider.repo.ts",
+    "apps/server/src/core/ai/repos/ai-provider.repo.spec.ts",
+    "apps/server/src/core/ai/dto/ai-provider.dto.ts",
+    "apps/server/src/core/ai/services/ai-provider.service.ts",
+    "apps/server/src/core/ai/services/ai-provider.service.spec.ts",
+    "apps/server/src/core/ai/ai-provider.controller.ts",
+    "apps/server/src/core/ai/ai-provider.controller.spec.ts",
+    "apps/client/src/ee/ai/types/ai-provider.types.ts",
+    "apps/client/src/ee/ai/services/ai-provider-service.ts",
+    "apps/client/src/ee/ai/services/ai-provider-service.spec.ts",
+    "apps/client/src/ee/ai/components/provider-settings.tsx",
+    "apps/client/src/ee/ai/components/provider-settings.spec.tsx",
+    "apps/client/src/ee/ai/pages/ai-settings-tab.spec.tsx",
+    "docs/plans/2026-10-15-ai-provider-config.md",
+    "docs/test-reports/2026-10-15-ai-provider-config/task-*.md"
+  ],
+  "files_modified": [
+    "apps/server/src/database/types/db.d.ts",
+    "apps/server/src/database/types/entity.types.ts",
+    "apps/server/src/core/ai/ai.module.ts",
+    "apps/server/src/core/ai/services/embedding.service.ts",
+    "apps/server/src/core/ai-chat/services/ai-chat-llm.client.ts",
+    "apps/server/src/core/ai-chat/services/ai-chat.service.ts",
+    "apps/server/src/core/ai-chat/ai-chat.module.ts",
+    "apps/server/src/core/ai/processors/ai-queue.processor.ts",
+    "apps/client/src/ee/features.ts",
+    "apps/client/src/App.tsx",
+    "apps/client/src/ee/ai/pages/ai-settings.tsx"
+  ],
+  "undone": false
+}

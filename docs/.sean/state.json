@@ -1,7 +1,37 @@
 {
   "version": 3,
-  "active": "docker-deploy",
+  "active": "ai-provider-config",
   "features": {
+    "ai-provider-config": {
+      "name": "ai-provider-config",
+      "requirement": "docs/requirements/2026-10-15-ai-provider-config.md",
+      "plan": "docs/plans/2026-10-15-ai-provider-config.md",
+      "status": "DONE",
+      "current_task": 6,
+      "tasks_total": 6,
+      "tasks": [
+        { "id": 1, "name": "db-schema-and-repo", "status": "done", "evidence": "exercised", "tests_total": 7, "tests_passed": 7, "fixes": 0, "complexity": "medium", "parallel_safe": false, "report": "docs/test-reports/2026-10-15-ai-provider-config/task-1-db-schema-and-repo.md" },
+        { "id": 2, "name": "server-service", "status": "done", "evidence": "exercised", "tests_total": 10, "tests_passed": 10, "fixes": 0, "complexity": "high", "parallel_safe": false, "report": "docs/test-reports/2026-10-15-ai-provider-config/task-2-server-service.md" },
+        { "id": 3, "name": "server-controller", "status": "done", "evidence": "exercised", "tests_total": 6, "tests_passed": 6, "fixes": 1, "complexity": "medium", "parallel_safe": false, "report": "docs/test-reports/2026-10-15-ai-provider-config/task-3-server-controller.md" },
+        { "id": 4, "name": "backend-wiring", "status": "done", "evidence": "exercised", "tests_total": 24, "tests_passed": 24, "fixes": 0, "complexity": "high", "parallel_safe": false, "report": "docs/test-reports/2026-10-15-ai-provider-config/task-4-backend-wiring.md" },
+        { "id": 5, "name": "client-routing-tab", "status": "done", "evidence": "exercised", "tests_total": 4, "tests_passed": 4, "fixes": 2, "complexity": "low", "parallel_safe": true, "report": "docs/test-reports/2026-10-15-ai-provider-config/task-5-client-routing-tab.md" },
+        { "id": 6, "name": "client-provider-ui", "status": "done", "evidence": "exercised", "tests_total": 8, "tests_passed": 8, "fixes": 2, "complexity": "high", "parallel_safe": false, "report": "docs/test-reports/2026-10-15-ai-provider-config/task-6-client-provider-ui.md" }
+      ],
+      "tests_passed": 59,
+      "tests_failed": 0,
+      "tests_fixed": 0,
+      "started_at": "2026-10-15T11:30:00Z",
+      "completed_at": "2026-10-15T17:10:00Z",
+      "blocked_reason": null,
+      "review": {
+        "task-understanding": { "score": 5, "evidence": "Requirement+plan captured scope (multi-provider CRUD, encrypted keys, env override) and confirmed via clarifying questions before coding." },
+        "controlled-execution": { "score": 5, "evidence": "TDD per task; RED then GREEN; 3/6 tasks needed small test-harness fixes (vi.hoisted, ResizeObserver/matchMedia, within(dialog)) but no implementation rework loops." },
+        "change-validation": { "score": 5, "evidence": "59 tests pass (server 61 across AI suites incl. regression; client 17). tsc clean on all changed files. Provider override + env-fallback covered." },
+        "reliable-delivery": { "score": 5, "evidence": "Feature branch docs + state + history snapshots; migration, encrypted storage, admin guard, and backend wiring all in place and test-backed." },
+        "learning-capture": { "score": 5, "evidence": "Requirement and plan files document the architecture decisions (encrypted secrets in dedicated table, getActiveProviderConfig as override point) for future agents." }
+      },
+      "findings": []
+    },
     "docker-deploy": {
       "name": "docker-deploy",
       "requirement": "docs/requirements/2026-10-15-docker-deploy.md",

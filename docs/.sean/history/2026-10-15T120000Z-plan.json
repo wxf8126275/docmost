@@ -1,0 +1,25 @@
+{
+  "timestamp": "2026-10-15T12:00:00Z",
+  "action": "plan",
+  "feature": "ai-provider-config",
+  "before": {
+    "status": "DRAFT",
+    "tasks_total": 0,
+    "tasks": []
+  },
+  "after": {
+    "status": "PLANNED",
+    "tasks_total": 6,
+    "tasks": [
+      { "id": 1, "name": "db-schema-and-repo", "complexity": "medium", "parallel_safe": false, "depends_on": [] },
+      { "id": 2, "name": "server-service", "complexity": "high", "parallel_safe": false, "depends_on": [1] },
+      { "id": 3, "name": "server-controller", "complexity": "medium", "parallel_safe": false, "depends_on": [2] },
+      { "id": 4, "name": "backend-wiring", "complexity": "high", "parallel_safe": false, "depends_on": [2] },
+      { "id": 5, "name": "client-routing-tab", "complexity": "low", "parallel_safe": true, "depends_on": [] },
+      { "id": 6, "name": "client-provider-ui", "complexity": "high", "parallel_safe": false, "depends_on": [3, 5] }
+    ]
+  },
+  "files_created": ["docs/plans/2026-10-15-ai-provider-config.md"],
+  "files_modified": ["docs/.sean/state.json"],
+  "undone": false
+}
