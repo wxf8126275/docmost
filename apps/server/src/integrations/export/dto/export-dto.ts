@@ -47,4 +47,8 @@ export class ExportDocxPageDto {
   @IsString()
   @IsNotEmpty()
   pageId: string;
+
+  @IsOptional()
+  @IsBoolean()
+  bundleAttachments?: boolean;
 }

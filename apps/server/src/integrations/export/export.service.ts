@@ -9,7 +9,7 @@ import { ExportFormat } from './dto/export-dto';
 import { Page } from '@docmost/db/types/entity.types';
 import { InjectKysely } from 'nestjs-kysely';
 import { KyselyDB } from '@docmost/db/types/kysely.types';
-import * as JSZip from 'jszip';
+import JSZip = require('jszip');
 import { StorageService } from '../storage/storage.service';
 import {
   buildTree,
@@ -38,6 +38,7 @@ import {
   getAttachmentIds,
   getProsemirrorContent,
 } from '../../common/helpers/prosemirror/utils';
+import { sanitizeFileName } from '../../common/helpers';
 import {
   htmlToMarkdown,
   pageNodeToDocxBuffer,
@@ -132,6 +133,20 @@ export class ExportService {
   }
 
   async exportPageToDocx(page: Page, userId?: string): Promise<Buffer> {
+    return this.generateDocx(page, userId);
+  }
+
+  /**
+   * Generate the .docx buffer for a page. When `attachmentNames` is provided
+   * (zip-bundle mode), each resolved attachment's hyperlink URL is rewritten to
+   * the relative `attachments/<safeName>` path so it resolves to the file
+   * bundled alongside the document.
+   */
+  private async generateDocx(
+    page: Page,
+    userId: string | undefined,
+    attachmentSrcNames?: Map<string, string>,
+  ): Promise<Buffer> {
     let prosemirrorJson = getProsemirrorContent(page.content);
 
     const baseUrl = await this.getWorkspaceBaseUrl(page.workspaceId);
@@ -161,14 +176,109 @@ export class ExportService {
       return buffer;
     };
 
-    // Resolves any attachment (image or file) referenced by a media node so the
-    // docx serializer can embed it instead of printing only its name.
     const getAttachment: DocxAttachmentResolver = async (src) => {
       const data = await this.resolveDocxAttachment(src, page);
-      return data ?? undefined;
+      if (!data) {
+        return undefined;
+      }
+      if (attachmentSrcNames) {
+        const safe = attachmentSrcNames.get(src);
+        if (safe) {
+          data.url = `attachments/${safe}`;
+        }
+      }
+      return data;
     };
 
     return pageNodeToDocxBuffer(node, getImageBuffer, getAttachment);
+  }
+
+  /**
+   * Build a self-contained .zip for a Word export: the generated .docx plus an
+   * `attachments/` folder holding every referenced non-image attachment, so the
+   * export is fully offline.
+   */
+  async exportPageToDocxZip(page: Page, userId?: string): Promise<Buffer> {
+    const prosemirrorJson = getProsemirrorContent(page.content);
+
+    const refs = await this.collectBundleAttachments(prosemirrorJson, page);
+    const attachmentSrcNames = new Map<string, string>();
+    const usedNames = new Map<string, number>();
+    for (const ref of refs) {
+      attachmentSrcNames.set(
+        ref.src,
+        this.safeAttachmentName(ref.name, usedNames),
+      );
+    }
+
+    const docxBuffer = await this.generateDocx(page, userId, attachmentSrcNames);
+
+    const zip = new JSZip();
+    zip.file('document.docx', docxBuffer);
+    for (const ref of refs) {
+      const safe = attachmentSrcNames.get(ref.src);
+      if (safe) {
+        zip.file(`attachments/${safe}`, Buffer.from(ref.data));
+      }
+    }
+
+    return zip.generateAsync({ type: 'nodebuffer', compression: 'DEFLATE' });
+  }
+
+  /**
+   * Collect every referenced non-image attachment (pdf/doc/zip/video/audio)
+   * that should be bundled into the export .zip. Image attachments are skipped
+   * because they are already embedded directly inside the .docx.
+   */
+  private async collectBundleAttachments(
+    prosemirrorJson: any,
+    page: Page,
+  ): Promise<{ name: string; data: Uint8Array; src: string }[]> {
+    const bundleNodeTypes = ['attachment', 'pdf', 'video', 'audio'];
+    const nodes: any[] = [];
+    const walk = (node: any) => {
+      if (node?.type && bundleNodeTypes.includes(node.type)) {
+        nodes.push(node);
+      }
+      if (Array.isArray(node?.content)) {
+        node.content.forEach(walk);
+      }
+    };
+    walk(prosemirrorJson);
+
+    const result: { name: string; data: Uint8Array; src: string }[] = [];
+    for (const node of nodes) {
+      const src: string | undefined = node?.attrs?.src ?? node?.attrs?.url;
+      if (!src) {
+        continue;
+      }
+      const resolved = await this.resolveDocxAttachment(src, page);
+      if (!resolved) {
+        continue;
+      }
+      // Images are embedded in the document; only bundle non-image files.
+      if (resolved.mimeType?.startsWith('image/')) {
+        continue;
+      }
+      result.push({ name: resolved.name, data: resolved.data, src });
+    }
+    return result;
+  }
+
+  /** Produce a unique, filesystem-safe name within the attachments/ folder. */
+  private safeAttachmentName(raw: string, used: Map<string, number>): string {
+    const base =
+      sanitizeFileName(raw, { preserveSpaces: true }) || 'attachment';
+    const seen = used.get(base) ?? 0;
+    if (seen > 0) {
+      const dot = base.lastIndexOf('.');
+      const stem = dot > 0 ? base.slice(0, dot) : base;
+      const ext = dot > 0 ? base.slice(dot) : '';
+      used.set(base, seen + 1);
+      return `${stem} (${seen})${ext}`;
+    }
+    used.set(base, 1);
+    return base;
   }
 
   private async resolveDocxImage(

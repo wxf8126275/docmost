@@ -346,4 +346,138 @@ describe('ExportService.exportPageToDocx', () => {
     const result = await (service as any).exportPageToDocx(page, 'user-1');
     expect(result).toBe(docxBuffer);
   });
+
+  const loadZip = async (buf: Buffer) => {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const JSZip = require('jszip');
+    return new JSZip().loadAsync(buf);
+  };
+
+  it('bundles a referenced pdf into the zip and points the docx link at the relative path', async () => {
+    const docxBuffer = Buffer.from('PK docx bytes');
+    editorExt.pageNodeToDocxBuffer.mockImplementation(
+      async (node: any, _img: any, getAttachment: any) => {
+        // A heading may be prepended at index 0; locate the attachment node.
+        let attNode = node.child(0);
+        if (attNode?.type?.name !== 'attachment') {
+          attNode = node.child(1);
+        }
+        const resolved = await getAttachment(attNode.attrs.src);
+        // In zip-bundle mode the attachment URL must be the relative path.
+        expect(resolved.url).toBe('attachments/doc.pdf');
+        return docxBuffer;
+      },
+    );
+    collaborationUtil.jsonToNode.mockImplementation((json: any) =>
+      fakeNode(json),
+    );
+    dbRow = {
+      filePath: 'attachments/doc.pdf',
+      fileName: 'doc.pdf',
+      mimeType: 'application/pdf',
+    };
+    storageService.read.mockResolvedValue(Buffer.from([7, 7, 7]));
+
+    const service = makeService();
+    const page: any = {
+      id: 'page-zip-1',
+      title: 'Zip Page',
+      spaceId: 'space-1',
+      workspaceId: 'ws-1',
+      content: {
+        type: 'doc',
+        content: [
+          {
+            type: 'attachment',
+            attrs: { src: '/files/att-pdf/doc.pdf', name: 'doc.pdf' },
+          },
+        ],
+      },
+    };
+
+    const zipBuffer = await (service as any).exportPageToDocxZip(page, 'user-1');
+    expect(Buffer.isBuffer(zipBuffer)).toBe(true);
+
+    const zip = await loadZip(zipBuffer);
+    expect(zip.files['document.docx']).toBeTruthy();
+    expect(zip.files['attachments/doc.pdf']).toBeTruthy();
+    const bytes = await zip.files['attachments/doc.pdf'].async('nodebuffer');
+    expect(Buffer.from(bytes)).toEqual(Buffer.from([7, 7, 7]));
+  });
+
+  it('does not re-bundle image attachments (they are embedded in the docx)', async () => {
+    const docxBuffer = Buffer.from('PK docx');
+    editorExt.pageNodeToDocxBuffer.mockResolvedValue(docxBuffer);
+    collaborationUtil.jsonToNode.mockImplementation((json: any) =>
+      fakeNode(json),
+    );
+    dbRow = {
+      filePath: 'attachments/photo.png',
+      fileName: 'photo.png',
+      mimeType: 'image/png',
+    };
+    storageService.read.mockResolvedValue(Buffer.from([1, 2]));
+
+    const service = makeService();
+    const page: any = {
+      id: 'page-zip-2',
+      title: 'Img',
+      spaceId: 'space-1',
+      workspaceId: 'ws-1',
+      content: {
+        type: 'doc',
+        content: [
+          { type: 'image', attrs: { src: '/files/att-img/photo.png' } },
+        ],
+      },
+    };
+
+    const zipBuffer = await (service as any).exportPageToDocxZip(page, 'user-1');
+    const zip = await loadZip(zipBuffer);
+    expect(zip.files['document.docx']).toBeTruthy();
+    // Image is embedded inside document.docx, not duplicated in attachments/.
+    expect(zip.files['attachments/photo.png']).toBeFalsy();
+  });
+
+  it('dedupes attachment file names that collide in the zip', async () => {
+    const docxBuffer = Buffer.from('PK docx');
+    editorExt.pageNodeToDocxBuffer.mockResolvedValue(docxBuffer);
+    collaborationUtil.jsonToNode.mockImplementation((json: any) =>
+      fakeNode(json),
+    );
+    dbRow = {
+      filePath: 'attachments/report.pdf',
+      fileName: 'report.pdf',
+      mimeType: 'application/pdf',
+    };
+    storageService.read.mockResolvedValue(Buffer.from([3, 3]));
+
+    const service = makeService();
+    const page: any = {
+      id: 'page-zip-3',
+      title: '',
+      spaceId: 'space-1',
+      workspaceId: 'ws-1',
+      content: {
+        type: 'doc',
+        content: [
+          {
+            type: 'attachment',
+            attrs: { src: '/files/a1/report.pdf', name: 'report.pdf' },
+          },
+          {
+            type: 'attachment',
+            attrs: { src: '/files/a2/report.pdf', name: 'report.pdf' },
+          },
+        ],
+      },
+    };
+
+    const zipBuffer = await (service as any).exportPageToDocxZip(page, 'user-1');
+    const zip = await loadZip(zipBuffer);
+    expect(zip.files['attachments/report.pdf']).toBeTruthy();
+    expect(zip.files['attachments/report (1).pdf']).toBeTruthy();
+  });
 });
+
+

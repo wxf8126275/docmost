@@ -133,6 +133,28 @@ export class ExportController {
 
     await this.pageAccessService.validateCanView(page, user);
 
+    // By default bundle every referenced attachment into a self-contained
+    // .zip (document.docx + attachments/). Opt out with bundleAttachments:false.
+    if (dto.bundleAttachments !== false) {
+      const zipBuffer = await this.exportService.exportPageToDocxZip(
+        page,
+        user.id,
+      );
+
+      const zipName =
+        sanitizeFileName(page.title || 'untitled', { preserveSpaces: true }) +
+        '.zip';
+
+      res.headers({
+        'Content-Type': 'application/zip',
+        'Content-Disposition':
+          'attachment; filename="' + encodeURIComponent(zipName) + '"',
+      });
+
+      res.send(zipBuffer);
+      return;
+    }
+
     const buffer = await this.exportService.exportPageToDocx(page, user.id);
 
     const fileName =
