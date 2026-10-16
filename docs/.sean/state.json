@@ -1,7 +1,30 @@
 {
   "version": 3,
-  "active": "ai-provider-config",
+  "active": "space-direct-upload",
   "features": {
+    "space-direct-upload": {
+      "name": "space-direct-upload",
+      "requirement": "docs/requirements/2026-10-16-space-direct-upload.md",
+      "plan": null,
+      "status": "DRAFT",
+      "current_task": 0,
+      "tasks_total": 0,
+      "tasks": [],
+      "tests_passed": 0,
+      "tests_failed": 0,
+      "tests_fixed": 0,
+      "started_at": "2026-10-16T08:00:00Z",
+      "completed_at": null,
+      "blocked_reason": null,
+      "review": {
+        "task-understanding": { "score": 0, "evidence": "unobserved" },
+        "controlled-execution": { "score": 0, "evidence": "unobserved" },
+        "change-validation": { "score": 0, "evidence": "unobserved" },
+        "reliable-delivery": { "score": 0, "evidence": "unobserved" },
+        "learning-capture": { "score": 0, "evidence": "unobserved" }
+      },
+      "findings": []
+    },
     "ai-provider-config": {
       "name": "ai-provider-config",
       "requirement": "docs/requirements/2026-10-15-ai-provider-config.md",

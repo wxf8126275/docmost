@@ -14,6 +14,8 @@
 #     并同步修改 APP_URL。
 #   - 若你的 PG/Redis 账号、密码或宿主端口与下方不同，请改这 2 行。
 #   - 若 .env 不存在，请把所需变量直接写进 environment 段。
+#   - 存储已切到本地独立 MinIO（../minio）：请先在 MinIO 控制台建好 bucket「docmost」
+#     （http://localhost:9001 → Buckets → Create Bucket），否则应用启动后上传会报 NoSuchBucket。
 
 services:
   docmost:
@@ -28,7 +30,18 @@ services:
       # 覆盖 .env 里的 localhost 连接串 -> 走宿主网关
       DATABASE_URL: postgresql://docmost:docmost123@host.docker.internal:15432/docmost
       REDIS_URL: redis://host.docker.internal:16379
-      STORAGE_DRIVER: local
+      # --- MinIO / S3 存储（本地独立 MinIO，见 ../minio/docker-compose.yml）---
+      # 服务端经 host.docker.internal 访问宿主机上发布的 MinIO 9000 端口；
+      # 浏览器侧若无法解析 host.docker.internal，在宿主机 /etc/hosts 加:
+      #   127.0.0.1 host.docker.internal
+      STORAGE_DRIVER: s3
+      AWS_S3_ACCESS_KEY_ID: wuxiufeng
+      AWS_S3_SECRET_ACCESS_KEY: Sjht8126275
+      AWS_S3_REGION: us-east-1
+      AWS_S3_BUCKET: docmost
+      AWS_S3_ENDPOINT: http://host.docker.internal:9000
+      AWS_S3_FORCE_PATH_STYLE: "true"
+      AWS_S3_URL: http://host.docker.internal:9000
       PORT: "3000"
     ports:
       - "8089:3000"

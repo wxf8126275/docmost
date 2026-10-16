@@ -1,0 +1,16 @@
+{
+  "timestamp": "2026-10-16T08:00:00Z",
+  "action": "start",
+  "feature": "space-direct-upload",
+  "before": {
+    "active": "ai-provider-config",
+    "features_keys": ["ai-provider-config", "docker-deploy", "word-export-zip-bundle", "base-backend", "template", "personal-space", "recycle-bin", "attachment-upload-limit", "page-export", "word-export-attachments", "word-export-error"]
+  },
+  "after": {
+    "active": "space-direct-upload",
+    "features_keys": ["space-direct-upload", "ai-provider-config", "docker-deploy", "word-export-zip-bundle", "base-backend", "template", "personal-space", "recycle-bin", "attachment-upload-limit", "page-export", "word-export-attachments", "word-export-error"]
+  },
+  "files_created": ["docs/requirements/2026-10-16-space-direct-upload.md"],
+  "files_modified": ["docs/.sean/state.json"],
+  "undone": false
+}
