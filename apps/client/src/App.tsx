@@ -84,6 +84,7 @@ const AiChat = lazy(() => import("@/ee/ai-chat/pages/ai-chat.tsx"));
 const VerifyEmail = lazy(() => import("@/ee/pages/verify-email.tsx"));
 const LabelPage = lazy(() => import("@/pages/label/label-page"));
 const OAuthConsent = lazy(() => import("@/ee/oauth/pages/oauth-consent.tsx"));
+const DrivePage = lazy(() => import("@/features/drive/drive-page.tsx"));
 
 export default function App() {
   const { t } = useTranslation();
@@ -143,6 +144,7 @@ export default function App() {
 
         <Route element={<Layout />}>
           <Route path={"/home"} element={<Home />} />
+          <Route path={"/drive"} element={<DrivePage />} />
           <Route path={"/ai"} element={<AiChat />} />
           <Route path={"/ai/chat/:chatId"} element={<AiChat />} />
           <Route path={"/spaces"} element={<SpacesPage />} />

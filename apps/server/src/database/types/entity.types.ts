@@ -4,6 +4,10 @@ import {
   AiChatMessages,
   AiProviders,
   Attachments,
+  DriveFolders,
+  DriveFiles,
+  DriveShares,
+  DriveFileVersions,
   BaseProperties,
   BaseRows,
   BaseViews,
@@ -123,6 +127,26 @@ export type UpdatableComment = Updateable<Omit<Comments, 'id'>>;
 export type Attachment = Selectable<Attachments>;
 export type InsertableAttachment = Insertable<Attachments>;
 export type UpdatableAttachment = Updateable<Omit<Attachments, 'id'>>;
+
+// Drive Folder
+export type DriveFolder = Selectable<DriveFolders>;
+export type InsertableDriveFolder = Insertable<DriveFolders>;
+export type UpdatableDriveFolder = Updateable<Omit<DriveFolders, 'id'>>;
+
+// Drive File
+export type DriveFile = Selectable<DriveFiles>;
+export type InsertableDriveFile = Insertable<DriveFiles>;
+export type UpdatableDriveFile = Updateable<Omit<DriveFiles, 'id'>>;
+
+// Drive Share
+export type DriveShare = Selectable<DriveShares>;
+export type InsertableDriveShare = Insertable<DriveShares>;
+export type UpdatableDriveShare = Updateable<Omit<DriveShares, 'id'>>;
+
+// Drive File Version
+export type DriveFileVersion = Selectable<DriveFileVersions>;
+export type InsertableDriveFileVersion = Insertable<DriveFileVersions>;
+export type UpdatableDriveFileVersion = Updateable<Omit<DriveFileVersions, 'id'>>;
 
 // User Token
 export type UserToken = Selectable<UserTokens>;

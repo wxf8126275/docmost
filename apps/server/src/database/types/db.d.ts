@@ -747,6 +747,64 @@ export interface OauthTokens {
   workspaceId: string;
 }
 
+export interface DriveFolders {
+  id: Generated<string>;
+  workspaceId: string;
+  driveType: string;
+  ownerId: string | null;
+  parentId: string | null;
+  name: string;
+  creatorId: string;
+  createdAt: Generated<Timestamp>;
+  updatedAt: Generated<Timestamp>;
+  deletedAt: Timestamp | null;
+}
+
+export interface DriveFiles {
+  id: Generated<string>;
+  workspaceId: string;
+  driveType: string;
+  ownerId: string | null;
+  folderId: string | null;
+  fileName: string;
+  filePath: string;
+  fileSize: Int8 | null;
+  fileExt: string;
+  mimeType: string | null;
+  type: string | null;
+  creatorId: string;
+  createdAt: Generated<Timestamp>;
+  updatedAt: Generated<Timestamp>;
+  deletedAt: Timestamp | null;
+}
+
+export interface DriveShares {
+  id: Generated<string>;
+  workspaceId: string;
+  fileId: string;
+  creatorId: string | null;
+  token: string;
+  permission: string;
+  expiresAt: Timestamp | null;
+  createdAt: Generated<Timestamp>;
+  updatedAt: Generated<Timestamp>;
+  deletedAt: Timestamp | null;
+}
+
+export interface DriveFileVersions {
+  id: Generated<string>;
+  workspaceId: string;
+  fileId: string;
+  versionNumber: number;
+  fileName: string;
+  filePath: string;
+  fileSize: Int8 | null;
+  fileExt: string | null;
+  mimeType: string | null;
+  creatorId: string | null;
+  createdAt: Generated<Timestamp>;
+}
+
 export interface DB {
   aiChats: AiChats;
   aiChatMessages: AiChatMessages;
@@ -754,6 +812,10 @@ export interface DB {
   apiKeys: ApiKeys;
   attachments: Attachments;
   audit: Audit;
+  driveFolders: DriveFolders;
+  driveFiles: DriveFiles;
+  driveShares: DriveShares;
+  driveFileVersions: DriveFileVersions;
   authAccounts: AuthAccounts;
   authProviders: AuthProviders;
   backlinks: Backlinks;

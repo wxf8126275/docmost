@@ -1,0 +1,83 @@
+import { Kysely, sql } from 'kysely';
+
+/**
+ * Cloud Drive schema (Phase 1).
+ *
+ * Two tables back the drive feature:
+ *  - `drive_folders`: hierarchy via self-referencing `parent_id` (null = root).
+ *    A root is identified by `parent_id IS NULL` together with the
+ *    `(drive_type, owner_id)` pair. `drive_type` is 'personal' (owner_id set)
+ *    or 'shared' (owner_id null, workspace-scoped).
+ *  - `drive_files`: files live under a folder (`folder_id`, null = root of the
+ *    drive) and reuse the existing S3 storage backend via `file_path`.
+ *
+ * Kept separate from `attachments` so page/AI-chat attachment semantics are not
+ * polluted by drive concerns.
+ */
+export async function up(db: Kysely<any>): Promise<void> {
+  await db.schema
+    .createTable('drive_folders')
+    .addColumn('id', 'uuid', (col) =>
+      col.primaryKey().defaultTo(sql`gen_uuid_v7()`),
+    )
+    .addColumn('workspace_id', 'uuid', (col) =>
+      col.references('workspaces.id').onDelete('cascade').notNull(),
+    )
+    .addColumn('drive_type', 'varchar', (col) => col.notNull())
+    .addColumn('owner_id', 'uuid', (col) =>
+      col.references('users.id').onDelete('cascade'),
+    )
+    .addColumn('parent_id', 'uuid', (col) =>
+      col.references('drive_folders.id').onDelete('cascade'),
+    )
+    .addColumn('name', 'varchar', (col) => col.notNull())
+    .addColumn('creator_id', 'uuid', (col) =>
+      col.references('users.id').notNull(),
+    )
+    .addColumn('created_at', 'timestamptz', (col) =>
+      col.notNull().defaultTo(sql`now()`),
+    )
+    .addColumn('updated_at', 'timestamptz', (col) =>
+      col.notNull().defaultTo(sql`now()`),
+    )
+    .addColumn('deleted_at', 'timestamptz', (col) => col)
+    .execute();
+
+  await db.schema
+    .createTable('drive_files')
+    .addColumn('id', 'uuid', (col) =>
+      col.primaryKey().defaultTo(sql`gen_uuid_v7()`),
+    )
+    .addColumn('workspace_id', 'uuid', (col) =>
+      col.references('workspaces.id').onDelete('cascade').notNull(),
+    )
+    .addColumn('drive_type', 'varchar', (col) => col.notNull())
+    .addColumn('owner_id', 'uuid', (col) =>
+      col.references('users.id').onDelete('cascade'),
+    )
+    .addColumn('folder_id', 'uuid', (col) =>
+      col.references('drive_folders.id').onDelete('cascade'),
+    )
+    .addColumn('file_name', 'varchar', (col) => col.notNull())
+    .addColumn('file_path', 'varchar', (col) => col.notNull())
+    .addColumn('file_size', 'int8', (col) => col)
+    .addColumn('file_ext', 'varchar', (col) => col.notNull())
+    .addColumn('mime_type', 'varchar', (col) => col)
+    .addColumn('type', 'varchar', (col) => col)
+    .addColumn('creator_id', 'uuid', (col) =>
+      col.references('users.id').notNull(),
+    )
+    .addColumn('created_at', 'timestamptz', (col) =>
+      col.notNull().defaultTo(sql`now()`),
+    )
+    .addColumn('updated_at', 'timestamptz', (col) =>
+      col.notNull().defaultTo(sql`now()`),
+    )
+    .addColumn('deleted_at', 'timestamptz', (col) => col)
+    .execute();
+}
+
+export async function down(db: Kysely<any>): Promise<void> {
+  await db.schema.dropTable('drive_files').execute();
+  await db.schema.dropTable('drive_folders').execute();
+}

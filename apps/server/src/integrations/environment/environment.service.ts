@@ -96,6 +96,18 @@ export class EnvironmentService {
     return parsed && parsed > 0 ? val : '200mb';
   }
 
+  /**
+   * Cloud Drive capacity ceiling in bytes. Parsed with the `bytes` helper so
+   * values like "10gb" are accepted. Returns null when unset, which means the
+   * drive is unbounded.
+   */
+  getDriveStorageQuota(): number | null {
+    const raw = this.configService.get<string>('DRIVE_STORAGE_QUOTA');
+    if (!raw) return null;
+    const parsed = bytes(raw);
+    return parsed && parsed > 0 ? parsed : null;
+  }
+
   getAwsS3AccessKeyId(): string {
     return this.configService.get<string>('AWS_S3_ACCESS_KEY_ID');
   }

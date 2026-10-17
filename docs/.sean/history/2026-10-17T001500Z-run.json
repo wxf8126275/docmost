@@ -1,0 +1,24 @@
+{
+  "timestamp": "2026-10-17T00:15:00Z",
+  "action": "task",
+  "feature": "cloud-drive",
+  "note": "Task 8 (drive-share-links) completed: drive_shares table + migration, share repo/service (token, read/download permission, expiry), controller endpoints (create, public resolve, public download). 37/37 server drive tests pass; server tsc clean.",
+  "before": { "current_task": 7, "tasks": { "8": "in_progress" } },
+  "after": { "current_task": 8, "tasks": { "8": "done" } },
+  "files_created": [
+    "apps/server/src/database/migrations/20261017T000000-drive-shares.ts",
+    "apps/server/src/database/repos/drive/drive-share.repo.ts",
+    "apps/server/src/core/drive/services/drive-share.service.ts",
+    "apps/server/src/core/drive/services/drive-share.service.spec.ts"
+  ],
+  "files_modified": [
+    "apps/server/src/database/types/db.d.ts",
+    "apps/server/src/database/types/entity.types.ts",
+    "apps/server/src/core/drive/dto/drive.dto.ts",
+    "apps/server/src/core/drive/drive.controller.ts",
+    "apps/server/src/core/drive/drive.module.ts",
+    "apps/server/src/core/drive/drive.controller.spec.ts",
+    "docs/.sean/state.json"
+  ],
+  "undone": false
+}

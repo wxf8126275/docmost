@@ -1,0 +1,46 @@
+import { Kysely, sql } from 'kysely';
+
+/**
+ * Cloud Drive file versioning (Phase 2).
+ *
+ * Every time an existing file is overwritten (a new version is uploaded), the
+ * *previous* state (storage path + metadata) is snapshotted here before the
+ * live `drive_files` row is updated. `version_number` is a per-file 1-based
+ * sequence. Versions are immutable history, so there is no `deleted_at`.
+ */
+export async function up(db: Kysely<any>): Promise<void> {
+  await db.schema
+    .createTable('drive_file_versions')
+    .addColumn('id', 'uuid', (col) =>
+      col.primaryKey().defaultTo(sql`gen_uuid_v7()`),
+    )
+    .addColumn('workspace_id', 'uuid', (col) =>
+      col.references('workspaces.id').onDelete('cascade').notNull(),
+    )
+    .addColumn('file_id', 'uuid', (col) =>
+      col.references('drive_files.id').onDelete('cascade').notNull(),
+    )
+    .addColumn('version_number', 'integer', (col) => col.notNull())
+    .addColumn('file_name', 'varchar', (col) => col.notNull())
+    .addColumn('file_path', 'varchar', (col) => col.notNull())
+    .addColumn('file_size', 'int8', (col) => col)
+    .addColumn('file_ext', 'varchar', (col) => col)
+    .addColumn('mime_type', 'varchar', (col) => col)
+    .addColumn('creator_id', 'uuid', (col) =>
+      col.references('users.id').onDelete('set null'),
+    )
+    .addColumn('created_at', 'timestamptz', (col) =>
+      col.notNull().defaultTo(sql`now()`),
+    )
+    .execute();
+
+  await db.schema
+    .createIndex('drive_file_versions_file_id_idx')
+    .on('drive_file_versions')
+    .column('file_id')
+    .execute();
+}
+
+export async function down(db: Kysely<any>): Promise<void> {
+  await db.schema.dropTable('drive_file_versions').execute();
+}
