@@ -1,4 +1,5 @@
 import { DriveController } from './drive.controller';
+import { DriveModule } from './drive.module';
 import { DriveService } from './services/drive.service';
 import { DriveStorageService } from './services/drive-storage.service';
 import { DriveShareService } from './services/drive-share.service';
@@ -248,5 +249,13 @@ describe('DriveController', () => {
       expect(driveStorageService.readStream).toHaveBeenCalledWith('p');
       expect(res.send).toHaveBeenCalled();
     });
+  });
+});
+
+describe('DriveModule wiring', () => {
+  it('provides DriveAbilityFactory so DriveController resolves without UnknownDependenciesException', () => {
+    const providers = (Reflect.getMetadata('providers', DriveModule) ??
+      []) as unknown[];
+    expect(providers).toContain(DriveAbilityFactory);
   });
 });

@@ -37,11 +37,14 @@
         "learning-capture": { "score": 72, "evidence": "present" }
       },
       "findings": [
-        { "id": "F001", "dimension": "reliable-delivery", "severity": "medium", "evidence": "No handoff.md / artifact catalog / conventional commit; not run through CI", "impact": "Change not yet accepted at the delivery boundary (human/CI acceptance pending)", "repair": "sean handoff cloud-drive; generate docs/artifacts/2026-10-16-cloud-drive.md; create commit; run CI", "verifier": "docs/test-reports/2026-10-16-cloud-drive/handoff.md exists; git log", "status": "open" },
+        { "id": "F001", "dimension": "reliable-delivery", "severity": "medium", "evidence": "handoff.md + conventional commit created (3d51d8b1); artifact catalog still missing; CI not run", "impact": "Change partially accepted at delivery boundary; live-DB e2e / CI not yet verified", "repair": "sean artifact cloud-drive list -> generate docs/artifacts/2026-10-16-cloud-drive.md; run CI / pnpm --filter server test:e2e", "verifier": "catalog exists; CI green; git log", "status": "partial" },
         { "id": "F002", "dimension": "controlled-execution", "severity": "medium", "evidence": "drive.controller.ts is 556 lines (>400 convention)", "impact": "Single file bundles many endpoint groups; harder to navigate/review", "repair": "Split endpoint groups (upload/download/share/version) into partials or sub-controllers", "verifier": "wc -l apps/server/src/core/drive/drive.controller.ts", "status": "open" },
         { "id": "F003", "dimension": "conventions", "severity": "low", "evidence": "any types in drive.controller.ts (req/file/err)", "impact": "Loses type safety on request/stream handling", "repair": "Type the Fastify request or use @Res()-typed wrappers", "verifier": "grep -n ' any' apps/server/src/core/drive/drive.controller.ts", "status": "open" },
-        { "id": "F004", "dimension": "sean-process", "severity": "low", "evidence": "Drive migrations lack the mandated reverse-reference header; artifact catalog missing", "impact": "Artifact provenance not traceable from the file alone", "repair": "Add header to the 3 migrations; generate catalog", "verifier": "header grep + catalog exists", "status": "open" },
+        { "id": "F004", "dimension": "sean-process", "severity": "low", "evidence": "Reverse-reference headers added to 3 migrations; catalog docs/artifacts/2026-10-16-cloud-drive.md generated", "impact": "Artifact provenance now traceable from each file", "repair": "Add header to the 3 migrations; generate catalog", "verifier": "header grep + catalog exists", "status": "verified" },
         { "id": "F005", "dimension": "conventions", "severity": "low", "evidence": "Bare catch {} in upload-dropzone.tsx swallows error", "impact": "Upload failures are not logged for diagnosis", "repair": "Log the error before marking item error", "verifier": "code read", "status": "open" }
+      ],
+      "bugs": [
+        { "id": "B001", "symptom": "Nest UnknownDependenciesException: DriveController cannot resolve dependency DriveAbilityFactory at index [2] in DriveModule", "classification": "implementation", "found_by": "production", "status": "fixed", "regression_test": "apps/server/src/core/drive/drive.controller.spec.ts (describe: DriveModule wiring)" }
       ]
     },
     "ai-provider-config": {
