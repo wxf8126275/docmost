@@ -30,13 +30,16 @@ import classes from "./space-sidebar.module.css";
 import React from "react";
 import { useAtom } from "jotai";
 import { useTreeMutation } from "@/features/page/tree/hooks/use-tree-mutation.ts";
-import { Link, useLocation, useParams } from "react-router-dom";
+import { Link, useLocation, useParams, useSearchParams } from "react-router-dom";
 import clsx from "clsx";
 import { useDisclosure } from "@mantine/hooks";
 import SpaceSettingsModal from "@/features/space/components/settings-modal.tsx";
 import { useGetSpaceBySlugQuery } from "@/features/space/queries/space-query.ts";
 import { getSpaceUrl, isBetaPublicSpaces } from "@/lib/config.ts";
 import SpaceTree from "@/features/page/tree/components/space-tree.tsx";
+import DriveCategoryNav from "@/features/drive/components/drive-category-nav";
+import { parseDriveCategory } from "@/features/drive/drive-category";
+import { DriveCategory } from "@/features/drive/types/drive.types";
 import { useSpaceAbility } from "@/features/space/permissions/use-space-ability.ts";
 import {
   SpaceCaslAction,
@@ -76,6 +79,7 @@ export function SpaceSidebar() {
   const spaceRules = space?.membership?.permissions;
   const spaceAbility = useSpaceAbility(spaceRules);
   const { handleCreate } = useTreeMutation(space?.id ?? "");
+  const [searchParams, setSearchParams] = useSearchParams();
 
   if (!space) {
     return <></>;
@@ -83,6 +87,20 @@ export function SpaceSidebar() {
 
   function handleCreatePage() {
     handleCreate(null);
+  }
+
+  // Drive spaces have no pages: the sidebar shows the drive category nav in
+  // place of the page tree, and page-specific actions are hidden.
+  const isDriveSpace = space.type === "drive";
+  const canManagePages =
+    spaceAbility.can(SpaceCaslAction.Manage, SpaceCaslSubject.Page) &&
+    !isDriveSpace;
+  const category = parseDriveCategory(searchParams.get("category"));
+
+  function handleCategoryChange(next: DriveCategory) {
+    const params = new URLSearchParams(searchParams);
+    params.set("category", next);
+    setSearchParams(params, { replace: true });
   }
 
   return (
@@ -158,10 +176,7 @@ export function SpaceSidebar() {
               </div>
             </UnstyledButton>
 
-            {spaceAbility.can(
-              SpaceCaslAction.Manage,
-              SpaceCaslSubject.Page,
-            ) && (
+            {canManagePages && (
               <UnstyledButton
                 className={classes.menu}
                 onClick={() => {
@@ -185,48 +200,53 @@ export function SpaceSidebar() {
         </div>
 
         <div className={clsx(classes.section, classes.sectionPages)}>
-          <Group className={classes.pagesHeader} justify="space-between">
-            <Text size="xs" fw={500} c="dimmed">
-              {t("Pages")}
-            </Text>
-
-            <Group gap="xs">
-              <SpaceMenu
-                spaceId={space.id}
-                canManagePages={spaceAbility.can(
-                  SpaceCaslAction.Manage,
-                  SpaceCaslSubject.Page,
-                )}
-                onSpaceSettings={openSettings}
+          {isDriveSpace ? (
+            <div className={classes.pages}>
+              <DriveCategoryNav
+                value={category}
+                onChange={handleCategoryChange}
               />
+            </div>
+          ) : (
+            <>
+              <Group className={classes.pagesHeader} justify="space-between">
+                <Text size="xs" fw={500} c="dimmed">
+                  {t("Pages")}
+                </Text>
 
-              {spaceAbility.can(
-                SpaceCaslAction.Manage,
-                SpaceCaslSubject.Page,
-              ) && (
-                <Tooltip label={t("Create page")} withArrow position="right">
-                  <ActionIcon
-                    variant="default"
-                    size={18}
-                    onClick={handleCreatePage}
-                    aria-label={t("Create page")}
-                  >
-                    <IconPlus />
-                  </ActionIcon>
-                </Tooltip>
-              )}
-            </Group>
-          </Group>
+                <Group gap="xs">
+                  <SpaceMenu
+                    spaceId={space.id}
+                    canManagePages={canManagePages}
+                    onSpaceSettings={openSettings}
+                  />
 
-          <div className={classes.pages}>
-            <SpaceTree
-              spaceId={space.id}
-              readOnly={spaceAbility.cannot(
-                SpaceCaslAction.Manage,
-                SpaceCaslSubject.Page,
-              )}
-            />
-          </div>
+                  {canManagePages && (
+                    <Tooltip label={t("Create page")} withArrow position="right">
+                      <ActionIcon
+                        variant="default"
+                        size={18}
+                        onClick={handleCreatePage}
+                        aria-label={t("Create page")}
+                      >
+                        <IconPlus />
+                      </ActionIcon>
+                    </Tooltip>
+                  )}
+                </Group>
+              </Group>
+
+              <div className={classes.pages}>
+                <SpaceTree
+                  spaceId={space.id}
+                  readOnly={spaceAbility.cannot(
+                    SpaceCaslAction.Manage,
+                    SpaceCaslSubject.Page,
+                  )}
+                />
+              </div>
+            </>
+          )}
         </div>
       </div>
 
