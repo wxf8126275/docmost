@@ -1507,5 +1507,7 @@
   "Failed to upload file": "파일 업로드에 실패했습니다",
   "Failed to create share": "링크 생성에 실패했습니다",
   "Space type": "스페이스 유형",
-  "Drive spaces store files instead of pages": "드라이브 스페이스는 페이지 대신 파일을 저장합니다"
+  "Drive spaces store files instead of pages": "드라이브 스페이스는 페이지 대신 파일을 저장합니다",
+  "Size": "크기",
+  "Last modified": "마지막 수정"
 }

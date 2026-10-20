@@ -1507,5 +1507,7 @@
   "Failed to upload file": "Caricamento file non riuscito",
   "Failed to create share": "Creazione link non riuscita",
   "Space type": "Tipo di spazio",
-  "Drive spaces store files instead of pages": "Gli spazi drive archiviano file invece di pagine"
+  "Drive spaces store files instead of pages": "Gli spazi drive archiviano file invece di pagine",
+  "Size": "Dimensione",
+  "Last modified": "Ultima modifica"
 }

@@ -1507,5 +1507,7 @@
   "Failed to upload file": "上传文件失败",
   "Failed to create share": "创建分享失败",
   "Space type": "空间类型",
-  "Drive spaces store files instead of pages": "网盘空间用于存储文件，而非页面"
+  "Drive spaces store files instead of pages": "网盘空间用于存储文件，而非页面",
+  "Size": "大小",
+  "Last modified": "上次修改时间"
 }

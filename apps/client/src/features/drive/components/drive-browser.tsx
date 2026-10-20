@@ -3,21 +3,12 @@ import { useSearchParams } from "react-router-dom";
 import {
   ActionIcon,
   Box,
-  Card,
   Group,
   Loader,
   Modal,
-  SimpleGrid,
-  Stack,
   Text,
   TextInput,
 } from "@mantine/core";
-import {
-  IconFile,
-  IconFolder,
-  IconPencil,
-  IconTrash,
-} from "@tabler/icons-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import {
@@ -30,8 +21,14 @@ import {
 } from "../queries/drive-query";
 import { downloadFileUrl } from "../services/drive-service";
 import { parseDriveCategory } from "../drive-category";
-import { DriveCategory, IDriveFile, IDriveFolder } from "../types/drive.types";
-import FileRowActions from "./file-row-actions";
+import {
+  DriveCategory,
+  DriveItemHandlers,
+  IDriveFile,
+  IDriveFolder,
+} from "../types/drive.types";
+import DriveGridView from "./drive-grid-view";
+import DriveListView from "./drive-list-view";
 import UploadDropzone from "./upload-dropzone";
 import PreviewModal from "./preview-modal";
 import ShareDialog from "./share-dialog";
@@ -188,6 +185,19 @@ export default function DriveBrowser({
     anchor.remove();
   }
 
+  const handlers: DriveItemHandlers = {
+    onFolderOpen,
+    onFilePreview,
+    onRenameFolder: startRenameFolder,
+    onRenameFile: startRenameFile,
+    onDeleteFolder: (folder) =>
+      deleteFolderMut.mutate({ folderId: folder.id, spaceId }),
+    onDeleteFile: (file) =>
+      deleteFileMut.mutate({ fileId: file.id, spaceId }),
+    onShareFile: setSharingFile,
+    onDownloadFile: downloadFile,
+  };
+
   return (
     <Box>
       {isLoading && (
@@ -211,140 +221,19 @@ export default function DriveBrowser({
         )}
 
         {view === "grid" ? (
-          <SimpleGrid cols={4} spacing="sm" verticalSpacing="sm">
-            {folders.map((folder) => (
-              <Card key={folder.id} withBorder padding="sm" radius="sm">
-                <Group justify="space-between" wrap="nowrap">
-                  <Group
-                    gap="xs"
-                    style={{ cursor: "pointer" }}
-                    onClick={() => onFolderOpen(folder)}
-                  >
-                    <IconFolder size={20} />
-                    <Text size="sm" lineClamp={1}>
-                      {folder.name}
-                    </Text>
-                  </Group>
-                  <Group gap={4}>
-                    <ActionIcon
-                      variant="subtle"
-                      size="sm"
-                      aria-label={`rename-folder-${folder.id}`}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        startRenameFolder(folder);
-                      }}
-                    >
-                      <IconPencil size={14} />
-                    </ActionIcon>
-                    <ActionIcon
-                      variant="subtle"
-                      color="red"
-                      size="sm"
-                      aria-label={`delete-folder-${folder.id}`}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        deleteFolderMut.mutate({ folderId: folder.id, spaceId });
-                      }}
-                    >
-                      <IconTrash size={14} />
-                    </ActionIcon>
-                  </Group>
-                </Group>
-              </Card>
-            ))}
-            {files.map((file) => (
-              <Card key={file.id} withBorder padding="sm" radius="sm">
-                <Group
-                  justify="space-between"
-                  wrap="nowrap"
-                  style={{ cursor: "pointer" }}
-                  onClick={() => onFilePreview?.(file)}
-                >
-                  <Group gap="xs">
-                    <IconFile size={20} />
-                    <Text size="sm" lineClamp={1}>
-                      {file.fileName}
-                    </Text>
-                  </Group>
-                  <FileRowActions
-                    fileId={file.id}
-                    onDownload={() => downloadFile(file)}
-                    onRename={() => startRenameFile(file)}
-                    onShare={() => setSharingFile(file)}
-                    onDelete={() =>
-                      deleteFileMut.mutate({ fileId: file.id, spaceId })
-                    }
-                  />
-                </Group>
-              </Card>
-            ))}
-          </SimpleGrid>
+          <DriveGridView
+            spaceId={spaceId}
+            folders={folders}
+            files={files}
+            handlers={handlers}
+          />
         ) : (
-          <Stack gap={4}>
-            {folders.map((folder) => (
-              <Group
-                key={folder.id}
-                justify="space-between"
-                wrap="nowrap"
-                style={{ cursor: "pointer" }}
-                onClick={() => onFolderOpen(folder)}
-              >
-                <Group gap="xs">
-                  <IconFolder size={18} />
-                  <Text size="sm">{folder.name}</Text>
-                </Group>
-                <Group gap={4}>
-                  <ActionIcon
-                    variant="subtle"
-                    size="sm"
-                    aria-label={`rename-folder-${folder.id}`}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      startRenameFolder(folder);
-                    }}
-                  >
-                    <IconPencil size={14} />
-                  </ActionIcon>
-                  <ActionIcon
-                    variant="subtle"
-                    color="red"
-                    size="sm"
-                    aria-label={`delete-folder-${folder.id}`}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      deleteFolderMut.mutate({ folderId: folder.id, spaceId });
-                    }}
-                  >
-                    <IconTrash size={14} />
-                  </ActionIcon>
-                </Group>
-              </Group>
-            ))}
-            {files.map((file) => (
-              <Group
-                key={file.id}
-                justify="space-between"
-                wrap="nowrap"
-                style={{ cursor: "pointer" }}
-                onClick={() => onFilePreview?.(file)}
-              >
-                <Group gap="xs">
-                  <IconFile size={18} />
-                  <Text size="sm">{file.fileName}</Text>
-                </Group>
-                <FileRowActions
-                  fileId={file.id}
-                  onDownload={() => downloadFile(file)}
-                  onRename={() => startRenameFile(file)}
-                  onShare={() => setSharingFile(file)}
-                  onDelete={() =>
-                    deleteFileMut.mutate({ fileId: file.id, spaceId })
-                  }
-                />
-              </Group>
-            ))}
-          </Stack>
+          <DriveListView
+            spaceId={spaceId}
+            folders={folders}
+            files={files}
+            handlers={handlers}
+          />
         )}
 
         <Modal

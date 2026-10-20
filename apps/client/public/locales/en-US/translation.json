@@ -1512,5 +1512,7 @@
   "Failed to upload file": "Failed to upload file",
   "Failed to create share": "Failed to create share",
   "Space type": "Space type",
-  "Drive spaces store files instead of pages": "Drive spaces store files instead of pages"
+  "Drive spaces store files instead of pages": "Drive spaces store files instead of pages",
+  "Size": "Size",
+  "Last modified": "Last modified"
 }

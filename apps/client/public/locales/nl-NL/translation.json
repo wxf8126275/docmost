@@ -1507,5 +1507,7 @@
   "Failed to upload file": "Bestand uploaden mislukt",
   "Failed to create share": "Link aanmaken mislukt",
   "Space type": "Ruimtetype",
-  "Drive spaces store files instead of pages": "Drive-ruimtes slaan bestanden op in plaats van pagina's"
+  "Drive spaces store files instead of pages": "Drive-ruimtes slaan bestanden op in plaats van pagina's",
+  "Size": "Grootte",
+  "Last modified": "Laatst gewijzigd"
 }

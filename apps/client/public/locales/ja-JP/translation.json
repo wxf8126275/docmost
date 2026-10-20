@@ -1507,5 +1507,7 @@
   "Failed to upload file": "ファイルのアップロードに失敗しました",
   "Failed to create share": "リンクの作成に失敗しました",
   "Space type": "スペースタイプ",
-  "Drive spaces store files instead of pages": "ドライブスペースはページではなくファイルを保存します"
+  "Drive spaces store files instead of pages": "ドライブスペースはページではなくファイルを保存します",
+  "Size": "サイズ",
+  "Last modified": "最終更新日時"
 }

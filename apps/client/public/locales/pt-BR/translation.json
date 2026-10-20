@@ -1507,5 +1507,7 @@
   "Failed to upload file": "Falha ao enviar o arquivo",
   "Failed to create share": "Falha ao criar o link",
   "Space type": "Tipo de espaço",
-  "Drive spaces store files instead of pages": "Espaços de nuvem armazenam arquivos em vez de páginas"
+  "Drive spaces store files instead of pages": "Espaços de nuvem armazenam arquivos em vez de páginas",
+  "Size": "Tamanho",
+  "Last modified": "Última modificação"
 }

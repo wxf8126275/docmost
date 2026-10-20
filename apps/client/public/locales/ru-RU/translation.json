@@ -1507,5 +1507,7 @@
   "Failed to upload file": "Не удалось загрузить файл",
   "Failed to create share": "Не удалось создать ссылку",
   "Space type": "Тип пространства",
-  "Drive spaces store files instead of pages": "Дисковые пространства хранят файлы, а не страницы"
+  "Drive spaces store files instead of pages": "Дисковые пространства хранят файлы, а не страницы",
+  "Size": "Размер",
+  "Last modified": "Последнее изменение"
 }

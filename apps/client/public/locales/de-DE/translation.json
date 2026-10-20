@@ -1507,5 +1507,7 @@
   "Failed to upload file": "Datei konnte nicht hochgeladen werden",
   "Failed to create share": "Freigabe konnte nicht erstellt werden",
   "Space type": "Space-Typ",
-  "Drive spaces store files instead of pages": "Cloud-Speicher speichern Dateien statt Seiten"
+  "Drive spaces store files instead of pages": "Cloud-Speicher speichern Dateien statt Seiten",
+  "Size": "Größe",
+  "Last modified": "Zuletzt geändert"
 }
