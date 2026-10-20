@@ -15,14 +15,10 @@ describe('DriveQuotaService', () => {
   });
 
   describe('getUsedBytes', () => {
-    it('sums personal drive files for the user', async () => {
+    it('sums file sizes for the drive space', async () => {
       fileRepo.sumFileSizes.mockResolvedValue(1234);
-      const used = await service.getUsedBytes('w1', 'personal', 'u1');
-      expect(fileRepo.sumFileSizes).toHaveBeenCalledWith({
-        workspaceId: 'w1',
-        driveType: 'personal',
-        ownerId: 'u1',
-      });
+      const used = await service.getUsedBytes('sp1');
+      expect(fileRepo.sumFileSizes).toHaveBeenCalledWith({ spaceId: 'sp1' });
       expect(used).toBe(1234);
     });
   });
@@ -35,7 +31,7 @@ describe('DriveQuotaService', () => {
       ); // 10 GB
 
       await expect(
-        service.ensureWithinQuota('w1', 'personal', 'u1', 2 * 1024 * 1024 * 1024),
+        service.ensureWithinQuota('sp1', 2 * 1024 * 1024 * 1024),
       ).rejects.toBeInstanceOf(BadRequestException);
     });
 
@@ -46,7 +42,7 @@ describe('DriveQuotaService', () => {
       );
 
       await expect(
-        service.ensureWithinQuota('w1', 'personal', 'u1', 1 * 1024 * 1024 * 1024),
+        service.ensureWithinQuota('sp1', 1 * 1024 * 1024 * 1024),
       ).resolves.toBeUndefined();
     });
 
@@ -55,7 +51,7 @@ describe('DriveQuotaService', () => {
       environmentService.getDriveStorageQuota.mockReturnValue(null);
 
       await expect(
-        service.ensureWithinQuota('w1', 'personal', 'u1', Number.MAX_SAFE_INTEGER),
+        service.ensureWithinQuota('sp1', Number.MAX_SAFE_INTEGER),
       ).resolves.toBeUndefined();
     });
   });

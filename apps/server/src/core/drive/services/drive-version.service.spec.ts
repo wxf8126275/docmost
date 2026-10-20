@@ -27,6 +27,7 @@ describe('DriveVersionService', () => {
       fileRepo.findById.mockResolvedValue({
         id: 'f1',
         workspaceId: 'w1',
+        spaceId: 'sp1',
         fileName: 'a.png',
         filePath: 'old-key',
         fileSize: 123,
@@ -42,6 +43,7 @@ describe('DriveVersionService', () => {
       const version = await service.recordVersion({
         fileId: 'f1',
         workspaceId: 'w1',
+        spaceId: 'sp1',
         creatorId: 'u1',
       });
 
@@ -52,8 +54,27 @@ describe('DriveVersionService', () => {
       expect(inserted.versionNumber).toBe(2);
       expect(inserted.fileId).toBe('f1');
       expect(inserted.workspaceId).toBe('w1');
+      expect(inserted.spaceId).toBe('sp1');
       expect(inserted.creatorId).toBe('u1');
       expect(version.id).toBe('v2');
+    });
+
+    it('rejects a file that belongs to another space', async () => {
+      fileRepo.findById.mockResolvedValue({
+        id: 'f1',
+        workspaceId: 'w1',
+        spaceId: 'sp-other',
+      });
+
+      await expect(
+        service.recordVersion({
+          fileId: 'f1',
+          workspaceId: 'w1',
+          spaceId: 'sp1',
+          creatorId: 'u1',
+        }),
+      ).rejects.toBeInstanceOf(NotFoundException);
+      expect(versionRepo.insertVersion).not.toHaveBeenCalled();
     });
   });
 
@@ -73,6 +94,7 @@ describe('DriveVersionService', () => {
         id: 'v1',
         fileId: 'f1',
         workspaceId: 'w1',
+        spaceId: 'sp1',
         filePath: 'history-key',
         fileSize: 10,
         fileExt: '.png',
@@ -88,6 +110,7 @@ describe('DriveVersionService', () => {
         fileId: 'f1',
         versionId: 'v1',
         workspaceId: 'w1',
+        spaceId: 'sp1',
       });
 
       expect(fileRepo.updateFile).toHaveBeenCalledWith(
@@ -98,8 +121,28 @@ describe('DriveVersionService', () => {
           mimeType: 'image/png',
         },
         'f1',
+        'sp1',
       );
       expect(updated.filePath).toBe('history-key');
+    });
+
+    it('rejects a version from another space', async () => {
+      versionRepo.getVersion.mockResolvedValue({
+        id: 'v1',
+        fileId: 'f1',
+        workspaceId: 'w1',
+        spaceId: 'sp-other',
+        filePath: 'x',
+      });
+      await expect(
+        service.restoreVersion({
+          fileId: 'f1',
+          versionId: 'v1',
+          workspaceId: 'w1',
+          spaceId: 'sp1',
+        }),
+      ).rejects.toBeInstanceOf(NotFoundException);
+      expect(fileRepo.updateFile).not.toHaveBeenCalled();
     });
 
     it('rejects a version that does not belong to the file', async () => {
@@ -113,6 +156,7 @@ describe('DriveVersionService', () => {
           fileId: 'f1',
           versionId: 'v1',
           workspaceId: 'w1',
+          spaceId: 'sp1',
         }),
       ).rejects.toBeInstanceOf(NotFoundException);
       expect(fileRepo.updateFile).not.toHaveBeenCalled();

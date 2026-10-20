@@ -1,10 +1,7 @@
-export type DriveType = "personal" | "shared";
-
 export interface IDriveFolder {
   id: string;
   workspaceId: string;
-  driveType: DriveType;
-  ownerId: string | null;
+  spaceId: string;
   parentId: string | null;
   name: string;
   creatorId: string;
@@ -16,8 +13,7 @@ export interface IDriveFolder {
 export interface IDriveFile {
   id: string;
   workspaceId: string;
-  driveType: DriveType;
-  ownerId: string | null;
+  spaceId: string;
   folderId: string | null;
   fileName: string;
   filePath: string;
@@ -36,20 +32,32 @@ export interface IDriveBreadcrumb {
   name: string;
 }
 
+/**
+ * Left-nav categories (Tencent Weiyun style). `recent` = everything sorted by
+ * last-modified desc; the typed categories filter files by extension/MIME.
+ */
+export type DriveCategory =
+  | "recent"
+  | "all"
+  | "images"
+  | "documents"
+  | "videos"
+  | "music";
+
 export interface CreateFolderInput {
-  driveType: DriveType;
+  spaceId: string;
   name: string;
   parentId?: string | null;
 }
 
 export interface UpdateFolderInput {
-  driveType: DriveType;
+  spaceId: string;
   name?: string;
   parentId?: string | null;
 }
 
 export interface UpdateFileInput {
-  driveType: DriveType;
+  spaceId: string;
   fileName?: string;
   folderId?: string | null;
 }

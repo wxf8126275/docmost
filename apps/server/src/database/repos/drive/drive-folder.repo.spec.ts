@@ -1,91 +1,111 @@
 import { DriveFolderRepo } from './drive-folder.repo';
-import { DriveFolder } from '@docmost/db/types/entity.types';
 
-function makeDbMock() {
-  const calls: { lastResult: unknown } = { lastResult: [] };
-  const chain: any = new Proxy(
-    {},
-    {
-      get(_t, prop: string) {
-        switch (prop) {
-          case 'executeTakeFirst':
-          case 'execute':
-            return async () => calls.lastResult;
-          case 'executeTakeFirstOrThrow':
-            return async () => {
-              if (calls.lastResult == null) throw new Error('not found');
-              return calls.lastResult;
-            };
-          default:
-            return () => chain;
-        }
-      },
-    },
-  );
+/**
+ * Behavioral spec with a recording Kysely mock: captures the query-builder
+ * calls so we can assert the space scoping of every where/values clause
+ * without a live database.
+ */
+function makeDb() {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const calls: any[] = [];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const chain: any = {};
+  const rec =
+    (name: string) =>
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (...args: any[]) => {
+      calls.push([name, ...args]);
+      return chain;
+    };
+  chain.selectFrom = rec('selectFrom');
+  chain.select = rec('select');
+  chain.selectAll = rec('selectAll');
+  chain.where = rec('where');
+  chain.orderBy = rec('orderBy');
+  chain.returning = rec('returning');
+  chain.values = rec('values');
+  chain.set = rec('set');
+  chain.insertInto = rec('insertInto');
+  chain.updateTable = rec('updateTable');
+  chain.execute = jest.fn().mockResolvedValue([]);
+  chain.executeTakeFirst = jest.fn().mockResolvedValue(undefined);
   return { db: chain, calls };
 }
 
-describe('DriveFolderRepo', () => {
+const hasWhere = (calls: unknown[], col: string, value: unknown) =>
+  calls.some(
+    (c: any) => c[0] === 'where' && c[1] === col && c[2] === '=' && c[3] === value,
+  );
+
+describe('DriveFolderRepo (space-scoped)', () => {
   let repo: DriveFolderRepo;
-  let dbMock: ReturnType<typeof makeDbMock>;
 
   beforeEach(() => {
-    dbMock = makeDbMock();
-    repo = new DriveFolderRepo(dbMock.db);
+    repo = new DriveFolderRepo(makeDb().db as any);
   });
 
-  const folder: DriveFolder = {
-    id: 'f1',
-    workspaceId: 'w1',
-    driveType: 'personal',
-    ownerId: 'u1',
-    parentId: null,
-    name: 'Docs',
-    creatorId: 'u1',
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    deletedAt: null,
-  };
+  it('listFolders filters by spaceId and never by driveType/ownerId', async () => {
+    const { db, calls } = makeDb();
+    repo = new DriveFolderRepo(db as any);
 
-  it('createFolder inserts and returns the row', async () => {
-    dbMock.calls.lastResult = folder;
-    const result = await repo.createFolder({
+    await repo.listFolders({ workspaceId: 'w1', spaceId: 'sp1', parentId: null });
+
+    expect(calls.some((c: any) => c[0] === 'selectFrom' && c[1] === 'driveFolders')).toBe(true);
+    expect(hasWhere(calls, 'workspaceId', 'w1')).toBe(true);
+    expect(hasWhere(calls, 'spaceId', 'sp1')).toBe(true);
+    expect(hasWhere(calls, 'driveType', 'personal')).toBe(false);
+    expect(hasWhere(calls, 'driveType', 'shared')).toBe(false);
+    expect(hasWhere(calls, 'ownerId', 'u1')).toBe(false);
+    expect(calls.some((c: any) => c[0] === 'where' && c[1] === 'parentId' && c[2] === 'is')).toBe(true);
+  });
+
+  it('createFolder inserts spaceId', async () => {
+    const { db, calls } = makeDb();
+    repo = new DriveFolderRepo(db as any);
+
+    await repo.createFolder({
       workspaceId: 'w1',
-      driveType: 'personal',
-      ownerId: 'u1',
+      spaceId: 'sp1',
       parentId: null,
-      name: 'Docs',
+      name: 'X',
       creatorId: 'u1',
-    });
-    expect(result).toEqual(folder);
+    } as any);
+
+    const valuesCall = calls.find((c: any) => c[0] === 'values');
+    expect(valuesCall[1]).toEqual(
+      expect.objectContaining({ workspaceId: 'w1', spaceId: 'sp1', name: 'X' }),
+    );
+    expect(valuesCall[1].driveType).toBeUndefined();
+    expect(valuesCall[1].ownerId).toBeUndefined();
   });
 
-  it('findById returns the row', async () => {
-    dbMock.calls.lastResult = folder;
-    const result = await repo.findById('f1');
-    expect(result).toEqual(folder);
+  it('updateFolder scopes the update by spaceId', async () => {
+    const { db, calls } = makeDb();
+    repo = new DriveFolderRepo(db as any);
+
+    await repo.updateFolder({ name: 'N' }, 'f1', 'sp1');
+
+    expect(hasWhere(calls, 'id', 'f1')).toBe(true);
+    expect(hasWhere(calls, 'spaceId', 'sp1')).toBe(true);
   });
 
-  it('updateFolder returns the updated row', async () => {
-    const updated = { ...folder, name: 'Renamed' };
-    dbMock.calls.lastResult = updated;
-    const result = await repo.updateFolder({ name: 'Renamed' }, 'f1');
-    expect(result.name).toBe('Renamed');
+  it('softDeleteFolder scopes the delete by spaceId', async () => {
+    const { db, calls } = makeDb();
+    repo = new DriveFolderRepo(db as any);
+
+    await repo.softDeleteFolder('f1', 'sp1');
+
+    expect(hasWhere(calls, 'id', 'f1')).toBe(true);
+    expect(hasWhere(calls, 'spaceId', 'sp1')).toBe(true);
   });
 
-  it('softDeleteFolder resolves without throwing', async () => {
-    dbMock.calls.lastResult = { ...folder, deletedAt: new Date() };
-    await expect(repo.softDeleteFolder('f1')).resolves.toBeUndefined();
-  });
+  it('findById scopes by spaceId when provided', async () => {
+    const { db, calls } = makeDb();
+    repo = new DriveFolderRepo(db as any);
 
-  it('listFolders returns an array of folders', async () => {
-    dbMock.calls.lastResult = [folder];
-    const result = await repo.listFolders({
-      workspaceId: 'w1',
-      driveType: 'personal',
-      ownerId: 'u1',
-      parentId: null,
-    });
-    expect(result).toHaveLength(1);
+    await repo.findById('f1', { spaceId: 'sp1' });
+
+    expect(hasWhere(calls, 'id', 'f1')).toBe(true);
+    expect(hasWhere(calls, 'spaceId', 'sp1')).toBe(true);
   });
 });

@@ -11,15 +11,13 @@ import { DriveFolderRepo } from '../../../database/repos/drive/drive-folder.repo
 import { DriveFileRepo } from '../../../database/repos/drive/drive-file.repo';
 
 export interface CreateFolderInput {
-  driveType: 'personal' | 'shared';
+  spaceId: string;
   name: string;
   parentId?: string | null;
-  /** Ignored for personal drives (forced to the auth user). */
-  ownerId?: string;
 }
 
 export interface CreateFileInput {
-  driveType: 'personal' | 'shared';
+  spaceId: string;
   folderId?: string | null;
   fileName: string;
   filePath: string;
@@ -27,15 +25,13 @@ export interface CreateFileInput {
   fileSize?: number | null;
   mimeType?: string | null;
   type?: string | null;
-  /** Ignored for personal drives (forced to the auth user). */
-  ownerId?: string;
 }
 
 /**
- * Business logic for the Cloud Drive feature. Authorization (CASL) is applied at
- * the controller layer (mirroring the rest of the codebase). This service owns
- * the ownership rules: a personal drive's folders/files are always attributed to
- * the requesting user, while a shared drive is workspace-scoped (ownerId = null).
+ * Business logic for the Cloud Drive feature. Authorization (space CASL) is
+ * applied at the controller layer. Every drive operation is scoped to the
+ * owning `spaceId` — a drive space's folders/files are invisible and
+ * unreachable from any other space.
  */
 @Injectable()
 export class DriveService {
@@ -51,12 +47,9 @@ export class DriveService {
     workspaceId: string,
     dto: CreateFolderInput,
   ): Promise<DriveFolder> {
-    const ownerId = dto.driveType === 'personal' ? authUser.id : null;
-
     const insertable: InsertableDriveFolder = {
       workspaceId,
-      driveType: dto.driveType,
-      ownerId,
+      spaceId: dto.spaceId,
       parentId: dto.parentId ?? null,
       name: dto.name,
       creatorId: authUser.id,
@@ -68,48 +61,49 @@ export class DriveService {
   async listFolders(
     authUser: User,
     workspaceId: string,
-    driveType: 'personal' | 'shared',
+    spaceId: string,
     parentId?: string | null,
   ): Promise<DriveFolder[]> {
-    const ownerId = driveType === 'personal' ? authUser.id : null;
     return this.folderRepo.listFolders({
       workspaceId,
-      driveType,
-      ownerId,
+      spaceId,
       parentId: parentId ?? null,
     });
   }
 
   async renameFolder(
+    spaceId: string,
     folderId: string,
     name: string,
   ): Promise<DriveFolder> {
-    return this.folderRepo.updateFolder({ name }, folderId);
+    return this.folderRepo.updateFolder({ name }, folderId, spaceId);
   }
 
   async moveFolder(
+    spaceId: string,
     folderId: string,
     targetParentId: string | null,
   ): Promise<DriveFolder> {
     return this.folderRepo.updateFolder(
       { parentId: targetParentId ?? null },
       folderId,
+      spaceId,
     );
   }
 
-  async softDeleteFolder(folderId: string): Promise<void> {
-    return this.folderRepo.softDeleteFolder(folderId);
+  async softDeleteFolder(spaceId: string, folderId: string): Promise<void> {
+    return this.folderRepo.softDeleteFolder(folderId, spaceId);
   }
 
   /** Walks the parent chain from `folderId` back to the root, inclusive. */
-  async getBreadcrumb(folderId: string): Promise<DriveFolder[]> {
+  async getBreadcrumb(spaceId: string, folderId: string): Promise<DriveFolder[]> {
     const crumbs: DriveFolder[] = [];
-    let current = await this.folderRepo.findById(folderId);
+    let current = await this.folderRepo.findById(folderId, { spaceId });
 
     while (current) {
       crumbs.unshift(current);
       if (!current.parentId) break;
-      current = await this.folderRepo.findById(current.parentId);
+      current = await this.folderRepo.findById(current.parentId, { spaceId });
     }
 
     return crumbs;
@@ -122,12 +116,9 @@ export class DriveService {
     workspaceId: string,
     dto: CreateFileInput,
   ): Promise<DriveFile> {
-    const ownerId = dto.driveType === 'personal' ? authUser.id : null;
-
     const insertable: InsertableDriveFile = {
       workspaceId,
-      driveType: dto.driveType,
-      ownerId,
+      spaceId: dto.spaceId,
       folderId: dto.folderId ?? null,
       fileName: dto.fileName,
       filePath: dto.filePath,
@@ -144,48 +135,53 @@ export class DriveService {
   async listFiles(
     authUser: User,
     workspaceId: string,
-    driveType: 'personal' | 'shared',
+    spaceId: string,
     folderId?: string | null,
   ): Promise<DriveFile[]> {
-    const ownerId = driveType === 'personal' ? authUser.id : null;
     return this.fileRepo.listFiles({
       workspaceId,
-      driveType,
-      ownerId,
+      spaceId,
       folderId: folderId ?? null,
     });
   }
 
-  async renameFile(fileId: string, fileName: string): Promise<DriveFile> {
-    return this.fileRepo.updateFile({ fileName }, fileId);
+  async renameFile(
+    spaceId: string,
+    fileId: string,
+    fileName: string,
+  ): Promise<DriveFile> {
+    return this.fileRepo.updateFile({ fileName }, fileId, spaceId);
   }
 
   async updateFile(
+    spaceId: string,
     fileId: string,
     updatable: UpdatableDriveFile,
   ): Promise<DriveFile> {
-    return this.fileRepo.updateFile(updatable, fileId);
+    return this.fileRepo.updateFile(updatable, fileId, spaceId);
   }
 
   async moveFile(
+    spaceId: string,
     fileId: string,
     targetFolderId: string | null,
   ): Promise<DriveFile> {
     return this.fileRepo.updateFile(
       { folderId: targetFolderId ?? null },
       fileId,
+      spaceId,
     );
   }
 
-  async softDeleteFile(fileId: string): Promise<void> {
-    return this.fileRepo.softDeleteFile(fileId);
+  async softDeleteFile(spaceId: string, fileId: string): Promise<void> {
+    return this.fileRepo.softDeleteFile(fileId, spaceId);
   }
 
-  async getFile(fileId: string): Promise<DriveFile> {
-    return this.fileRepo.findById(fileId);
+  async getFile(fileId: string, spaceId?: string): Promise<DriveFile> {
+    return this.fileRepo.findById(fileId, spaceId ? { spaceId } : undefined);
   }
 
-  async getFolder(folderId: string): Promise<DriveFolder> {
-    return this.folderRepo.findById(folderId);
+  async getFolder(folderId: string, spaceId?: string): Promise<DriveFolder> {
+    return this.folderRepo.findById(folderId, spaceId ? { spaceId } : undefined);
   }
 }

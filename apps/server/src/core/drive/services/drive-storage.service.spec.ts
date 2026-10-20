@@ -27,35 +27,45 @@ describe('DriveStorageService', () => {
     expect(service.getMaxFileSize()).toBe(bytes('50mb'));
   });
 
-  it('generateKey builds the canonical personal-drive prefix', () => {
+  it('generateKey builds the space-scoped drive prefix', () => {
     const key = service.generateKey({
       workspaceId: 'w1',
-      driveType: 'personal',
-      ownerId: 'u1',
+      spaceId: 'sp1',
       folderId: null,
       fileName: 'a.png',
     });
-    expect(key.startsWith('drive/w1/personal/u1/root/')).toBe(true);
+    expect(key.startsWith('drive/w1/sp1/root/')).toBe(true);
     expect(key.endsWith('.png')).toBe(true);
   });
 
-  it('generateKey uses the shared segment when the drive is shared', () => {
+  it('generateKey nests under the folder id when present', () => {
     const key = service.generateKey({
       workspaceId: 'w1',
-      driveType: 'shared',
-      ownerId: null,
+      spaceId: 'sp1',
       folderId: 'f2',
       fileName: 'b.jpg',
     });
-    expect(key.startsWith('drive/w1/shared/shared/f2/')).toBe(true);
+    expect(key.startsWith('drive/w1/sp1/f2/')).toBe(true);
     expect(key.endsWith('.jpg')).toBe(true);
+  });
+
+  it('generateKey no longer contains driveType/ownerId segments', () => {
+    const key = service.generateKey({
+      workspaceId: 'w1',
+      spaceId: 'sp1',
+      folderId: null,
+      fileName: 'a.png',
+    });
+    expect(key).not.toContain('personal');
+    expect(key).not.toContain('shared');
+    expect(key).not.toContain('u1');
   });
 
   it('upload delegates to StorageService with the key and stream', async () => {
     const stream = Readable.from(Buffer.from('x'));
-    await service.upload('drive/w1/personal/u1/root/k.png', stream);
+    await service.upload('drive/w1/sp1/root/k.png', stream);
     expect(storageService.upload).toHaveBeenCalledWith(
-      'drive/w1/personal/u1/root/k.png',
+      'drive/w1/sp1/root/k.png',
       stream,
     );
   });

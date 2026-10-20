@@ -9,7 +9,6 @@ import {
 import { IconUpload } from "@tabler/icons-react";
 import { useTranslation } from "react-i18next";
 import { useUploadFileMutation } from "../queries/drive-query";
-import { DriveType } from "../types/drive.types";
 
 interface UploadItem {
   id: string;
@@ -19,7 +18,7 @@ interface UploadItem {
 }
 
 interface UploadDropzoneProps {
-  driveType: DriveType;
+  spaceId: string;
   folderId: string | null;
   onUploaded?: () => void;
 }
@@ -34,7 +33,7 @@ interface UploadProgressEvent {
  * to the current drive + folder; the queue shows per-file progress and status.
  */
 export default function UploadDropzone({
-  driveType,
+  spaceId,
   folderId,
   onUploaded,
 }: UploadDropzoneProps) {
@@ -68,7 +67,7 @@ export default function UploadDropzone({
       try {
         await uploadMut.mutateAsync({
           file,
-          driveType,
+          spaceId,
           folderId,
           onUploadProgress: (event: UploadProgressEvent) => {
             const pct = event.total

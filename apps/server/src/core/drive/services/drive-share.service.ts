@@ -1,6 +1,5 @@
 import {
   BadRequestException,
-  ForbiddenException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -18,6 +17,7 @@ export type SharePermission = 'read' | 'download';
 export interface CreateFileShareInput {
   authUserId: string;
   workspaceId: string;
+  spaceId: string;
   fileId: string;
   permission: SharePermission;
   expiresAt?: Date | null;
@@ -31,9 +31,10 @@ export interface ResolvedShare {
 /**
  * Creates and resolves time-boxed, token-gated share links for drive files.
  * Authorization boundary:
- *  - A personal file can only be shared by its owner.
- *  - A shared (workspace) file can be shared by any workspace member; the
- *    controller additionally enforces the CASL `Manage` ability.
+ *  - The caller must be a member of the file's drive space with the Manage
+ *    Drive ability (enforced at the controller layer via space CASL).
+ *  - Shares are scoped to the file's space; a file can never be shared into
+ *    another space.
  *  - Resolve rejects expired or soft-deleted links and cross-workspace tokens.
  */
 @Injectable()
@@ -44,21 +45,19 @@ export class DriveShareService {
   ) {}
 
   async createFileShare(input: CreateFileShareInput): Promise<DriveShare> {
-    const file = await this.driveService.getFile(input.fileId);
+    const file = await this.driveService.getFile(input.fileId, input.spaceId);
     if (
       !file ||
       file.deletedAt ||
-      file.workspaceId !== input.workspaceId
+      file.workspaceId !== input.workspaceId ||
+      file.spaceId !== input.spaceId
     ) {
       throw new NotFoundException('File not found');
     }
 
-    if (file.driveType === 'personal' && file.ownerId !== input.authUserId) {
-      throw new ForbiddenException('Cannot share a file you do not own');
-    }
-
     const insertable: InsertableDriveShare = {
       workspaceId: input.workspaceId,
+      spaceId: input.spaceId,
       fileId: input.fileId,
       creatorId: input.authUserId,
       token: nanoIdGen().toLowerCase(),
@@ -79,8 +78,13 @@ export class DriveShareService {
       throw new BadRequestException('Share link has expired');
     }
 
-    const file = await this.driveService.getFile(share.fileId);
-    if (!file || file.deletedAt || file.workspaceId !== share.workspaceId) {
+    const file = await this.driveService.getFile(share.fileId, share.spaceId);
+    if (
+      !file ||
+      file.deletedAt ||
+      file.workspaceId !== share.workspaceId ||
+      file.spaceId !== share.spaceId
+    ) {
       throw new NotFoundException('Shared file not found');
     }
 

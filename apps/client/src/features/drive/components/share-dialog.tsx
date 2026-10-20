@@ -11,11 +11,11 @@ import {
 import { IconCopy } from "@tabler/icons-react";
 import { useTranslation } from "react-i18next";
 import { useCreateShareMutation } from "../queries/drive-query";
-import { DriveType, IDriveShare } from "../types/drive.types";
+import { IDriveShare } from "../types/drive.types";
 
 interface ShareDialogProps {
   fileId: string;
-  driveType: DriveType;
+  spaceId: string;
   opened: boolean;
   onClose: () => void;
 }
@@ -41,7 +41,7 @@ const EXPIRY_MS: Record<string, number> = {
  */
 export default function ShareDialog({
   fileId,
-  driveType,
+  spaceId,
   opened,
   onClose,
 }: ShareDialogProps) {
@@ -59,7 +59,7 @@ export default function ShareDialog({
 
     const created = await createShareMut.mutateAsync({
       fileId,
-      driveType,
+      spaceId,
       input: { permission, expiresAt },
     });
     setShare(created);

@@ -90,6 +90,7 @@ export type UpdatableUser = Updateable<Omit<Users, 'id'>>;
 export type Space = Selectable<Spaces>;
 export type InsertableSpace = Insertable<Spaces>;
 export type UpdatableSpace = Updateable<Omit<Spaces, 'id'>>;
+export type SpaceType = 'page' | 'drive';
 
 // SpaceMember
 export type SpaceMember = Selectable<SpaceMembers>;

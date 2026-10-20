@@ -2,15 +2,12 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { DriveFileRepo } from '../../../database/repos/drive/drive-file.repo';
 import { EnvironmentService } from '../../../integrations/environment/environment.service';
 
-export type QuotaScope = 'personal' | 'shared';
-
 /**
- * Aggregates drive storage usage and enforces the configured capacity ceiling.
+ * Aggregates drive storage usage per drive space and enforces the configured
+ * capacity ceiling.
  *
  * Quota is read from `DRIVE_STORAGE_QUOTA` (parsed with the `bytes` helper so
- * "10gb" works) and is workspace-wide. When unset, uploads are unbounded. The
- * personal scope sums only the requesting user's files; the shared scope sums
- * the workspace's shared drive (ownerId is null).
+ * "10gb" works) and applies per drive space. When unset, uploads are unbounded.
  */
 @Injectable()
 export class DriveQuotaService {
@@ -19,13 +16,8 @@ export class DriveQuotaService {
     private readonly environmentService: EnvironmentService,
   ) {}
 
-  async getUsedBytes(
-    workspaceId: string,
-    scope: QuotaScope,
-    userId?: string,
-  ): Promise<number> {
-    const ownerId = scope === 'personal' ? userId ?? null : null;
-    return this.fileRepo.sumFileSizes({ workspaceId, driveType: scope, ownerId });
+  async getUsedBytes(spaceId: string): Promise<number> {
+    return this.fileRepo.sumFileSizes({ spaceId });
   }
 
   getQuota(): number | null {
@@ -33,27 +25,23 @@ export class DriveQuotaService {
   }
 
   async getQuotaInfo(
-    workspaceId: string,
-    scope: QuotaScope,
-    userId?: string,
+    spaceId: string,
   ): Promise<{ usedBytes: number; quota: number | null }> {
     const [usedBytes, quota] = await Promise.all([
-      this.getUsedBytes(workspaceId, scope, userId),
+      this.getUsedBytes(spaceId),
       Promise.resolve(this.getQuota()),
     ]);
     return { usedBytes, quota };
   }
 
   async ensureWithinQuota(
-    workspaceId: string,
-    scope: QuotaScope,
-    userId: string,
+    spaceId: string,
     additionalBytes: number,
   ): Promise<void> {
     const quota = this.getQuota();
     if (quota == null) return;
 
-    const used = await this.getUsedBytes(workspaceId, scope, userId);
+    const used = await this.getUsedBytes(spaceId);
     if (used + additionalBytes > quota) {
       throw new BadRequestException('Storage quota exceeded');
     }

@@ -20,7 +20,6 @@ import {
 import {
   CreateFolderInput,
   CreateShareLinkInput,
-  DriveType,
   IDriveFile,
   IDriveFolder,
   IDriveQuota,
@@ -31,22 +30,24 @@ import {
 import type { AxiosProgressEvent } from "axios";
 
 export function useDriveFoldersQuery(
-  driveType: DriveType,
+  spaceId: string,
   parentId?: string | null,
 ): UseQueryResult<IDriveFolder[], Error> {
   return useQuery({
-    queryKey: ["drive-folders", driveType, parentId ?? "root"],
-    queryFn: () => listFolders(driveType, parentId),
+    queryKey: ["drive-folders", spaceId, parentId ?? "root"],
+    queryFn: () => listFolders(spaceId, parentId),
+    enabled: !!spaceId,
   });
 }
 
 export function useDriveFilesQuery(
-  driveType: DriveType,
+  spaceId: string,
   folderId?: string | null,
 ): UseQueryResult<IDriveFile[], Error> {
   return useQuery({
-    queryKey: ["drive-files", driveType, folderId ?? "root"],
-    queryFn: () => listFiles(driveType, folderId),
+    queryKey: ["drive-files", spaceId, folderId ?? "root"],
+    queryFn: () => listFiles(spaceId, folderId),
+    enabled: !!spaceId,
   });
 }
 
@@ -70,8 +71,8 @@ export function useUpdateFolderMutation() {
 
 export function useDeleteFolderMutation() {
   const { t } = useTranslation();
-  return useMutation<void, Error, { folderId: string; driveType: DriveType }>({
-    mutationFn: ({ folderId, driveType }) => deleteFolder(folderId, driveType),
+  return useMutation<void, Error, { folderId: string; spaceId: string }>({
+    mutationFn: ({ folderId, spaceId }) => deleteFolder(folderId, spaceId),
     onError: () =>
       notifications.show({ message: t("Failed to delete folder"), color: "red" }),
   });
@@ -88,8 +89,8 @@ export function useUpdateFileMutation() {
 
 export function useDeleteFileMutation() {
   const { t } = useTranslation();
-  return useMutation<void, Error, { fileId: string; driveType: DriveType }>({
-    mutationFn: ({ fileId, driveType }) => deleteFile(fileId, driveType),
+  return useMutation<void, Error, { fileId: string; spaceId: string }>({
+    mutationFn: ({ fileId, spaceId }) => deleteFile(fileId, spaceId),
     onError: () =>
       notifications.show({ message: t("Failed to delete file"), color: "red" }),
   });
@@ -102,24 +103,25 @@ export function useUploadFileMutation() {
     Error,
     {
       file: File;
-      driveType: DriveType;
+      spaceId: string;
       folderId?: string | null;
       onUploadProgress?: (event: AxiosProgressEvent) => void;
     }
   >({
-    mutationFn: ({ file, driveType, folderId, onUploadProgress }) =>
-      uploadFile(file, driveType, folderId, onUploadProgress),
+    mutationFn: ({ file, spaceId, folderId, onUploadProgress }) =>
+      uploadFile(file, spaceId, folderId, onUploadProgress),
     onError: () =>
       notifications.show({ message: t("Failed to upload file"), color: "red" }),
   });
 }
 
 export function useDriveQuotaQuery(
-  driveType: DriveType,
+  spaceId: string,
 ): UseQueryResult<IDriveQuota, Error> {
   return useQuery({
-    queryKey: ["drive-quota", driveType],
-    queryFn: () => getQuota(driveType),
+    queryKey: ["drive-quota", spaceId],
+    queryFn: () => getQuota(spaceId),
+    enabled: !!spaceId,
   });
 }
 
@@ -128,9 +130,9 @@ export function useCreateShareMutation() {
   return useMutation<
     IDriveShare,
     Error,
-    { fileId: string; driveType: DriveType; input: CreateShareLinkInput }
+    { fileId: string; spaceId: string; input: CreateShareLinkInput }
   >({
-    mutationFn: ({ fileId, input }) => createShare(fileId, input),
+    mutationFn: ({ fileId, spaceId, input }) => createShare(spaceId, fileId, input),
     onError: () =>
       notifications.show({ message: t("Failed to create share"), color: "red" }),
   });

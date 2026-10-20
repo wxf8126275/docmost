@@ -9,8 +9,7 @@ import { EnvironmentService } from '../../../integrations/environment/environmen
 
 export interface DriveStorageOptions {
   workspaceId: string;
-  driveType: 'personal' | 'shared';
-  ownerId: string | null;
+  spaceId: string;
   folderId: string | null;
   fileName: string;
 }
@@ -18,8 +17,8 @@ export interface DriveStorageOptions {
 /**
  * Owns the S3 integration for the Cloud Drive feature: the canonical object key
  * prefix, the upload-size guard, and the read/upload delegation to StorageService.
- * Centralizing this keeps the controller free of storage details and makes the
- * size limit testable in isolation (see drive-storage.service.spec.ts).
+ * The key layout is space-scoped:
+ * `drive/{workspaceId}/{spaceId}/{folderId|root}/{uuid}{ext}`.
  */
 @Injectable()
 export class DriveStorageService {
@@ -39,12 +38,10 @@ export class DriveStorageService {
     return raw ? bytes(raw) : 0;
   }
 
-  /** Builds the S3 key with the canonical drive prefix. */
+  /** Builds the S3 key with the canonical space-scoped drive prefix. */
   generateKey(opts: DriveStorageOptions): string {
     const ext = path.extname(opts.fileName);
-    const ownerSegment =
-      opts.driveType === 'personal' ? opts.ownerId : 'shared';
-    return `drive/${opts.workspaceId}/${opts.driveType}/${ownerSegment}/${opts.folderId ?? 'root'}/${uuid7()}${ext}`;
+    return `drive/${opts.workspaceId}/${opts.spaceId}/${opts.folderId ?? 'root'}/${uuid7()}${ext}`;
   }
 
   /** Throws when the byte size exceeds the configured limit. */

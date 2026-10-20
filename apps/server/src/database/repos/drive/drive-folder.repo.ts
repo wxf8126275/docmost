@@ -10,9 +10,8 @@ import {
 
 export interface ListFoldersOptions {
   workspaceId: string;
-  driveType: 'personal' | 'shared';
-  /** Required for personal drives; ignored (treated as null) for shared. */
-  ownerId?: string | null;
+  /** Owning drive space. All folder access is scoped by it. */
+  spaceId: string;
   /** null = root level, string = inside that folder. */
   parentId?: string | null;
   trx?: KyselyTransaction;
@@ -25,8 +24,7 @@ export class DriveFolderRepo {
   private baseFields: Array<keyof DriveFolder> = [
     'id',
     'workspaceId',
-    'driveType',
-    'ownerId',
+    'spaceId',
     'parentId',
     'name',
     'creatorId',
@@ -37,14 +35,19 @@ export class DriveFolderRepo {
 
   async findById(
     folderId: string,
-    opts?: { trx?: KyselyTransaction },
+    opts?: { trx?: KyselyTransaction; spaceId?: string },
   ): Promise<DriveFolder> {
     const db = dbOrTx(this.db, opts?.trx);
-    return db
+    let query = db
       .selectFrom('driveFolders')
       .select(this.baseFields)
-      .where('id', '=', folderId)
-      .executeTakeFirst();
+      .where('id', '=', folderId);
+
+    if (opts?.spaceId) {
+      query = query.where('spaceId', '=', opts.spaceId);
+    }
+
+    return query.executeTakeFirst();
   }
 
   async createFolder(
@@ -62,6 +65,7 @@ export class DriveFolderRepo {
   async updateFolder(
     updatable: UpdatableDriveFolder,
     folderId: string,
+    spaceId: string,
     trx?: KyselyTransaction,
   ): Promise<DriveFolder> {
     const db = dbOrTx(this.db, trx);
@@ -69,12 +73,14 @@ export class DriveFolderRepo {
       .updateTable('driveFolders')
       .set(updatable)
       .where('id', '=', folderId)
+      .where('spaceId', '=', spaceId)
       .returning(this.baseFields)
       .executeTakeFirst();
   }
 
   async softDeleteFolder(
     folderId: string,
+    spaceId: string,
     trx?: KyselyTransaction,
   ): Promise<void> {
     const db = dbOrTx(this.db, trx);
@@ -82,25 +88,20 @@ export class DriveFolderRepo {
       .updateTable('driveFolders')
       .set({ deletedAt: new Date() })
       .where('id', '=', folderId)
+      .where('spaceId', '=', spaceId)
       .execute();
   }
 
   async listFolders(opts: ListFoldersOptions): Promise<DriveFolder[]> {
-    const { workspaceId, driveType, ownerId, parentId, trx } = opts;
+    const { workspaceId, spaceId, parentId, trx } = opts;
     const db = dbOrTx(this.db, trx);
 
     let query = db
       .selectFrom('driveFolders')
       .select(this.baseFields)
       .where('workspaceId', '=', workspaceId)
-      .where('driveType', '=', driveType)
+      .where('spaceId', '=', spaceId)
       .where('deletedAt', 'is', null);
-
-    if (driveType === 'personal') {
-      query = query.where('ownerId', '=', ownerId ?? '');
-    } else {
-      query = query.where('ownerId', 'is', null);
-    }
 
     if (parentId === null) {
       query = query.where('parentId', 'is', null);

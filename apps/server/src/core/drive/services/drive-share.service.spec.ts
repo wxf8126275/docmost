@@ -8,8 +8,7 @@ function makeFile(over: Partial<any> = {}): any {
   return {
     id: 'f1',
     workspaceId: 'w1',
-    driveType: 'personal',
-    ownerId: 'u1',
+    spaceId: 'sp1',
     deletedAt: null,
     fileName: 'a.png',
     filePath: 'p',
@@ -36,21 +35,18 @@ describe('DriveShareService', () => {
   });
 
   describe('createFileShare', () => {
-    it('creates a share with a token and default read permission', async () => {
+    it('creates a share scoped to the file space with default read permission', async () => {
       const file = makeFile();
       driveService.getFile.mockResolvedValue(file);
       shareRepo.createShare.mockImplementation(async (insertable: any) => ({
         id: 's1',
-        token: insertable.token,
-        permission: insertable.permission,
-        fileId: insertable.fileId,
-        expiresAt: insertable.expiresAt,
         ...insertable,
       }));
 
       const share = await service.createFileShare({
         authUserId: 'u1',
         workspaceId: 'w1',
+        spaceId: 'sp1',
         fileId: 'f1',
         permission: 'read',
         expiresAt: null,
@@ -64,22 +60,24 @@ describe('DriveShareService', () => {
       expect(insertable.fileId).toBe('f1');
       expect(insertable.creatorId).toBe('u1');
       expect(insertable.workspaceId).toBe('w1');
+      expect(insertable.spaceId).toBe('sp1');
       expect(share.token).toBe(insertable.token);
     });
 
-    it('rejects sharing a personal file owned by another user', async () => {
-      const file = makeFile({ ownerId: 'other' });
+    it('rejects sharing a file that belongs to another space', async () => {
+      const file = makeFile({ spaceId: 'sp-other' });
       driveService.getFile.mockResolvedValue(file);
 
       await expect(
         service.createFileShare({
           authUserId: 'u1',
           workspaceId: 'w1',
+          spaceId: 'sp1',
           fileId: 'f1',
           permission: 'read',
           expiresAt: null,
         }),
-      ).rejects.toBeInstanceOf(ForbiddenException);
+      ).rejects.toBeInstanceOf(NotFoundException);
       expect(shareRepo.createShare).not.toHaveBeenCalled();
     });
 
@@ -91,6 +89,7 @@ describe('DriveShareService', () => {
         service.createFileShare({
           authUserId: 'u1',
           workspaceId: 'w1',
+          spaceId: 'sp1',
           fileId: 'f1',
           permission: 'read',
           expiresAt: null,
@@ -109,6 +108,7 @@ describe('DriveShareService', () => {
         permission: 'read',
         fileId: 'f1',
         workspaceId: 'w1',
+        spaceId: 'sp1',
         deletedAt: null,
         expiresAt: null,
       };
@@ -122,6 +122,25 @@ describe('DriveShareService', () => {
       expect(resolved.file).toBe(file);
     });
 
+    it('rejects a share whose file moved to another space', async () => {
+      const share = {
+        id: 's1',
+        token: 'abc123',
+        permission: 'read',
+        fileId: 'f1',
+        workspaceId: 'w1',
+        spaceId: 'sp1',
+        deletedAt: null,
+        expiresAt: null,
+      };
+      shareRepo.findByToken.mockResolvedValue(share);
+      driveService.getFile.mockResolvedValue(makeFile({ spaceId: 'sp-other' }));
+
+      await expect(service.resolveShare('abc123')).rejects.toBeInstanceOf(
+        NotFoundException,
+      );
+    });
+
     it('rejects an expired share', async () => {
       const share = {
         id: 's1',
@@ -129,6 +148,7 @@ describe('DriveShareService', () => {
         permission: 'read',
         fileId: 'f1',
         workspaceId: 'w1',
+        spaceId: 'sp1',
         deletedAt: null,
         expiresAt: new Date(Date.now() - 1000),
       };

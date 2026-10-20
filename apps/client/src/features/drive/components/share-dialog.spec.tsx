@@ -59,7 +59,7 @@ describe('ShareDialog', () => {
     renderWithProviders(
       <ShareDialog
         fileId="file1"
-        driveType="personal"
+        spaceId="sp1"
         opened={true}
         onClose={vi.fn()}
       />,
@@ -83,7 +83,7 @@ describe('ShareDialog', () => {
     renderWithProviders(
       <ShareDialog
         fileId="file1"
-        driveType="personal"
+        spaceId="sp1"
         opened={true}
         onClose={vi.fn()}
       />,
@@ -94,10 +94,11 @@ describe('ShareDialog', () => {
     const linkInput = (await screen.findByLabelText(
       'share-link',
     )) as HTMLInputElement;
+    // Public share URLs keep the token-gated /api/drive/shares/:token contract.
     expect(linkInput.value).toContain('/api/drive/shares/tok-123');
     expect(mockCreateShare).toHaveBeenCalledWith({
       fileId: 'file1',
-      driveType: 'personal',
+      spaceId: 'sp1',
       input: expect.objectContaining({ permission: 'read' }),
     });
   });

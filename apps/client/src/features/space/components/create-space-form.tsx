@@ -1,4 +1,4 @@
-import { Group, Box, Button, TextInput, Stack, Textarea, Text } from "@mantine/core";
+import { Group, Box, Button, SegmentedControl, TextInput, Stack, Textarea, Text } from "@mantine/core";
 import React, { useEffect } from "react";
 import { useForm } from "@mantine/form";
 import { zod4Resolver } from "mantine-form-zod-resolver";
@@ -21,6 +21,7 @@ const formSchema = z.object({
       "Space slug must start with a letter or number and may contain hyphens and underscores",
     ),
   description: z.string().max(500),
+  type: z.enum(["page", "drive"]).default("page"),
 });
 type FormValues = z.infer<typeof formSchema>;
 
@@ -36,6 +37,7 @@ export function CreateSpaceForm() {
       name: "",
       slug: "",
       description: "",
+      type: "page",
     },
   });
 
@@ -58,11 +60,13 @@ export function CreateSpaceForm() {
     name?: string;
     slug?: string;
     description?: string;
+    type?: "page" | "drive";
   }) => {
     const spaceData = {
       name: data.name,
       slug: data.slug,
       description: data.description,
+      type: data.type ?? "page",
     };
 
     const createdSpace = await createSpaceMutation.mutateAsync(spaceData);
@@ -121,6 +125,27 @@ export function CreateSpaceForm() {
               errorProps={{ role: "alert" }}
               {...form.getInputProps("description")}
             />
+
+            <Stack gap={4}>
+              <Text size="sm" fw={500}>
+                {t("Space type")}
+              </Text>
+              <SegmentedControl
+                fullWidth
+                aria-label="space-type"
+                value={form.values.type}
+                onChange={(value) =>
+                  form.setFieldValue("type", value as "page" | "drive")
+                }
+                data={[
+                  { label: t("Page"), value: "page" },
+                  { label: t("Drive"), value: "drive" },
+                ]}
+              />
+              <Text size="xs" c="dimmed">
+                {t("Drive spaces store files instead of pages")}
+              </Text>
+            </Stack>
           </Stack>
 
           <Group justify="flex-end" mt="md">

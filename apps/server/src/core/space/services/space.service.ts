@@ -9,7 +9,7 @@ import { CreateSpaceDto } from '../dto/create-space.dto';
 import { PaginationOptions } from '@docmost/db/pagination/pagination-options';
 import { SpaceRepo } from '@docmost/db/repos/space/space.repo';
 import { KyselyDB, KyselyTransaction } from '@docmost/db/types/kysely.types';
-import { Space, User } from '@docmost/db/types/entity.types';
+import { Space, SpaceType, User } from '@docmost/db/types/entity.types';
 import { UpdateSpaceDto } from '../dto/update-space.dto';
 import { executeTx } from '@docmost/db/utils';
 import { InjectKysely } from 'nestjs-kysely';
@@ -117,6 +117,7 @@ export class SpaceService {
         workspaceId: workspaceId,
         slug: createSpaceDto.slug,
         isPersonal: options?.isPersonal ?? false,
+        type: createSpaceDto.type ?? 'page',
       },
       trx,
     );
@@ -268,8 +269,9 @@ export class SpaceService {
   async getWorkspaceSpaces(
     workspaceId: string,
     pagination: PaginationOptions,
+    type?: SpaceType,
   ): Promise<CursorPaginationResult<Space>> {
-    return this.spaceRepo.getSpacesInWorkspace(workspaceId, pagination);
+    return this.spaceRepo.getSpacesInWorkspace(workspaceId, pagination, type);
   }
 
   async deleteSpace(spaceId: string, workspaceId: string): Promise<void> {

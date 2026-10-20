@@ -44,7 +44,7 @@ describe("UploadDropzone", () => {
   beforeEach(() => vi.clearAllMocks());
 
   it("renders a drop area with file and folder inputs", () => {
-    renderWithProviders(<UploadDropzone driveType="personal" folderId={null} />);
+    renderWithProviders(<UploadDropzone spaceId="sp1" folderId={null} />);
     expect(screen.getByLabelText("upload-dropzone")).toBeTruthy();
     expect(screen.getByLabelText("drive-file-input")).toBeTruthy();
     expect(screen.getByLabelText("drive-folder-input")).toBeTruthy();
@@ -54,7 +54,7 @@ describe("UploadDropzone", () => {
     const f1 = new File(["a"], "a.png", { type: "image/png" });
     const f2 = new File(["b"], "b.pdf", { type: "application/pdf" });
 
-    renderWithProviders(<UploadDropzone driveType="personal" folderId={null} />);
+    renderWithProviders(<UploadDropzone spaceId="sp1" folderId={null} />);
     const input = screen.getByLabelText("drive-file-input") as HTMLInputElement;
     fireEvent.change(input, { target: { files: [f1, f2] } });
 
@@ -62,20 +62,20 @@ describe("UploadDropzone", () => {
     expect(await screen.findByText("a.png")).toBeTruthy();
     expect(screen.getByText("b.pdf")).toBeTruthy();
 
-    // each file triggers a distinct upload call carrying the file + driveType
+    // each file triggers a distinct upload call carrying the file + spaceId
     await waitFor(() => expect(mockUpload).toHaveBeenCalledTimes(2));
     expect(mockUpload).toHaveBeenCalledWith(
-      expect.objectContaining({ file: f1, driveType: "personal", folderId: null }),
+      expect.objectContaining({ file: f1, spaceId: "sp1", folderId: null }),
     );
     expect(mockUpload).toHaveBeenCalledWith(
-      expect.objectContaining({ file: f2, driveType: "personal", folderId: null }),
+      expect.objectContaining({ file: f2, spaceId: "sp1", folderId: null }),
     );
   });
 
   it("passes the active folderId to uploads", async () => {
     const f1 = new File(["a"], "c.png", { type: "image/png" });
     renderWithProviders(
-      <UploadDropzone driveType="shared" folderId="folder-9" />,
+      <UploadDropzone spaceId="sp1" folderId="folder-9" />,
     );
     const input = screen.getByLabelText("drive-file-input") as HTMLInputElement;
     fireEvent.change(input, { target: { files: [f1] } });
@@ -84,7 +84,7 @@ describe("UploadDropzone", () => {
     expect(mockUpload).toHaveBeenCalledWith(
       expect.objectContaining({
         file: f1,
-        driveType: "shared",
+        spaceId: "sp1",
         folderId: "folder-9",
       }),
     );

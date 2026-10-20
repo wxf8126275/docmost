@@ -7,9 +7,6 @@ import {
 } from 'class-validator';
 
 export class CreateFolderDto {
-  @IsIn(['personal', 'shared'])
-  driveType: 'personal' | 'shared';
-
   @IsString()
   @MaxLength(255)
   name: string;
@@ -30,9 +27,6 @@ export class CreateShareLinkDto {
 }
 
 export class UpdateFolderDto {
-  @IsIn(['personal', 'shared'])
-  driveType: 'personal' | 'shared';
-
   @IsOptional()
   @IsString()
   @MaxLength(255)
@@ -43,9 +37,6 @@ export class UpdateFolderDto {
 }
 
 export class UpdateFileDto {
-  @IsIn(['personal', 'shared'])
-  driveType: 'personal' | 'shared';
-
   @IsOptional()
   @IsString()
   @MaxLength(255)

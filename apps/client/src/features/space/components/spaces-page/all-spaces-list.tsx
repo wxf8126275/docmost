@@ -7,10 +7,17 @@ import {
   Space,
   Menu,
   Anchor,
+  SegmentedControl,
   Tooltip,
   VisuallyHidden,
 } from "@mantine/core";
-import { IconDots, IconSettings, IconEye, IconEyeOff } from "@tabler/icons-react";
+import {
+  IconDots,
+  IconSettings,
+  IconEye,
+  IconEyeOff,
+  IconCloud,
+} from "@tabler/icons-react";
 import StarButton from "@/features/favorite/components/star-button";
 import {
   useWatchedSpaceIds,
@@ -96,6 +103,11 @@ export default function AllSpacesList({
   const [settingsOpened, { open: openSettings, close: closeSettings }] =
     useDisclosure(false);
   const [selectedSpaceId, setSelectedSpaceId] = useState<string | null>(null);
+  const [typeFilter, setTypeFilter] = useState<"all" | "page" | "drive">("all");
+
+  const visibleSpaces = spaces.filter(
+    (space) => typeFilter === "all" || (space.type ?? "page") === typeFilter,
+  );
 
   const handleOpenSettings = (spaceId: string) => {
     setSelectedSpaceId(spaceId);
@@ -104,7 +116,20 @@ export default function AllSpacesList({
 
   return (
     <Box>
-      <SearchInput onSearch={onSearch} />
+      <Group justify="space-between" wrap="wrap" gap="sm">
+        <SearchInput onSearch={onSearch} />
+        <SegmentedControl
+          size="xs"
+          aria-label="space-type-filter"
+          value={typeFilter}
+          onChange={(value) => setTypeFilter(value as "all" | "page" | "drive")}
+          data={[
+            { label: t("All"), value: "all" },
+            { label: t("Page"), value: "page" },
+            { label: t("Drive"), value: "drive" },
+          ]}
+        />
+      </Group>
 
       <Space h="md" />
 
@@ -126,8 +151,8 @@ export default function AllSpacesList({
           </Table.Thead>
 
           <Table.Tbody>
-            {spaces.length > 0 ? (
-              spaces.map((space) => (
+            {visibleSpaces.length > 0 ? (
+              visibleSpaces.map((space) => (
                 <Table.Tr key={space.id} className={rowClasses.row}>
                   <Table.Td>
                     <Anchor
@@ -154,6 +179,18 @@ export default function AllSpacesList({
                           variant="filled"
                           size="md"
                         />
+                        {(space.type ?? "page") === "drive" && (
+                          <Tooltip label={t("Drive")} withArrow>
+                            <IconCloud
+                              size={14}
+                              aria-label="space-type-drive"
+                              style={{
+                                color: "var(--mantine-color-blue-6)",
+                                flexShrink: 0,
+                              }}
+                            />
+                          </Tooltip>
+                        )}
                         <div style={{ minWidth: 0, overflow: "hidden", maxWidth: 350 }}>
                           <AutoTooltipText fz="sm" fw={500} lineClamp={1}>
                             {space.name}
@@ -206,7 +243,7 @@ export default function AllSpacesList({
         </Table>
       </Table.ScrollContainer>
 
-      {spaces.length > 0 && (
+      {visibleSpaces.length > 0 && (
         <Paginate
           hasPrevPage={hasPrevPage}
           hasNextPage={hasNextPage}

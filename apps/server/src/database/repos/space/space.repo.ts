@@ -5,6 +5,7 @@ import { dbOrTx } from '@docmost/db/utils';
 import {
   InsertableSpace,
   Space,
+  SpaceType,
   UpdatableSpace,
 } from '@docmost/db/types/entity.types';
 import { ExpressionBuilder, sql } from 'kysely';
@@ -175,6 +176,7 @@ export class SpaceRepo {
   async getSpacesInWorkspace(
     workspaceId: string,
     pagination: PaginationOptions,
+    type?: SpaceType,
   ) {
     // todo: show spaces user have access based on visibility and memberships
     let query = this.db
@@ -183,6 +185,10 @@ export class SpaceRepo {
       .select((eb) => [this.withMemberCount(eb)])
       .select((eb) => this.withIsPublished(eb))
       .where('workspaceId', '=', workspaceId);
+
+    if (type) {
+      query = query.where('type', '=', type);
+    }
 
     if (pagination.query) {
       query = query.where((eb) =>

@@ -9,8 +9,7 @@ function makeFile(over: Partial<IDriveFile>): IDriveFile {
   return {
     id: "f1",
     workspaceId: "w1",
-    driveType: "personal",
-    ownerId: "u1",
+    spaceId: "sp1",
     folderId: null,
     fileName: "file",
     filePath: "p",
@@ -62,12 +61,14 @@ describe("PreviewModal", () => {
       fileExt: ".png",
       mimeType: "image/png",
     });
-    renderWithProviders(<PreviewModal file={file} opened onClose={vi.fn()} />);
+    renderWithProviders(
+      <PreviewModal file={file} spaceId="sp1" opened onClose={vi.fn()} />,
+    );
     const img = q<HTMLImageElement>("img");
     expect(img).toBeTruthy();
     await waitFor(() => {
       expect(img?.getAttribute("src")).toContain(
-        "/api/drive/files/img1/download",
+        "/api/spaces/sp1/drive/files/img1/download",
       );
     });
   });
@@ -79,7 +80,9 @@ describe("PreviewModal", () => {
       fileExt: ".mp3",
       mimeType: "audio/mpeg",
     });
-    renderWithProviders(<PreviewModal file={file} opened onClose={vi.fn()} />);
+    renderWithProviders(
+      <PreviewModal file={file} spaceId="sp1" opened onClose={vi.fn()} />,
+    );
     expect(q("audio")).toBeTruthy();
     expect(q("video")).toBeNull();
     expect(q("img")).toBeNull();
@@ -92,7 +95,9 @@ describe("PreviewModal", () => {
       fileExt: ".mp4",
       mimeType: "video/mp4",
     });
-    renderWithProviders(<PreviewModal file={file} opened onClose={vi.fn()} />);
+    renderWithProviders(
+      <PreviewModal file={file} spaceId="sp1" opened onClose={vi.fn()} />,
+    );
     expect(q("video")).toBeTruthy();
   });
 
@@ -103,7 +108,9 @@ describe("PreviewModal", () => {
       fileExt: ".pdf",
       mimeType: "application/pdf",
     });
-    renderWithProviders(<PreviewModal file={file} opened onClose={vi.fn()} />);
+    renderWithProviders(
+      <PreviewModal file={file} spaceId="sp1" opened onClose={vi.fn()} />,
+    );
     expect(q("img")).toBeNull();
     expect(q("audio")).toBeNull();
     expect(q("video")).toBeNull();

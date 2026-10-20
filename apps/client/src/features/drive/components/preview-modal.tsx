@@ -5,6 +5,7 @@ import { downloadFileUrl } from "../services/drive-service";
 
 interface PreviewModalProps {
   file: IDriveFile | null;
+  spaceId: string;
   opened: boolean;
   onClose: () => void;
 }
@@ -28,13 +29,14 @@ const AUDIO_EXTS = [".mp3", ".wav", ".oga", ".m4a", ".aac", ".flac"];
  */
 export default function PreviewModal({
   file,
+  spaceId,
   opened,
   onClose,
 }: PreviewModalProps) {
   function renderPreview() {
     if (!file) return null;
     const ext = file.fileExt.toLowerCase();
-    const url = downloadFileUrl(file.id);
+    const url = downloadFileUrl(spaceId, file.id);
 
     if (IMAGE_EXTS.includes(ext)) {
       return (

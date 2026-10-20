@@ -10,9 +10,8 @@ import {
 
 export interface ListFilesOptions {
   workspaceId: string;
-  driveType: 'personal' | 'shared';
-  /** Required for personal drives; ignored (treated as null) for shared. */
-  ownerId?: string | null;
+  /** Owning drive space. All file access is scoped by it. */
+  spaceId: string;
   /** null = root level, string = inside that folder. */
   folderId?: string | null;
   trx?: KyselyTransaction;
@@ -25,8 +24,7 @@ export class DriveFileRepo {
   private baseFields: Array<keyof DriveFile> = [
     'id',
     'workspaceId',
-    'driveType',
-    'ownerId',
+    'spaceId',
     'folderId',
     'fileName',
     'filePath',
@@ -42,14 +40,19 @@ export class DriveFileRepo {
 
   async findById(
     fileId: string,
-    opts?: { trx?: KyselyTransaction },
+    opts?: { trx?: KyselyTransaction; spaceId?: string },
   ): Promise<DriveFile> {
     const db = dbOrTx(this.db, opts?.trx);
-    return db
+    let query = db
       .selectFrom('driveFiles')
       .select(this.baseFields)
-      .where('id', '=', fileId)
-      .executeTakeFirst();
+      .where('id', '=', fileId);
+
+    if (opts?.spaceId) {
+      query = query.where('spaceId', '=', opts.spaceId);
+    }
+
+    return query.executeTakeFirst();
   }
 
   async createFile(
@@ -67,6 +70,7 @@ export class DriveFileRepo {
   async updateFile(
     updatable: UpdatableDriveFile,
     fileId: string,
+    spaceId: string,
     trx?: KyselyTransaction,
   ): Promise<DriveFile> {
     const db = dbOrTx(this.db, trx);
@@ -74,12 +78,14 @@ export class DriveFileRepo {
       .updateTable('driveFiles')
       .set(updatable)
       .where('id', '=', fileId)
+      .where('spaceId', '=', spaceId)
       .returning(this.baseFields)
       .executeTakeFirst();
   }
 
   async softDeleteFile(
     fileId: string,
+    spaceId: string,
     trx?: KyselyTransaction,
   ): Promise<void> {
     const db = dbOrTx(this.db, trx);
@@ -87,25 +93,20 @@ export class DriveFileRepo {
       .updateTable('driveFiles')
       .set({ deletedAt: new Date() })
       .where('id', '=', fileId)
+      .where('spaceId', '=', spaceId)
       .execute();
   }
 
   async listFiles(opts: ListFilesOptions): Promise<DriveFile[]> {
-    const { workspaceId, driveType, ownerId, folderId, trx } = opts;
+    const { workspaceId, spaceId, folderId, trx } = opts;
     const db = dbOrTx(this.db, trx);
 
     let query = db
       .selectFrom('driveFiles')
       .select(this.baseFields)
       .where('workspaceId', '=', workspaceId)
-      .where('driveType', '=', driveType)
+      .where('spaceId', '=', spaceId)
       .where('deletedAt', 'is', null);
-
-    if (driveType === 'personal') {
-      query = query.where('ownerId', '=', ownerId ?? '');
-    } else {
-      query = query.where('ownerId', 'is', null);
-    }
 
     if (folderId === null) {
       query = query.where('folderId', 'is', null);
@@ -116,28 +117,17 @@ export class DriveFileRepo {
     return query.orderBy('fileName', 'asc').execute();
   }
 
-  async sumFileSizes(opts: {
-    workspaceId: string;
-    driveType: 'personal' | 'shared';
-    ownerId?: string | null;
-  }): Promise<number> {
-    const { workspaceId, driveType, ownerId } = opts;
+  async sumFileSizes(opts: { spaceId: string }): Promise<number> {
+    const { spaceId } = opts;
     const db = dbOrTx(this.db);
 
-    let query = db
+    const row = await db
       .selectFrom('driveFiles')
       .select((eb) => eb.fn.sum<number>('fileSize').as('total'))
-      .where('workspaceId', '=', workspaceId)
-      .where('driveType', '=', driveType)
-      .where('deletedAt', 'is', null);
+      .where('spaceId', '=', spaceId)
+      .where('deletedAt', 'is', null)
+      .executeTakeFirst();
 
-    if (driveType === 'personal') {
-      query = query.where('ownerId', '=', ownerId ?? '');
-    } else {
-      query = query.where('ownerId', 'is', null);
-    }
-
-    const row = await query.executeTakeFirst();
     return Number(row?.total ?? 0);
   }
 }

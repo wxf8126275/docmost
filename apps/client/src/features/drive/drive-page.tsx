@@ -1,8 +1,10 @@
 import { useRef, useState } from "react";
+import { useParams } from "react-router-dom";
 import {
   Box,
   Button,
   Group,
+  Loader,
   Modal,
   SegmentedControl,
   Stack,
@@ -25,20 +27,24 @@ import {
   useDriveQuotaQuery,
   useUploadFileMutation,
 } from "./queries/drive-query";
-import { DriveType, IDriveBreadcrumb, IDriveFolder } from "./types/drive.types";
+import { useGetSpaceBySlugQuery } from "@/features/space/queries/space-query";
+import { IDriveBreadcrumb } from "./types/drive.types";
 import DriveBrowser from "./components/drive-browser";
 import DriveBreadcrumb from "./components/breadcrumb";
 import QuotaIndicator from "./components/quota-indicator";
 
 export default function DrivePage() {
   const { t } = useTranslation();
+  const { spaceSlug } = useParams();
+  const { data: space } = useGetSpaceBySlugQuery(spaceSlug);
+  const spaceId = space?.id;
+
   const queryClient = useQueryClient();
   const createFolderMut = useCreateFolderMutation();
   const uploadFileMut = useUploadFileMutation();
+  const quotaQuery = useDriveQuotaQuery(spaceId ?? "");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const [driveType, setDriveType] = useState<DriveType>("personal");
-  const quotaQuery = useDriveQuotaQuery(driveType);
   const [path, setPath] = useState<IDriveBreadcrumb[]>([]);
   const [view, setView] = useState<"grid" | "list">("grid");
   const [search, setSearch] = useState("");
@@ -47,7 +53,7 @@ export default function DrivePage() {
 
   const currentFolderId = path.length ? path[path.length - 1].id : null;
 
-  function openFolder(folder: IDriveFolder) {
+  function openFolder(folder: { id: string; name: string }) {
     setPath((prev) => [...prev, { id: folder.id, name: folder.name }]);
     setSearch("");
   }
@@ -63,9 +69,9 @@ export default function DrivePage() {
 
   async function handleCreateFolder() {
     const name = newFolderName.trim();
-    if (!name) return;
+    if (!name || !spaceId) return;
     await createFolderMut.mutateAsync({
-      driveType,
+      spaceId,
       name,
       parentId: currentFolderId,
     });
@@ -75,32 +81,33 @@ export default function DrivePage() {
   }
 
   async function handleFilesSelected(files: FileList | null) {
-    if (!files) return;
+    if (!files || !spaceId) return;
     for (const file of Array.from(files)) {
       await uploadFileMut.mutateAsync({
         file,
-        driveType,
+        spaceId,
         folderId: currentFolderId,
       });
     }
     invalidateLists();
   }
 
+  if (!spaceId) {
+    return (
+      <Box p="md">
+        <Group justify="center" py="xl">
+          <Loader />
+        </Group>
+      </Box>
+    );
+  }
+
   return (
     <Box p="md">
       <Group justify="space-between" mb="md">
         <Title order={3}>
-          <IconCloud size={22} style={{ verticalAlign: "middle" }} />{" "}
-          {t("Drive")}
+          <IconCloud size={22} style={{ verticalAlign: "middle" }} /> {t("Drive")}
         </Title>
-        <SegmentedControl
-          value={driveType}
-          onChange={(value) => setDriveType(value as DriveType)}
-          data={[
-            { label: t("Personal"), value: "personal" },
-            { label: t("Shared"), value: "shared" },
-          ]}
-        />
       </Group>
 
       <Group justify="space-between" mb="sm">
@@ -164,7 +171,7 @@ export default function DrivePage() {
       </Box>
 
       <DriveBrowser
-        driveType={driveType}
+        spaceId={spaceId}
         folderId={currentFolderId}
         onFolderOpen={openFolder}
         view={view}
@@ -187,7 +194,10 @@ export default function DrivePage() {
             }}
           />
           <Group justify="flex-end">
-            <Button onClick={() => void handleCreateFolder()} aria-label="confirm-new-folder">
+            <Button
+              onClick={() => void handleCreateFolder()}
+              aria-label="confirm-new-folder"
+            >
               {t("Create")}
             </Button>
           </Group>

@@ -1,4 +1,5 @@
 import {
+  IsIn,
   IsOptional,
   IsString,
   Matches,
@@ -6,6 +7,7 @@ import {
   MinLength,
 } from 'class-validator';
 import {Transform, TransformFnParams} from "class-transformer";
+import { SpaceType } from '@docmost/db/types/entity.types';
 
 export class CreateSpaceDto {
   @MinLength(2)
@@ -17,6 +19,10 @@ export class CreateSpaceDto {
   @IsOptional()
   @IsString()
   description?: string;
+
+  @IsOptional()
+  @IsIn(['page', 'drive'])
+  type?: SpaceType;
 
   @MinLength(2)
   @MaxLength(100)

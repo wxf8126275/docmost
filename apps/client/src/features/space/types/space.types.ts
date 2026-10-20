@@ -32,6 +32,7 @@ export interface ISpace {
   memberCount?: number;
   isPublished?: boolean;
   spaceId?: string;
+  type?: "page" | "drive";
   membership?: IMembership;
   settings?: ISpaceSettings;
   // for updates

@@ -71,7 +71,7 @@ export interface Attachments {
   id: Generated<string>;
   mimeType: string | null;
   pageId: string | null;
-  spaceId: string | null;
+  spaceId: string;
   textContent: string | null;
   tsv: string | null;
   type: string | null;
@@ -90,7 +90,7 @@ export interface Audit {
   metadata: Json | null;
   resourceId: string | null;
   resourceType: string;
-  spaceId: string | null;
+  spaceId: string;
   userAgent: string | null;
   workspaceId: string;
 }
@@ -241,7 +241,7 @@ export interface Favorites {
   id: Generated<string>;
   userId: string;
   pageId: string | null;
-  spaceId: string | null;
+  spaceId: string;
   templateId: string | null;
   type: string;
   workspaceId: string;
@@ -261,7 +261,7 @@ export interface FileTasks {
   metadata: Json | null;
   pageId: string | null;
   source: string | null;
-  spaceId: string | null;
+  spaceId: string;
   status: string | null;
   type: string | null;
   updatedAt: Generated<Timestamp>;
@@ -429,6 +429,7 @@ export interface Spaces {
   slug: string;
   updatedAt: Generated<Timestamp>;
   visibility: Generated<string>;
+  type: Generated<string>;
   workspaceId: string;
 }
 
@@ -524,7 +525,7 @@ export interface Notifications {
   type: string;
   actorId: string | null;
   pageId: string | null;
-  spaceId: string | null;
+  spaceId: string;
   commentId: string | null;
   pageVerificationId: string | null;
   data: Json | null;
@@ -638,7 +639,7 @@ export interface Templates {
   content: Json | null;
   ydoc: Buffer | null;
   icon: string | null;
-  spaceId: string | null;
+  spaceId: string;
   workspaceId: string;
   creatorId: string | null;
   lastUpdatedById: string | null;
@@ -750,8 +751,7 @@ export interface OauthTokens {
 export interface DriveFolders {
   id: Generated<string>;
   workspaceId: string;
-  driveType: string;
-  ownerId: string | null;
+  spaceId: string;
   parentId: string | null;
   name: string;
   creatorId: string;
@@ -763,8 +763,7 @@ export interface DriveFolders {
 export interface DriveFiles {
   id: Generated<string>;
   workspaceId: string;
-  driveType: string;
-  ownerId: string | null;
+  spaceId: string;
   folderId: string | null;
   fileName: string;
   filePath: string;
@@ -781,6 +780,7 @@ export interface DriveFiles {
 export interface DriveShares {
   id: Generated<string>;
   workspaceId: string;
+  spaceId: string;
   fileId: string;
   creatorId: string | null;
   token: string;
@@ -794,6 +794,7 @@ export interface DriveShares {
 export interface DriveFileVersions {
   id: Generated<string>;
   workspaceId: string;
+  spaceId: string;
   fileId: string;
   versionNumber: number;
   fileName: string;

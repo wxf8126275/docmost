@@ -10,6 +10,7 @@ import { DriveFileVersionRepo } from '../../../database/repos/drive/drive-file-v
 export interface RecordVersionInput {
   fileId: string;
   workspaceId: string;
+  spaceId: string;
   creatorId: string;
 }
 
@@ -17,16 +18,18 @@ export interface RestoreVersionInput {
   fileId: string;
   versionId: string;
   workspaceId: string;
+  spaceId: string;
 }
 
 /**
  * Tracks immutable snapshots of a drive file's storage path + metadata so an
- * overwritten file can be traced and rolled back.
+ * overwritten file can be traced and rolled back. All operations are scoped to
+ * the file's drive space.
  *
  * - `recordVersion` snapshots the *current* file state and is called BEFORE the
  *   live `drive_files` row is updated to a new upload.
  * - `restoreVersion` points the live file back at a historical version's path.
- * Authorization is enforced at the controller layer (CASL `Manage`).
+ * Authorization is enforced at the controller layer (space CASL `Manage`).
  */
 @Injectable()
 export class DriveVersionService {
@@ -37,7 +40,11 @@ export class DriveVersionService {
 
   async recordVersion(input: RecordVersionInput): Promise<DriveFileVersion> {
     const current = await this.fileRepo.findById(input.fileId);
-    if (!current || current.workspaceId !== input.workspaceId) {
+    if (
+      !current ||
+      current.workspaceId !== input.workspaceId ||
+      current.spaceId !== input.spaceId
+    ) {
       throw new NotFoundException('File not found');
     }
 
@@ -45,6 +52,7 @@ export class DriveVersionService {
 
     const insertable: InsertableDriveFileVersion = {
       workspaceId: input.workspaceId,
+      spaceId: input.spaceId,
       fileId: input.fileId,
       versionNumber,
       fileName: current.fileName,
@@ -67,7 +75,11 @@ export class DriveVersionService {
       input.versionId,
       input.fileId,
     );
-    if (!version || version.workspaceId !== input.workspaceId) {
+    if (
+      !version ||
+      version.workspaceId !== input.workspaceId ||
+      version.spaceId !== input.spaceId
+    ) {
       throw new NotFoundException('Version not found');
     }
 
@@ -79,6 +91,7 @@ export class DriveVersionService {
         mimeType: version.mimeType,
       },
       input.fileId,
+      input.spaceId,
     );
   }
 }
