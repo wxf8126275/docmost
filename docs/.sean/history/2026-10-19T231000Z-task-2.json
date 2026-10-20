@@ -1,0 +1,25 @@
+{
+  "timestamp": "2026-10-19T23:10:00Z",
+  "action": "task",
+  "feature": "drive-category-sidebar",
+  "task_id": 2,
+  "task_name": "drive-category-url-state",
+  "before": {
+    "feature": { "status": "IN_PROGRESS", "tests_passed": 4, "current_task": 2 },
+    "task": { "id": 2, "status": "in_progress" }
+  },
+  "after": {
+    "feature": { "status": "PLANNED", "tests_passed": 14, "current_task": 2 },
+    "task": { "id": 2, "status": "done", "tests_total": 10, "tests_passed": 10, "evidence": "exercised" }
+  },
+  "files_modified": [
+    "apps/client/src/features/drive/components/drive-browser.tsx",
+    "apps/client/src/features/drive/components/drive-browser.spec.tsx",
+    "apps/client/src/features/drive/drive-space.spec.tsx"
+  ],
+  "files_created": [
+    "docs/test-reports/2026-10-19-drive-category-sidebar/task-2-drive-category-url-state.md"
+  ],
+  "notes": "RED: 5 rewritten URL-driven cases failed (browser ignored URL, still rendered inline nav). GREEN: parseCategory + useSearchParams; inline nav column removed. Cross-feature spec drive-space.spec.tsx updated (nav relocated by design). Client full suite 23 files / 155 tests green; tsc clean.",
+  "undone": false
+}

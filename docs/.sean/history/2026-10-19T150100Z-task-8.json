@@ -1,0 +1,34 @@
+{
+  "timestamp": "2026-10-19T15:01:00Z",
+  "action": "task",
+  "feature": "cloud-drive",
+  "task_id": 8,
+  "task_name": "client-drive-ui-space-scoped",
+  "before": {
+    "feature": { "status": "IN_PROGRESS", "tests_passed": 94, "current_task": 7 },
+    "task": { "id": 8, "status": "pending" }
+  },
+  "after": {
+    "feature": { "status": "IN_PROGRESS", "tests_passed": 118, "current_task": 9 },
+    "task": { "id": 8, "status": "done", "tests_total": 19, "tests_passed": 19, "evidence": "exercised" }
+  },
+  "files_modified": [
+    "apps/client/src/features/drive/types/drive.types.ts",
+    "apps/client/src/features/drive/services/drive-service.ts",
+    "apps/client/src/features/drive/queries/drive-query.ts",
+    "apps/client/src/features/drive/drive-page.tsx",
+    "apps/client/src/features/drive/components/drive-browser.tsx",
+    "apps/client/src/features/drive/components/upload-dropzone.tsx",
+    "apps/client/src/features/drive/components/share-dialog.tsx",
+    "apps/client/src/features/drive/components/preview-modal.tsx",
+    "apps/client/src/features/drive/components/drive-browser.spec.tsx",
+    "apps/client/src/features/drive/components/upload-dropzone.spec.tsx",
+    "apps/client/src/features/drive/components/preview-modal.spec.tsx",
+    "apps/client/src/features/drive/components/share-dialog.spec.tsx"
+  ],
+  "files_created": [
+    "docs/test-reports/2026-10-19-cloud-drive/task-8-client-drive-ui-space-scoped.md"
+  ],
+  "notes": "Weiyun-style category nav landed in drive-browser. Client full suite 145 tests pass; tsc clean; eslint blocked by missing @tanstack/eslint-plugin-query (finding F011).",
+  "undone": false
+}

@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-10-20T15:10:00Z",
+  "action": "commit",
+  "feature": "drive-category-sidebar",
+  "before": {
+    "active": "drive-file-icons-views",
+    "note": "working tree held uncommitted output of cloud-drive (DONE) and drive-category-sidebar (DONE); git HEAD was a5563e11"
+  },
+  "after": {
+    "active": "drive-file-icons-views",
+    "note": "commits ad475e42 (feat drive space-scoping) and 03e1e13d (feat category sidebar) created; sean docs committed in the following chore(sean) commit"
+  },
+  "files_created": [],
+  "files_modified": [],
+  "commits": [
+    "ad475e42 feat(drive): fold cloud drive into spaces (type:drive, space-scoped CASL)",
+    "03e1e13d feat(client): render drive category nav in the space sidebar"
+  ],
+  "notes": "Split by feature. cloud-drive and drive-category-sidebar both modified drive-browser.tsx (spaceId scoping vs ?category= URL state), so the shared drive-category.ts URL-contract module and the browser URL reading landed with the cloud-drive commit to keep every commit compilable; commit 2 carries the sidebar integration (controlled DriveCategoryNav + SpaceSidebar wiring). Verification before commit: client vitest src/features/drive + src/features/space = 38/38 green.",
+  "undone": false
+}

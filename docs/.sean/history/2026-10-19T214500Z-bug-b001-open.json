@@ -1,0 +1,24 @@
+{
+  "timestamp": "2026-10-19T21:45:00Z",
+  "action": "bug",
+  "feature": "cloud-drive",
+  "bug_id": "B001",
+  "phase": "open",
+  "before": {
+    "feature": { "status": "DONE", "bugs": [] },
+    "task": { "id": 1, "name": "db-space-type", "status": "done" }
+  },
+  "after": {
+    "feature": { "status": "IN_PROGRESS", "bugs": ["B001(open)"] },
+    "task": { "id": 1, "name": "db-space-type", "status": "done" }
+  },
+  "symptom": "Migration 20261019T100000-drive-space-id-notnull fails: column \"space_id\" of relation \"drive_folders\" contains null values; DatabaseMigrationService exits program (backend crash-loop on boot).",
+  "classification": "implementation",
+  "files_created": [
+    "docs/test-reports/2026-10-19-cloud-drive/bugs.md"
+  ],
+  "files_modified": [
+    "docs/.sean/state.json"
+  ],
+  "undone": false
+}

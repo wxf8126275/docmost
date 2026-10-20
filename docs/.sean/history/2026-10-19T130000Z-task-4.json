@@ -1,0 +1,25 @@
+{
+  "timestamp": "2026-10-19T13:00:00Z",
+  "action": "task",
+  "feature": "cloud-drive",
+  "task_id": 4,
+  "task_name": "drive-abilities-reuse",
+  "before": {
+    "feature": { "status": "IN_PROGRESS", "tests_passed": 15, "current_task": 4 },
+    "task": { "id": 4, "status": "pending" }
+  },
+  "after": {
+    "feature": { "status": "IN_PROGRESS", "tests_passed": 18, "current_task": 5 },
+    "task": { "id": 4, "status": "done", "tests_total": 3, "tests_passed": 3, "evidence": "exercised" }
+  },
+  "files_modified": [
+    "apps/server/src/core/casl/interfaces/space-ability.type.ts",
+    "apps/server/src/core/casl/abilities/space-ability.factory.ts"
+  ],
+  "files_created": [
+    "apps/server/src/core/casl/abilities/space-ability.factory.spec.ts",
+    "docs/test-reports/2026-10-19-cloud-drive/task-4-drive-abilities-reuse.md"
+  ],
+  "notes": "Deletion of standalone drive-ability files deferred to Task 6 (controller still imports them). Recorded as finding F010.",
+  "undone": false
+}

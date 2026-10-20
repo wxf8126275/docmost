@@ -1,0 +1,31 @@
+{
+  "timestamp": "2026-10-19T14:00:00Z",
+  "action": "task",
+  "feature": "cloud-drive",
+  "task_id": 5,
+  "task_name": "drive-service-space-scoped",
+  "before": {
+    "feature": { "status": "IN_PROGRESS", "tests_passed": 18, "current_task": 5 },
+    "task": { "id": 5, "status": "pending" }
+  },
+  "after": {
+    "feature": { "status": "IN_PROGRESS", "tests_passed": 94, "current_task": 7 },
+    "task": { "id": 5, "status": "done", "tests_total": 36, "tests_passed": 36, "evidence": "exercised" }
+  },
+  "files_modified": [
+    "apps/server/src/database/types/db.d.ts",
+    "apps/server/src/database/repos/drive/drive-folder.repo.ts",
+    "apps/server/src/database/repos/drive/drive-file.repo.ts",
+    "apps/server/src/core/drive/services/drive.service.ts",
+    "apps/server/src/core/drive/services/drive-storage.service.ts",
+    "apps/server/src/core/drive/services/drive.service.spec.ts",
+    "apps/server/src/core/drive/services/drive-storage.service.spec.ts"
+  ],
+  "files_created": [
+    "apps/server/src/database/repos/drive/drive-folder.repo.spec.ts",
+    "apps/server/src/database/repos/drive/drive-file.repo.spec.ts",
+    "docs/test-reports/2026-10-19-cloud-drive/task-5-drive-service-space-scoped.md"
+  ],
+  "notes": "Task 5+6 merged step (signature coupling); Tasks 10/11/12 server-side absorbed. 76 new tests total across tasks 5/6/10/11/12. db.d.ts legacy columns removed; migration B header GATED→ENABLED.",
+  "undone": false
+}

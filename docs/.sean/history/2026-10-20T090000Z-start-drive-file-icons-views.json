@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-10-20T09:00:00Z",
+  "action": "start",
+  "feature": "drive-file-icons-views",
+  "before": {
+    "active": "drive-category-sidebar",
+    "feature": null
+  },
+  "after": {
+    "active": "drive-file-icons-views",
+    "feature": { "status": "DRAFT", "tasks_total": 0 }
+  },
+  "files_created": [
+    "docs/requirements/2026-10-20-drive-file-icons-views.md"
+  ],
+  "files_modified": [
+    "docs/.sean/state.json"
+  ],
+  "notes": "Problem: drive file lists use one generic icon and no image thumbnails; reference is the Tencent Weiyun screenshot (type-specific icons, thumbnail + list views). Interpretations flagged to user: name drive-file-icons-views; scope = file-type icons + image thumbnails + two views (thumbnail tiles / list with time+size columns), no pixel-perfect Weiyun clone; Weiyun-only sidebar items (notes/trash/vault/etc.) out of scope; videos keep icons (no poster generation).",
+  "undone": false
+}

@@ -1,0 +1,23 @@
+{
+  "timestamp": "2026-10-19T22:05:00Z",
+  "action": "bug",
+  "feature": "cloud-drive",
+  "bug_id": "B001",
+  "phase": "fixed",
+  "before": {
+    "feature": { "status": "IN_PROGRESS", "bugs": ["B001(open)"] }
+  },
+  "after": {
+    "feature": { "status": "DONE", "bugs": ["B001(fixed)"] }
+  },
+  "classification": "implementation",
+  "root_cause": "Migration B set spaceId NOT NULL while v1 drive rows still had space_id NULL; the backfill was only a documented manual prerequisite, never automated into the migration path, so any DB with v1 drive data rejected the constraint and crash-looped the backend on boot.",
+  "fix": "Migration 20261019T100000 up() now calls applyBackfill(db) first (tested, idempotent), sweeps residual NULL drive_shares/drive_file_versions from their files, then drops legacy columns and sets NOT NULL.",
+  "regression_test": "drive-space-type.spec.ts › B: backfills v1 rows BEFORE any schema alteration / B: sweeps residual NULL share/version rows from their files, then constrains (RED observed before fix)",
+  "files_modified": [
+    "apps/server/src/database/migrations/20261019T100000-drive-space-id-notnull.ts",
+    "apps/server/src/database/migrations/drive-space-type.spec.ts"
+  ],
+  "verification": "migration+backfill specs 13/13 green; server full regression 726/738 (12 pre-existing DI-debt failures unchanged, proven unrelated via stash earlier); client 149/149 unaffected.",
+  "undone": false
+}

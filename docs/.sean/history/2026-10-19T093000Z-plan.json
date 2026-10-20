@@ -1,0 +1,41 @@
+{
+  "timestamp": "2026-10-19T09:30:00Z",
+  "action": "plan",
+  "feature": "cloud-drive",
+  "before": {
+    "feature": {
+      "status": "DRAFT",
+      "plan": null,
+      "tasks_total": 0
+    }
+  },
+  "after": {
+    "feature": {
+      "status": "PLANNED",
+      "plan": "docs/plans/2026-10-19-cloud-drive.md",
+      "tasks_total": 13,
+      "tasks": [
+        { "id": 1, "name": "db-space-type", "complexity": "medium", "parallel_safe": false, "artifacts": ["migrations/20261019T090000-space-drive-type.ts", "migrations/20261019T100000-drive-space-id-notnull.ts", "config/drive.env.example"] },
+        { "id": 2, "name": "batch-backfill-drive", "complexity": "medium", "parallel_safe": false, "artifacts": ["scripts/backfill-drive-to-spaces.ts"] },
+        { "id": 3, "name": "space-type-service", "complexity": "medium", "parallel_safe": false },
+        { "id": 4, "name": "drive-abilities-reuse", "complexity": "medium", "parallel_safe": true },
+        { "id": 5, "name": "drive-service-space-scoped", "complexity": "high", "parallel_safe": false },
+        { "id": 6, "name": "drive-controller-space-scoped", "complexity": "high", "parallel_safe": false },
+        { "id": 7, "name": "client-drive-nav", "complexity": "high", "parallel_safe": false },
+        { "id": 8, "name": "client-drive-ui-space-scoped", "complexity": "high", "parallel_safe": false },
+        { "id": 9, "name": "drive-i18n", "complexity": "medium", "parallel_safe": true },
+        { "id": 10, "name": "drive-share-space-scoped", "complexity": "medium", "parallel_safe": false },
+        { "id": 11, "name": "drive-quota-space-scoped", "complexity": "medium", "parallel_safe": true },
+        { "id": 12, "name": "drive-versions-space-scoped", "complexity": "medium", "parallel_safe": false },
+        { "id": 13, "name": "client-drive-share-quota", "complexity": "low", "parallel_safe": true }
+      ]
+    }
+  },
+  "files_created": [
+    "docs/plans/2026-10-19-cloud-drive.md"
+  ],
+  "files_modified": [
+    { "path": "docs/.sean/state.json", "before_hash": "draft" }
+  ],
+  "undone": false
+}

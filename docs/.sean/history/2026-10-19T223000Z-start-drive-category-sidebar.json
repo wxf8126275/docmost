@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-10-19T22:30:00Z",
+  "action": "start",
+  "feature": "drive-category-sidebar",
+  "before": {
+    "active": "cloud-drive",
+    "feature": null
+  },
+  "after": {
+    "active": "drive-category-sidebar",
+    "feature": { "status": "DRAFT", "tasks_total": 0 }
+  },
+  "files_created": [
+    "docs/requirements/2026-10-19-drive-category-sidebar.md"
+  ],
+  "files_modified": [
+    "docs/.sean/state.json"
+  ],
+  "notes": "Problem: drive spaces still render the page tree in SpaceSidebar while the drive category nav sits in a narrow column inside DriveBrowser. Intent (to confirm at plan): for type=drive spaces, replace the Pages section with the category nav; hide page-specific items; share category state between sidebar and content.",
+  "undone": false
+}

@@ -1,0 +1,24 @@
+{
+  "timestamp": "2026-10-19T14:03:00Z",
+  "action": "task",
+  "feature": "cloud-drive",
+  "task_id": 11,
+  "task_name": "drive-quota-space-scoped",
+  "before": {
+    "feature": { "status": "IN_PROGRESS", "tests_passed": 18, "current_task": 5 },
+    "task": { "id": 11, "status": "pending" }
+  },
+  "after": {
+    "feature": { "status": "IN_PROGRESS", "tests_passed": 94, "current_task": 7 },
+    "task": { "id": 11, "status": "done", "tests_total": 4, "tests_passed": 4, "evidence": "exercised" }
+  },
+  "files_modified": [
+    "apps/server/src/core/drive/services/drive-quota.service.ts",
+    "apps/server/src/core/drive/services/drive-quota.service.spec.ts"
+  ],
+  "files_created": [
+    "docs/test-reports/2026-10-19-cloud-drive/task-11-drive-quota-space-scoped.md"
+  ],
+  "notes": "Server-side scope absorbed into the combined Task 5+6 step.",
+  "undone": false
+}

@@ -1,0 +1,32 @@
+{
+  "timestamp": "2026-10-19T14:01:00Z",
+  "action": "task",
+  "feature": "cloud-drive",
+  "task_id": 6,
+  "task_name": "drive-controller-space-scoped",
+  "before": {
+    "feature": { "status": "IN_PROGRESS", "tests_passed": 18, "current_task": 5 },
+    "task": { "id": 6, "status": "pending" }
+  },
+  "after": {
+    "feature": { "status": "IN_PROGRESS", "tests_passed": 94, "current_task": 7 },
+    "task": { "id": 6, "status": "done", "tests_total": 23, "tests_passed": 23, "evidence": "exercised" }
+  },
+  "files_modified": [
+    "apps/server/src/core/drive/drive.controller.ts",
+    "apps/server/src/core/drive/drive.module.ts",
+    "apps/server/src/core/drive/dto/drive.dto.ts",
+    "apps/server/src/core/drive/drive.controller.spec.ts"
+  ],
+  "files_created": [
+    "apps/server/src/core/drive/drive-public-share.controller.ts",
+    "docs/test-reports/2026-10-19-cloud-drive/task-6-drive-controller-space-scoped.md"
+  ],
+  "files_deleted": [
+    "apps/server/src/core/casl/interfaces/drive-ability.type.ts",
+    "apps/server/src/core/casl/abilities/drive-ability.factory.ts",
+    "apps/server/src/core/casl/abilities/drive-ability.factory.spec.ts"
+  ],
+  "notes": "F010 resolved (drive-ability files deleted). Deviation: public share routes split into DrivePublicShareController to preserve /drive/shares/:token contract.",
+  "undone": false
+}
